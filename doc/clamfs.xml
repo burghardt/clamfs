@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<clamfs>
+	<!-- <log enabled="true" method="syslog"/> -->
+        <clamd socket="/var/run/clamav/clamd.ctl"/>
+</clamfs>

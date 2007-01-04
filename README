@@ -1,0 +1,15 @@
+ClamFS is FUSE based userspace filesystem that performs anti virus
+scanning on access using clamd. Clamd is a file scanning service developed
+by clamav project.
+
+To build ClamFS you need:
+ * FUSE
+ * GNU libCommonCpp (and libxml2 as it's dependency)
+ * rLog
+
+As a runtime dependency you need:
+ * clamd
+
+--
+Krzysztof Burghardt <krzysztof@burghardt.pl>
+http://www.burghardt.pl/

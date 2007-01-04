@@ -1,0 +1,14 @@
+Source: clamfs
+Section: utils
+Priority: optional
+Maintainer: Krzysztof Burghardt <krzysztof@burghardt.pl>
+Build-Depends: debhelper (>= 5), autotools-dev
+Standards-Version: 3.7.2
+
+Package: clamfs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Userspace filesystem that performs anti virus scanning on access
+ ClamFS is FUSE based userspace filesystem that performs anti virus
+ scanning on access using clamd. Clamd is a file scanning service developed
+ by clamav project.
