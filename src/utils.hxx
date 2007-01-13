@@ -2,7 +2,7 @@
    ClamFS - Userspace anti-virus secured filesystem
    Copyright (C) 2006 Krzysztof Burghardt.
 
-   $Id: rlog.hxx,v 1.2 2007-01-13 21:06:52 burghardt Exp $
+   $Id: utils.hxx,v 1.1 2007-01-13 21:06:52 burghardt Exp $
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -19,31 +19,23 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef CLAMFS_RLOG_HXX
-#define CLAMFS_RLOG_HXX
+#ifndef CLAMFS_UTILS_HXX
+#define CLAMFS_UTILS_HXX
 
 #include <config.h>
 
-#include <cc++/file.h>
-
-#include <rlog/rlog.h>
-#include <rlog/Error.h>
-#include <rlog/RLogChannel.h>
-#include <rlog/SyslogNode.h>
-#include <rlog/StdioNode.h>
-
 namespace clamfs {
 
-using namespace std;
-using namespace rlog;
-
-void RLogOpenStdio();
-void RLogCloseStdio();
-void RLogOpenSyslog();
-void RLogOpenLogFile(const char *filename);
+struct ltstr
+{
+  bool operator()(const char *s1, const char *s2) const
+    {
+        return strcmp(s1, s2) < 0;
+    }
+};
 
 } /* namespace clamfs */
 
-#endif /* CLAMFS_RLOG_HXX */
+#endif /* CLAMFS_UTILS_HXX */
 
 /* EoF */

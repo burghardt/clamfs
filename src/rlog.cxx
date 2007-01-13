@@ -2,7 +2,7 @@
    ClamFS - Userspace anti-virus secured filesystem
    Copyright (C) 2006 Krzysztof Burghardt.
 
-   $Id: rlog.cxx,v 1.1.1.1 2007-01-04 02:22:47 burghardt Exp $
+   $Id: rlog.cxx,v 1.2 2007-01-13 21:06:52 burghardt Exp $
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ void RLogOpenSyslog() {
     rLog(Info, "logs goes to syslog");
 }
 
-void RLogOpenLogFile(char *filename) {
+void RLogOpenLogFile(const char *filename) {
     fileLog = open(filename, O_WRONLY|O_CREAT|O_APPEND);
     fileLogNode = new StdioNode(fileLog);
     fileLogNode->subscribeTo( RLOG_CHANNEL("") );
@@ -60,4 +60,4 @@ void RLogOpenLogFile(char *filename) {
 
 } /* namespace clamfs */
 
-// EoF
+/* EoF */

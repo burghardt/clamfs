@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <clamfs>
-	<!-- <log enabled="true" method="syslog"/> -->
-        <clamd socket="/var/run/clamav/clamd.ctl"/>
+	<!-- Clamd socket -->
+        <clamd socket="/var/run/clamav/clamd.ctl" />
+
+	<!-- Filesystem settings
+	     root       - real directory to attach as our root
+	     mountpoint - where to attach our root
+	     public     - limit access to process owner only
+	                  or make filesystem publicly
+			  available for all users -->
+	<filesystem root="/tmp" mountpoint="/home/kb/src/clamfs/mountpoint" public="yes" />
+	
+	<!-- How many entries to keep in cache and for how long (in ms) -->
+	<cache entries="8192" expire="3600000" />
+	
+	<!-- Logging method (syslog or file) -->
+	<!-- <log method="syslog" /> -->
+	<!-- <log method="file" filename="/var/log/clamfs.log" /> -->
+
+	<!-- Send mail when virus is found -->
+	<!-- <mail to="root" from="root" subject="ClamFS: Virus detected on HOSTNAME" /> -->
 </clamfs>

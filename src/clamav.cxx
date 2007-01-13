@@ -2,7 +2,7 @@
    ClamFS - Userspace anti-virus secured filesystem
    Copyright (C) 2006 Krzysztof Burghardt.
 
-   $Id: clamav.cxx,v 1.1.1.1 2007-01-04 02:22:47 burghardt Exp $
+   $Id: clamav.cxx,v 1.2 2007-01-13 21:06:52 burghardt Exp $
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,6 +23,11 @@
 
 namespace clamfs {
 
+extern map <const char *, char *, ltstr> config;
+
+/*
+ * Check if we can connect co clamd
+ */
 #define CHECK_CLAMD(clamdSocket) do {\
     if (!clamdSocket) {\
 	rLog(Warn, "error: cannot connect to clamd");\
@@ -32,6 +37,9 @@ namespace clamfs {
 
 unixstream clamd;
 
+/*
+ * Open connection to clamd through unix socket
+ */
 int OpenClamav(const char *unixSocket) {
     rLog(Debug, "attempt to open control connection to clamd via %s", unixSocket); 
 
@@ -42,6 +50,9 @@ int OpenClamav(const char *unixSocket) {
     return 0;
 }
 
+/*
+ * Check clamd availability by sending PING command and checking for reply
+ */
 int PingClamav() {
     string reply;
 
@@ -58,32 +69,42 @@ int PingClamav() {
     return 0;
 }
 
+/*
+ * Close clamd collection
+ */
 void CloseClamav() {
     rLog(Debug, "closing clamd connection");
     clamd.close();
 }
 
+/*
+ * Request anti virus scanning on file
+ *
+ * return: -1 - error opening clamd connection
+ *          0 - OK (no virus found)
+ *          1 - virus found or error
+ */
 int ClamavScanFile(const char *filename) {
-    string reply;
+    char reply[PATH_MAX + 1024];
+
     rLog(Debug, "attempt to scan file %s", filename);
 
-    OpenClamav("/var/run/clamav/clamd.ctl");
+    OpenClamav(config["socket"]);
     if (!clamd) return -1;
 
     clamd << "RAWSCAN " << filename << endl;
-    clamd >> reply;
-    clamd >> reply;
+    clamd.getline(reply, PATH_MAX + 1024, '\n');
     CloseClamav();
 
-    if (reply != "OK") {
-        rLog(Warn, "%s IS INFECTED with %s", filename, reply.c_str());
+    if (strncmp(reply + strlen(reply) - 2, "OK", 2) != 0) {
+        rLog(Warn, "%s", reply);
 	return 1;
     }
 
-    rLog(Debug, "%s is OK", filename);
+    rLog(Debug, "%s: OK", filename);
     return 0;
 }
 
 } /* namespace clamfs */
 
-// EoF
+/* EoF */

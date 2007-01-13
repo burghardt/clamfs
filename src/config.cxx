@@ -2,7 +2,7 @@
    ClamFS - Userspace anti-virus secured filesystem
    Copyright (C) 2006 Krzysztof Burghardt.
 
-   $Id: config.cxx,v 1.1.1.1 2007-01-04 02:22:47 burghardt Exp $
+   $Id: config.cxx,v 1.2 2007-01-13 21:06:52 burghardt Exp $
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,16 +23,24 @@
 
 namespace clamfs {
 
-ConfigParserXML::ConfigParserXML(char *filename) {
+extern map <const char *, char *, ltstr> config;
+
+ConfigParserXML::ConfigParserXML(const char *filename) {
     Open(filename);
+#ifndef NDEBUG
+    cout << "--- begin of xml dump ---" << endl;
+#endif
     parse();
+#ifndef NDEBUG
+    cout << "--- end of xml dump ---" << endl;
+#endif
 }
 
 ConfigParserXML::~ConfigParserXML() {
     Close();
 }
 
-void ConfigParserXML::Open(char *filename) {
+void ConfigParserXML::Open(const char *filename) {
     ifstream::open(filename);
 }
 
@@ -46,21 +54,42 @@ int ConfigParserXML::read(unsigned char *buffer, size_t len) {
     return len;
 }
 
+/*
+ * Store configuration in map<const char *, char *, ltstr>
+ * and (if debug enabled) dump parsed configuration file to cout
+ */
 void ConfigParserXML::startElement(const unsigned char *name, const unsigned char **attr) {
+const unsigned char *option;
+const unsigned char *value;
+#ifndef NDEBUG
     cout << "<" << name;
+#endif
     if(attr) {
 	while(*attr) {
-	    cout << " " << *(attr++);
-	    cout << "=" << *(attr++);
+	    option = *(attr++);
+	    value = *(attr++);
+	    config[strdup((const char *)option)] = strdup((const char *)value);
+#ifndef NDEBUG
+	    cout << " " << option;
+	    cout << "=" << value;
+#endif
 	}
     }
+#ifndef NDEBUG
     cout << ">" << endl;
+#endif
 }
 
+/*
+ * As long as our configuration file have no nested elements
+ * we do not need to catch any element's end.
+ */
 void ConfigParserXML::endElement(const unsigned char *name) {
+#ifndef NDEBUG
     cout << "</" << name << ">" << endl;
+#endif
 }
 
 } /* namespace clamfs */
 
-// EoF
+/* EoF */
