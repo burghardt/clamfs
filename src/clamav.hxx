@@ -2,7 +2,7 @@
    ClamFS - Userspace anti-virus secured filesystem
    Copyright (C) 2006 Krzysztof Burghardt.
 
-   $Id: clamav.hxx,v 1.2 2007-01-13 21:06:52 burghardt Exp $
+   $Id: clamav.hxx,v 1.3 2007-01-25 02:51:29 burghardt Exp $
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -27,6 +27,9 @@
 #include <cc++/file.h>
 #include <cc++/unix.h>
 
+#include <Poco/Mutex.h>
+#include <Poco/ScopedLock.h>
+
 #include <config.hxx>
 #include <rlog.hxx>
 
@@ -34,6 +37,7 @@ namespace clamfs {
 
 using namespace std;
 using namespace ost;
+using namespace Poco;
 
 extern RLogChannel *Debug;
 extern RLogChannel *Info;

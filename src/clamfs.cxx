@@ -2,7 +2,7 @@
    ClamFS - Userspace anti-virus secured filesystem
    Copyright (C) 2006 Krzysztof Burghardt.
 
-   $Id: clamfs.cxx,v 1.2 2007-01-13 21:06:52 burghardt Exp $
+   $Id: clamfs.cxx,v 1.3 2007-01-25 02:51:29 burghardt Exp $
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -52,6 +52,10 @@ namespace clamfs {
 
 static int savefd;
 map <const char *, char *, ltstr> config;
+
+ScanCache *cache = NULL;
+
+FastMutex scanMutex;
 
 }
 
@@ -341,10 +345,24 @@ static int clamfs_create(const char *path, mode_t mode, struct fuse_file_info *f
     return 0;
 }
 
-static int clamfs_open(const char *path, struct fuse_file_info *fi)
+static inline int clamfs_open_backend(const char *path, struct fuse_file_info *fi)
 {
     int fd;
+
+    path = clamfs_fixpath(path);
+    fd = open(path, fi->flags);
+    if (fd == -1)
+        return -errno;
+
+    fi->fh = fd;
+    return 0;
+}
+
+static int clamfs_open(const char *path, struct fuse_file_info *fi)
+{
+    int ret;
     int scan_result;
+    struct stat file_stat;
 
     /*
      * Build file patch in real filesystem tree
@@ -354,27 +372,88 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
     strcat(real_path, path);
 
     /*
-     * Scan file when someone requests opening it
+     * Check if file is in cache
+     */
+    if (cache != NULL) { /* only if cache initalized */
+	ret = lstat(real_path, &file_stat);
+	if (!ret) { /* got file stat without error */
+	
+	    if (cache->has(file_stat.st_ino)) {
+		Poco::SharedPtr<time_t> ptr_val;
+		rLog(Info, "early cache hit for inode %ld", (unsigned long)file_stat.st_ino);
+		ptr_val = cache->get(file_stat.st_ino);
+		
+		if (*ptr_val == file_stat.st_mtime) {
+		    rLog(Info, "late cache hit for inode %ld", (unsigned long)file_stat.st_ino);
+		    
+		    /* file scanned and not changed, just open it */
+		    return clamfs_open_backend(path, fi);
+		} else {
+		    rLog(Info, "late cache miss for inode %ld", (unsigned long)file_stat.st_ino);
+
+		    /*
+		     * Scan file when file it was changed
+		     */
+		    scan_result = ClamavScanFile(real_path);
+	    	    delete[] real_path;
+
+	    	    /*
+	             * Check for scan results
+	    	     */
+	    	    if (scan_result != 0) { /* delete from cache and return -EPERM error if virus was found */
+			cache->remove(file_stat.st_ino);
+			return -EPERM;
+		    }
+		
+		    /* file was clean so update cache */
+		    *ptr_val = file_stat.st_mtime;
+
+		    /* and open it */
+		    return clamfs_open_backend(path, fi);
+		}
+
+	    } else {
+		rLog(Info, "cache miss for inode %ld", (unsigned long)file_stat.st_ino);
+		
+	        /*
+	         * Scan file when file is not in cache
+	         */
+	        scan_result = ClamavScanFile(real_path);
+	        delete[] real_path;
+
+	        /*
+	         * Check for scan results
+	         */
+	        if (scan_result != 0) /* return -EPERM error if virus was found */
+		    return -EPERM;
+		
+		/* file was clean so add it to cache */
+		cache->add(file_stat.st_ino, file_stat.st_mtime);
+
+		/* and open it */
+		return clamfs_open_backend(path, fi);
+		
+	    }
+	
+	}
+    }
+
+    /*
+     * Scan file when cache is not available
      */
     scan_result = ClamavScanFile(real_path);
     delete[] real_path;
-    
+
     /*
-     * Check for scan results and return -EPERM error if virus was found
+     * Check for scan results
      */
-    if (scan_result != 0)
+    if (scan_result != 0) /* return -EPERM error if virus was found */
 	return -EPERM;
 
     /*
-     * If no virus detected confinue as usual
+     * If no virus detected continue as usual
      */
-    path = clamfs_fixpath(path);
-    fd = open(path, fi->flags);
-    if (fd == -1)
-        return -errno;
-
-    fi->fh = fd;
-    return 0;
+    return clamfs_open_backend(path, fi);
 }
 
 static int clamfs_read(const char *path, char *buf, size_t size, off_t offset,
@@ -620,13 +699,29 @@ int main(int argc, char *argv[])
     CloseClamav();
 
     /*
+     * Initialize cache
+     */
+    if (atoi(config["entries"]) <= 0) {
+	rLog(Warn, "maximal cache entries count cannot be =< 0");
+	return EXIT_FAILURE;
+    }
+    if (atoi(config["expire"]) <= 0) {
+	rLog(Warn, "maximal cache expire value cannot be =< 0");
+	return EXIT_FAILURE;
+    }
+    cache = new ScanCache(atoi(config["entries"]), atoi(config["expire"]));
+
+    /*
      * Open configured logging target
      */
     /* TODO: use configuration file, do not assume syslog */
     RLogOpenSyslog();
     RLogCloseStdio();
-
+    
     ret = fuse_main(fuse_argc, fuse_argv, &clamfs_oper);
+    
+    rLog(Info, "deleting cache");
+    delete cache;
     
     rLog(Warn,"exiting");
     

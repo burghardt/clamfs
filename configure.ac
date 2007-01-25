@@ -22,6 +22,10 @@ AC_CHECK_LIB(fuse,fuse_main,LIBS="$LIBS -lfuse",AC_MSG_ERROR([libfuse not found!
 AC_CHECK_HEADER(rlog/rlog.h,,AC_MSG_ERROR([rlog/rlog.h not found!]))
 AC_CHECK_LIB(rlog,main,LIBS="$LIBS -lrlog",AC_MSG_ERROR([librlog not found!]))
 
+# Check for libpoco
+AC_CHECK_HEADER(Poco/ExpireLRUCache.h,,AC_MSG_ERROR([Poco/ExpireLRUCache.h not found!]))
+AC_CHECK_LIB(PocoFoundation,main,LIBS="$LIBS -lPocoFoundation",AC_MSG_ERROR([libpoco not found!]))
+
 # Check for libccgnu2 (via ccgnu2-config)
 AC_MSG_CHECKING(for libccgnu2 via ccgnu2-config)
 if test -x "`which ccgnu2-config 2>/dev/null`"; then

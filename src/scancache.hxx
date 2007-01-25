@@ -2,7 +2,7 @@
    ClamFS - Userspace anti-virus secured filesystem
    Copyright (C) 2006 Krzysztof Burghardt.
 
-   $Id: clamfs.hxx,v 1.3 2007-01-25 02:51:30 burghardt Exp $
+   $Id: scancache.hxx,v 1.1 2007-01-25 02:51:32 burghardt Exp $
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -19,34 +19,25 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef CLAMFS_CLAMFS_HXX
-#define CLAMFS_CLAMFS_HXX
+#ifndef CLAMFS_SCANCACHE_HXX
+#define CLAMFS_SCANCACHE_HXX
 
 #include <config.h>
 
-#include <Poco/Mutex.h>
-
-#include <rlog.hxx>
-#include <config.hxx>
-#include <clamav.hxx>
-#include <scancache.hxx>
-
-#define FUSE_MAX_ARGS 32
+#include <Poco/ExpireLRUCache.h>
 
 namespace clamfs {
 
 using namespace std;
-using namespace rlog;
 using namespace Poco;
 
-extern RLogChannel *Debug;
-extern RLogChannel *Info;
-extern RLogChannel *Warn;
-
-extern unixstream clamd;
+class ScanCache: public ExpireLRUCache<ino_t, time_t> {
+    public:
+    	ScanCache(int elements, int expire);
+};
 
 } /* namespace clamfs */
 
-#endif /* CLAMFS_CLAMFS_HXX */
+#endif /* CLAMFS_SCANCACHE_HXX */
 
 /* EoF */

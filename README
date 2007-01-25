@@ -6,6 +6,7 @@ To build ClamFS you need:
  * FUSE
  * GNU libCommonCpp (and libxml2 as it's dependency)
  * rLog
+ * POCO
 
 As a runtime dependency you need:
  * clamd

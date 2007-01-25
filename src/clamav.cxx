@@ -2,7 +2,7 @@
    ClamFS - Userspace anti-virus secured filesystem
    Copyright (C) 2006 Krzysztof Burghardt.
 
-   $Id: clamav.cxx,v 1.2 2007-01-13 21:06:52 burghardt Exp $
+   $Id: clamav.cxx,v 1.3 2007-01-25 02:51:29 burghardt Exp $
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 namespace clamfs {
 
 extern map <const char *, char *, ltstr> config;
+extern FastMutex scanMutex;
 
 /*
  * Check if we can connect co clamd
@@ -89,6 +90,11 @@ int ClamavScanFile(const char *filename) {
 
     rLog(Debug, "attempt to scan file %s", filename);
 
+    /*
+     * Enqueue requests
+     */
+    FastMutex::ScopedLock lock(scanMutex);
+
     OpenClamav(config["socket"]);
     if (!clamd) return -1;
 
@@ -96,13 +102,14 @@ int ClamavScanFile(const char *filename) {
     clamd.getline(reply, PATH_MAX + 1024, '\n');
     CloseClamav();
 
-    if (strncmp(reply + strlen(reply) - 2, "OK", 2) != 0) {
-        rLog(Warn, "%s", reply);
-	return 1;
+    if (strncmp(reply + strlen(reply) - 2, "OK", 2) == 0 ||
+	strncmp(reply + strlen(reply) - 10, "Empty file", 10) == 0) {
+        rLog(Debug, "%s", reply);
+	return 0;
     }
 
-    rLog(Debug, "%s: OK", filename);
-    return 0;
+    rLog(Warn, "%s", reply);
+    return 1;
 }
 
 } /* namespace clamfs */
