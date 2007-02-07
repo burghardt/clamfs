@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg1882"
+   sodipodi:version="0.32"
+   inkscape:version="0.44.1"
+   sodipodi:docbase="/home/kb/doc/ClamFS/images"
+   sodipodi:docname="clamfs_internals.svg"
+   inkscape:export-filename="/home/kb/doc/ClamFS/images/clamfs_internals.png"
+   inkscape:export-xdpi="20.93"
+   inkscape:export-ydpi="20.93">
+  <defs
+     id="defs1884" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#ffffff"
+     borderopacity="0.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="0"
+     inkscape:zoom="0.5"
+     inkscape:cx="437.45418"
+     inkscape:cy="643.47898"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     inkscape:window-width="1106"
+     inkscape:window-height="846"
+     inkscape:window-x="0"
+     inkscape:window-y="0" />
+  <metadata
+     id="metadata1887">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g3681"
+       transform="translate(-160,-134.25)">
+      <rect
+         ry="14.999998"
+         rx="14.999997"
+         y="265.95682"
+         x="-113.40536"
+         height="237.81073"
+         width="427.81073"
+         id="rect1890"
+         style="opacity:1;fill:#e3dbdb;fill-opacity:1;fill-rule:nonzero;stroke:black;stroke-width:4.1892705;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <text
+         id="text3663"
+         y="359.72546"
+         x="99.005867"
+         style="font-size:72px;font-style:normal;font-weight:normal;text-align:center;text-anchor:middle;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="359.72546"
+           x="99.005867"
+           id="tspan3665"
+           sodipodi:role="line">libfuse</tspan><tspan
+           id="tspan3673"
+           y="449.72546"
+           x="99.005867"
+           sodipodi:role="line">bindings</tspan></text>
+    </g>
+    <g
+       id="g3687"
+       transform="translate(-199,-135.75)">
+      <rect
+         ry="14.999998"
+         rx="14.999997"
+         y="267.45682"
+         x="354.09464"
+         height="237.81073"
+         width="427.81073"
+         id="rect3667"
+         style="opacity:1;fill:#e3dbdb;fill-opacity:1;fill-rule:nonzero;stroke:black;stroke-width:4.1892705;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <text
+         id="text3669"
+         y="420.20398"
+         x="369.70117"
+         style="font-size:72px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="420.20398"
+           x="369.70117"
+           id="tspan3671"
+           sodipodi:role="line">ScanCache</tspan></text>
+    </g>
+    <g
+       id="g3692"
+       transform="translate(1,-121.5)">
+      <rect
+         ry="14.999998"
+         rx="14.999997"
+         y="492.45682"
+         x="154.09464"
+         height="237.81073"
+         width="427.81073"
+         id="rect3675"
+         style="opacity:1;fill:#e3dbdb;fill-opacity:1;fill-rule:nonzero;stroke:black;stroke-width:4.1892705;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <text
+         id="text3677"
+         y="633.44031"
+         x="161.59766"
+         style="font-size:72px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="633.44031"
+           x="161.59766"
+           id="tspan3679"
+           sodipodi:role="line">ScanQueue</tspan></text>
+    </g>
+    <g
+       id="g3710"
+       transform="translate(-160.5858,-470.5)">
+      <rect
+         ry="14.999998"
+         rx="14.999997"
+         y="841.45679"
+         x="745.20984"
+         height="237.81073"
+         width="427.81073"
+         id="rect3699"
+         style="fill:#e3dbdb;fill-opacity:1;fill-rule:nonzero;stroke:black;stroke-width:4.1892705;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <text
+         id="text3701"
+         y="943.60437"
+         x="958.50586"
+         style="font-size:48px;font-style:normal;font-weight:normal;text-align:center;text-anchor:middle;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="943.60437"
+           x="958.50586"
+           id="tspan3703"
+           sodipodi:role="line">clamd / libclamav</tspan><tspan
+           id="tspan3708"
+           y="1003.6044"
+           x="958.50586"
+           sodipodi:role="line">bindings</tspan></text>
+    </g>
+  </g>
+</svg>

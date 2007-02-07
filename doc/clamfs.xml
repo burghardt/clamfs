@@ -15,10 +15,17 @@
 	<!-- How many entries to keep in cache and for how long (in ms) -->
 	<cache entries="8192" expire="3600000" />
 	
-	<!-- Logging method (syslog or file) -->
-	<!-- <log method="syslog" /> -->
-	<!-- <log method="file" filename="/var/log/clamfs.log" /> -->
-
+<!-- TODO:
+	< !-- Logging method (syslog or file) -- >
+	< !-- <log method="syslog" /> -- >
+	< !-- <log method="file" filename="/var/log/clamfs.log" /> -- >
+-->
 	<!-- Send mail when virus is found -->
-	<!-- <mail to="root" from="root" subject="ClamFS: Virus detected on HOSTNAME" /> -->
+	<!-- <mail server="localhost" to="root@localhost" from="clamfs@localhost"
+	     subject="ClamFS: Virus detected" /> -->
+	<!-- subject="ClamFS: Virus detected on @@HOSTNAME@@" /> -->
+	
+	<!-- Debug settings -->
+<!-- TODO: verbose -->
+	 <debug verbose="yes" threads="no" fork="no" />
 </clamfs>

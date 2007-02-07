@@ -2,4 +2,7 @@
  TO DO
  =====
 
-* everyting?
+* negative cache (cache informations about infected files)
+* better configuration file handling (preferably using POCO)
+* daily statistics
+* manual page

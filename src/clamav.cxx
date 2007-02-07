@@ -1,8 +1,8 @@
 /*
    ClamFS - Userspace anti-virus secured filesystem
-   Copyright (C) 2006 Krzysztof Burghardt.
+   Copyright (C) 2007 Krzysztof Burghardt.
 
-   $Id: clamav.cxx,v 1.3 2007-01-25 02:51:29 burghardt Exp $
+   $Id: clamav.cxx,v 1.4 2007-02-07 15:39:29 burghardt Exp $
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -86,6 +86,7 @@ void CloseClamav() {
  *          1 - virus found or error
  */
 int ClamavScanFile(const char *filename) {
+    /* FIXME: PATH_MAX is obsolet on some systems and does not exist on other. */
     char reply[PATH_MAX + 1024];
 
     rLog(Debug, "attempt to scan file %s", filename);
@@ -95,20 +96,39 @@ int ClamavScanFile(const char *filename) {
      */
     FastMutex::ScopedLock lock(scanMutex);
 
+    /*
+     * Open clamd socket
+     */
     OpenClamav(config["socket"]);
     if (!clamd) return -1;
 
-    clamd << "RAWSCAN " << filename << endl;
+    /*
+     * Scan file using SCAN method
+     */
+    clamd << "SCAN " << filename << endl;
     clamd.getline(reply, PATH_MAX + 1024, '\n');
     CloseClamav();
 
+    /*
+     * Chceck for scan results
+     */
     if (strncmp(reply + strlen(reply) - 2, "OK", 2) == 0 ||
 	strncmp(reply + strlen(reply) - 10, "Empty file", 10) == 0) {
         rLog(Debug, "%s", reply);
 	return 0;
     }
 
+    /*
+     * Log result through rLog (if virus is found)
+     */
     rLog(Warn, "%s", reply);
+
+    /*
+     * Send mail notification
+     */
+    SendMailNotification(config["server"], config["to"],
+			 config["from"], config["subject"], reply);
+
     return 1;
 }
 

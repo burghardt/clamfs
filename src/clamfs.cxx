@@ -1,8 +1,8 @@
 /*
    ClamFS - Userspace anti-virus secured filesystem
-   Copyright (C) 2006 Krzysztof Burghardt.
+   Copyright (C) 2007 Krzysztof Burghardt.
 
-   $Id: clamfs.cxx,v 1.3 2007-01-25 02:51:29 burghardt Exp $
+   $Id: clamfs.cxx,v 1.4 2007-02-07 15:39:29 burghardt Exp $
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -623,7 +623,7 @@ int main(int argc, char *argv[])
     RLogOpenStdio();
 
     rLog(Info, "ClamFS v"VERSION);
-    rLog(Info, "Copyright (c) 2006 Krzysztof Burghardt <krzysztof@burghardt.pl>");
+    rLog(Info, "Copyright (c) 2007 Krzysztof Burghardt <krzysztof@burghardt.pl>");
     rLog(Info, "http://clamfs.sourceforge.net/");
 
     /*
@@ -663,15 +663,22 @@ int main(int argc, char *argv[])
      */
     fuse_argv = new char *[FUSE_MAX_ARGS];
     memset(fuse_argv, 0, 32 * sizeof(char *)); /* set pointers to NULL */
-    fuse_argc = 2;
-    fuse_argv[0] = argv[0]; /* copy program name */
-    fuse_argv[1] = config["mountpoint"]; /* set mountpoint */
+    fuse_argc = 0;
+    fuse_argv[fuse_argc++] = argv[0]; /* copy program name */
+    fuse_argv[fuse_argc++] = config["mountpoint"]; /* set mountpoint */
 
     if (strncmp(config["public"], "yes", 3) == 0) {
-	fuse_argc += 2;
-	fuse_argv[2] = "-o";
-	fuse_argv[3] = "allow_other,default_permissions";
+	fuse_argv[fuse_argc++] = "-o";
+	fuse_argv[fuse_argc++] = "allow_other,default_permissions";
     }
+    
+    if ((config["threads"] != NULL) &&
+        (strncmp(config["threads"], "no", 2) == 0))
+	fuse_argv[fuse_argc++] = "-s";
+
+    if ((config["fork"] != NULL) &&
+        (strncmp(config["fork"], "no", 2) == 0))
+	fuse_argv[fuse_argc++] = "-f";
 
     /*
      * Change our current directory to "root" of our filesystem

@@ -5,4 +5,5 @@ clamfs_SOURCES=clamfs.cxx clamfs.hxx \
                rlog.cxx rlog.hxx \
                clamav.cxx clamav.hxx \
                scancache.cxx scancache.hxx \
+               mnotify.cxx mnotify.hxx \
                utils.hxx

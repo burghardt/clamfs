@@ -1,8 +1,8 @@
 /*
    ClamFS - Userspace anti-virus secured filesystem
-   Copyright (C) 2006 Krzysztof Burghardt.
+   Copyright (C) 2007 Krzysztof Burghardt.
 
-   $Id: scancache.hxx,v 1.1 2007-01-25 02:51:32 burghardt Exp $
+   $Id: scancache.hxx,v 1.2 2007-02-07 15:39:29 burghardt Exp $
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by

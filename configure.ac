@@ -1,4 +1,4 @@
-AC_INIT([ClamFS], [0.0.1], [krzysztof@burghardt.pl], [clamfs])
+AC_INIT([ClamFS], [0.5.0], [krzysztof@burghardt.pl], [clamfs])
 AC_CONFIG_AUX_DIR(build)
 AC_CONFIG_SRCDIR(src/clamfs.cxx)
 AM_CONFIG_HEADER(config.h)
@@ -24,7 +24,12 @@ AC_CHECK_LIB(rlog,main,LIBS="$LIBS -lrlog",AC_MSG_ERROR([librlog not found!]))
 
 # Check for libpoco
 AC_CHECK_HEADER(Poco/ExpireLRUCache.h,,AC_MSG_ERROR([Poco/ExpireLRUCache.h not found!]))
-AC_CHECK_LIB(PocoFoundation,main,LIBS="$LIBS -lPocoFoundation",AC_MSG_ERROR([libpoco not found!]))
+AC_CHECK_HEADER(Poco/Net/MailMessage.h,,AC_MSG_ERROR([Poco/Net/MailMessage.h]))
+AC_CHECK_HEADER(Poco/Net/MailRecipient.h,,AC_MSG_ERROR([Poco/Net/MailRecipient.h]))
+AC_CHECK_HEADER(Poco/Net/SMTPClientSession.h,,AC_MSG_ERROR([Poco/Net/SMTPClientSession.h]))
+AC_CHECK_HEADER(Poco/Net/StringPartSource.h,,AC_MSG_ERROR([Poco/Net/StringPartSource.h]))
+AC_CHECK_LIB(PocoFoundation,main,LIBS="$LIBS -lPocoFoundation",AC_MSG_ERROR([libPocoFoundation not found!]))
+AC_CHECK_LIB(PocoFoundation,main,LIBS="$LIBS -lPocoNet",AC_MSG_ERROR([libPocoNet not found!]))
 
 # Check for libccgnu2 (via ccgnu2-config)
 AC_MSG_CHECKING(for libccgnu2 via ccgnu2-config)
@@ -64,6 +69,7 @@ fi
 AC_CONFIG_FILES([Makefile
  src/Makefile
  doc/Makefile
+ doc/svg/Makefile
  debian/Makefile
  ])
 AC_OUTPUT

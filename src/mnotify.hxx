@@ -2,7 +2,7 @@
    ClamFS - Userspace anti-virus secured filesystem
    Copyright (C) 2007 Krzysztof Burghardt.
 
-   $Id: config.hxx,v 1.3 2007-02-07 15:39:29 burghardt Exp $
+   $Id: mnotify.hxx,v 1.1 2007-02-07 15:39:29 burghardt Exp $
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -19,38 +19,35 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef CLAMFS_CONFIG_HXX
-#define CLAMFS_CONFIG_HXX
+#ifndef CLAMFS_MNOTIFY_HXX
+#define CLAMFS_MNOTIFY_HXX
 
 #include <config.h>
 
-#include <map>
-#include <cc++/xml.h>
+#include <Poco/Exception.h>
+#include <Poco/Net/MailMessage.h>
+#include <Poco/Net/MailRecipient.h>
+#include <Poco/Net/SMTPClientSession.h>
+#include <Poco/Net/StringPartSource.h>
 
-#include <utils.hxx>
+#include <rlog.hxx>
 
 namespace clamfs {
 
 using namespace std;
-using namespace ost;
+using namespace Poco;
+using namespace Poco::Net;
 
-class ConfigParserXML: public ifstream, public XMLStream {
-    public:
-	ConfigParserXML(const char *filename);
-	~ConfigParserXML();
-    protected:
-	void Open(const char *filename);
-	void Close(void);
-    private:
-	int read(unsigned char *buffer, size_t len);
-	void startElement(const unsigned char *name, const unsigned char **attr);
-	void endElement(const unsigned char *name);
-	void characters(const unsigned char *text, size_t len) { }
+extern RLogChannel *Debug;
+extern RLogChannel *Info;
+extern RLogChannel *Warn;
 
-};
+int SendMailNotification(const char* mx, const char* recipient,
+                         const char* sender, const char* subject,
+			 const char* scanresult);
 
 } /* namespace clamfs */
 
-#endif /* CLAMFS_CONFIG_HXX */
+#endif /* CLAMFS_MNOTIFY_HXX */
 
 /* EoF */
