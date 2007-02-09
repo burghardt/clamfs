@@ -1,4 +1,4 @@
-sbin_PROGRAMS=clamfs
+bin_PROGRAMS=clamfs
 
 clamfs_SOURCES=clamfs.cxx clamfs.hxx \
                config.cxx config.hxx \
