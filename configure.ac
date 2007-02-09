@@ -55,6 +55,18 @@ else
  CPPFLAGS="$CPPFLAGS -Wall -O2 -DNDEBUG"
 fi
 
+dnl Use option --enable-dmalloc-debug to enable dmalloc debug code. 
+AC_ARG_ENABLE(dmalloc-debug,
+AC_HELP_STRING([--enable-dmalloc-debug],
+        [enable dmalloc debug code]),
+        [enable_dmalloc_debug=yes],
+        [enable_dmalloc_debug=no])
+if test "$enable_dmalloc_debug" = "yes" && (test "$GXX" = "yes"); then
+ AC_CHECK_HEADER(dmalloc.h,CPPFLAGS="$CPPFLAGS -DDMALLOC",AC_MSG_ERROR([dmalloc.h not found!]))
+ AC_CHECK_LIB(dmallocthcxx,main,LIBS="$LIBS -ldmallocthcxx",AC_MSG_ERROR([libdmallocthcxx not found!]))
+ AC_MSG_RESULT([Enabling dmalloc debug...])
+fi
+
 dnl Use option --gprof to enable gprof support
 AC_ARG_ENABLE(gprof,
 AC_HELP_STRING([--enable-gprof],

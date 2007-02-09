@@ -2,7 +2,7 @@
    ClamFS - Userspace anti-virus secured filesystem
    Copyright (C) 2007 Krzysztof Burghardt.
 
-   $Id: mnotify.cxx,v 1.1 2007-02-07 15:39:29 burghardt Exp $
+   $Id: mnotify.cxx,v 1.2 2007-02-09 21:21:21 burghardt Exp $
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ int SendMailNotification(const char* mx, const char* recipient,
 	session.sendMessage(mmsg);
 	session.close();
     } catch (Exception& exc) {
-	rLog(Debug, "Got exception when sending mail notification: %s", exc.displayText().c_str());
+	rLog(Info, "Got exception when sending mail notification: %s", exc.displayText().c_str());
 	return 1;
     }
 

@@ -2,7 +2,7 @@
    ClamFS - Userspace anti-virus secured filesystem
    Copyright (C) 2007 Krzysztof Burghardt.
 
-   $Id: mnotify.hxx,v 1.1 2007-02-07 15:39:29 burghardt Exp $
+   $Id: mnotify.hxx,v 1.2 2007-02-09 21:21:21 burghardt Exp $
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,6 +29,10 @@
 #include <Poco/Net/MailRecipient.h>
 #include <Poco/Net/SMTPClientSession.h>
 #include <Poco/Net/StringPartSource.h>
+
+#ifdef DMALLOC
+#include <dmalloc.h>
+#endif
 
 #include <rlog.hxx>
 

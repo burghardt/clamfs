@@ -6,7 +6,12 @@ To build ClamFS you need:
  * FUSE
  * GNU libCommonCpp (and libxml2 as it's dependency)
  * rLog
- * POCO
+ * POCO[1]
 
-As a runtime dependency you need:
+As a run-time dependency you need:
  * ClamAV (clamd)
+
+[1] - POCO version 1.2.8 contain 4-BSDL licensed files and thus you
+      should avoid linking it against any GPL licensed code. I strongly
+      advise using current SVN version (as license issues has been fixed)
+      or if you are using Debian GNU/Linux - package from Debian-mentors.

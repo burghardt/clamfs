@@ -2,7 +2,7 @@
    ClamFS - Userspace anti-virus secured filesystem
    Copyright (C) 2007 Krzysztof Burghardt.
 
-   $Id: clamav.cxx,v 1.4 2007-02-07 15:39:29 burghardt Exp $
+   $Id: clamav.cxx,v 1.5 2007-02-09 21:21:21 burghardt Exp $
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -42,12 +42,12 @@ unixstream clamd;
  * Open connection to clamd through unix socket
  */
 int OpenClamav(const char *unixSocket) {
-    rLog(Debug, "attempt to open control connection to clamd via %s", unixSocket); 
+    DEBUG("attempt to open control connection to clamd via %s", unixSocket); 
 
     clamd.open(unixSocket);
     CHECK_CLAMD(clamd);
 
-    rLog(Debug, "connected to clamd");
+    DEBUG("connected to clamd");
     return 0;
 }
 
@@ -66,7 +66,7 @@ int PingClamav() {
 	return -1;
     }
 
-    rLog(Debug, "got valid reply for PING command, clamd works");
+    DEBUG("got valid reply for PING command, clamd works");
     return 0;
 }
 
@@ -74,7 +74,7 @@ int PingClamav() {
  * Close clamd collection
  */
 void CloseClamav() {
-    rLog(Debug, "closing clamd connection");
+    DEBUG("closing clamd connection");
     clamd.close();
 }
 
@@ -89,7 +89,7 @@ int ClamavScanFile(const char *filename) {
     /* FIXME: PATH_MAX is obsolet on some systems and does not exist on other. */
     char reply[PATH_MAX + 1024];
 
-    rLog(Debug, "attempt to scan file %s", filename);
+    DEBUG("attempt to scan file %s", filename);
 
     /*
      * Enqueue requests
@@ -99,6 +99,7 @@ int ClamavScanFile(const char *filename) {
     /*
      * Open clamd socket
      */
+    DEBUG("started scanning file %s", filename);
     OpenClamav(config["socket"]);
     if (!clamd) return -1;
 
@@ -114,7 +115,7 @@ int ClamavScanFile(const char *filename) {
      */
     if (strncmp(reply + strlen(reply) - 2, "OK", 2) == 0 ||
 	strncmp(reply + strlen(reply) - 10, "Empty file", 10) == 0) {
-        rLog(Debug, "%s", reply);
+        DEBUG("%s", reply);
 	return 0;
     }
 

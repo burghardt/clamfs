@@ -2,7 +2,7 @@
    ClamFS - Userspace anti-virus secured filesystem
    Copyright (C) 2007 Krzysztof Burghardt.
 
-   $Id: clamfs.cxx,v 1.4 2007-02-07 15:39:29 burghardt Exp $
+   $Id: clamfs.cxx,v 1.5 2007-02-09 21:21:21 burghardt Exp $
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -63,12 +63,12 @@ extern "C" {
 
 static char* clamfs_fixpath(const char* path)
 {
-    char* fixed=new char[strlen(path)+1];
+    char* fixed=new char[strlen(path)+2];
     
     fchdir(savefd);
     strcpy(fixed,".");
     strcat(fixed,path);
-
+    
     return fixed;
 }
 
@@ -365,9 +365,9 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
     struct stat file_stat;
 
     /*
-     * Build file patch in real filesystem tree
+     * Build file path in real filesystem tree
      */
-    char *real_path = new char[strlen(config["root"]) + strlen(path)];
+    char *real_path = new char[strlen(config["root"])+strlen(path)+1];
     strcpy(real_path, config["root"]);
     strcat(real_path, path);
 
@@ -380,22 +380,23 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
 	
 	    if (cache->has(file_stat.st_ino)) {
 		Poco::SharedPtr<time_t> ptr_val;
-		rLog(Info, "early cache hit for inode %ld", (unsigned long)file_stat.st_ino);
+		DEBUG("early cache hit for inode %ld", (unsigned long)file_stat.st_ino);
 		ptr_val = cache->get(file_stat.st_ino);
 		
 		if (*ptr_val == file_stat.st_mtime) {
-		    rLog(Info, "late cache hit for inode %ld", (unsigned long)file_stat.st_ino);
+		    DEBUG("late cache hit for inode %ld", (unsigned long)file_stat.st_ino);
 		    
 		    /* file scanned and not changed, just open it */
 		    return clamfs_open_backend(path, fi);
 		} else {
-		    rLog(Info, "late cache miss for inode %ld", (unsigned long)file_stat.st_ino);
+		    DEBUG("late cache miss for inode %ld", (unsigned long)file_stat.st_ino);
 
 		    /*
 		     * Scan file when file it was changed
 		     */
 		    scan_result = ClamavScanFile(real_path);
-	    	    delete[] real_path;
+	    	    delete real_path;
+		    real_path = NULL;
 
 	    	    /*
 	             * Check for scan results
@@ -413,13 +414,14 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
 		}
 
 	    } else {
-		rLog(Info, "cache miss for inode %ld", (unsigned long)file_stat.st_ino);
+		DEBUG("cache miss for inode %ld", (unsigned long)file_stat.st_ino);
 		
 	        /*
 	         * Scan file when file is not in cache
 	         */
 	        scan_result = ClamavScanFile(real_path);
-	        delete[] real_path;
+	        delete real_path;
+		real_path = NULL;
 
 	        /*
 	         * Check for scan results
@@ -442,7 +444,8 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
      * Scan file when cache is not available
      */
     scan_result = ClamavScanFile(real_path);
-    delete[] real_path;
+    delete real_path;
+    real_path = NULL;
 
     /*
      * Check for scan results
@@ -721,17 +724,37 @@ int main(int argc, char *argv[])
     /*
      * Open configured logging target
      */
-    /* TODO: use configuration file, do not assume syslog */
-    RLogOpenSyslog();
-    RLogCloseStdio();
-    
+    if (config["method"] != NULL) {
+	if (strncmp(config["method"], "syslog", 6) == 0) {
+	    RLogOpenSyslog();
+	    RLogCloseStdio();
+	} else if (strncmp(config["method"], "file", 4) == 0) {
+	    if (config["filename"] != NULL) {
+		RLogOpenLogFile(config["filename"]);
+		RLogCloseStdio();
+	    } else {
+		rLog(Warn, "logging method 'file' choosen, but no log 'filename' given");
+		return EXIT_FAILURE;
+	    }		
+	}
+    }
+
+    /*
+     * Start FUSE
+     */
     ret = fuse_main(fuse_argc, fuse_argv, &clamfs_oper);
     
     rLog(Info, "deleting cache");
     delete cache;
-    
+    cache = NULL;
+
+    rLog(Info, "closing logging targets");
+    RLogCloseLogFile();
+
     rLog(Warn,"exiting");
-    
+#ifdef DMALLOC
+    dmalloc_verify(0L);
+#endif
     return ret;
 }
 
