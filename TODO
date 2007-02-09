@@ -2,7 +2,7 @@
  TO DO
  =====
 
-* negative cache (cache informations about infected files)
+* negative cache (cache information about infected files)
 * better configuration file handling (preferably using POCO)
+* mount helper
 * daily statistics
-* manual page

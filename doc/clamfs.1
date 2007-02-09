@@ -1,0 +1,58 @@
+.\" -*- nroff -*-
+.TH CLAMFS 1 "09 Feb 2007"
+.SH NAME
+clamfs \- an anti-virus protected file system
+.SH SYNOPSIS
+.B clamfs
+.RI <configuration.file>
+.SH DESCRIPTION
+This manual page documents briefly the ClamFS user-space file system.
+.PP
+\fBclamfs\fP is a program that mount anti-virus protected file system into existing directory tree.
+.SS Features
+.HP
+* User-space file system (no kernel patches, recompilation, etc.)
+.HP
+* Configuration stored in XML files
+.HP
+* FUSE (and libfuse) used as file system back-end
+.HP
+* Scan files using ClamAV
+.HP
+* ScanCache (LRU with time-based and out-of-memory expiration) speeds up file access
+.HP
+* Sends mail to administrator when detect virus
+.SS Idea
+ClamFS is completely user-space anti-virus solution for Linux.
+It uses libfuse and Linux kernel module to provide file system.
+ClamAV is used as anti-virus scanner.
+.PP
+Normally program (or library) uses glibc open() call to obtain file descriptor.
+Glibc calls kernel VFS to open file regardless of file system used.
+If file is on ClamFS file system open call from VFS is directed to user-space by FUSE.
+ClamFS calls libfuse to communicate with FUSE and through it with VFS.
+.SS Internals
+ClamFS is spitted into four parts:
+.HP
+* libfuse bindings -- used to communicate with FUSE (and with VFS through it),
+.HP
+* ScanCache -- store (per file) results of anti-virus scanning to speed up future open() requests
+.HP
+* ScanQueue -- queue files for scanning
+.HP
+* clamd / libclamav bindings -- communicate with anti-virus scanner		
+.HP
+.SH OPTIONS
+This program uses only one command line argument - configuration file name.
+.SH SEE ALSO
+.BR fusermount (1),
+.BR clamd (8),
+.BR clamdscan (1),
+.BR clamscan (1),
+.BR freshclam (1).
+.br
+ClamFS Project Page:
+.I http://clamfs.sourceforge.net/
+.SH AUTHOR
+ClamFS and this manual page was written by Krzysztof Burghardt <krzysztof@burghardt.pl>
+and may be freely distributed under the terms of the GNU General Public License.
