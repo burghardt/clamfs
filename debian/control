@@ -2,7 +2,7 @@ Source: clamfs
 Section: utils
 Priority: optional
 Maintainer: Krzysztof Burghardt <krzysztof@burghardt.pl>
-Build-Depends: debhelper (>= 5), autotools-dev
+Build-Depends: debhelper (>= 5), libfuse-dev, librlog-dev, libpoco-dev, libcommoncpp2-dev
 Standards-Version: 3.7.2
 
 Package: clamfs
