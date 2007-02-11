@@ -17,8 +17,8 @@
 	
 	<!-- Logging method (stdout, syslog or file) -->
 	<!-- <log method="stdout" verbose="yes" /> -->
-	<!-- <log method="syslog" /> -->
-	<log method="file" filename="/var/log/clamfs.log" verbose="no" />
+	<log method="syslog" />
+	<!-- <log method="file" filename="/var/log/clamfs.log" verbose="no" /> -->
 
 	<!-- Send mail when virus is found -->
 	<!-- <mail server="localhost" to="root@localhost" from="clamfs@localhost"
