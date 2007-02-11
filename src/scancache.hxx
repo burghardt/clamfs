@@ -1,8 +1,13 @@
-/*
-   ClamFS - Userspace anti-virus secured filesystem
-   Copyright (C) 2007 Krzysztof Burghardt.
+/*!\file scancache.hxx
 
-   $Id: scancache.hxx,v 1.3 2007-02-09 21:21:21 burghardt Exp $
+   \brief ScanCache (anti-virus scan result caching) routines (header file)
+
+   $Id: scancache.hxx,v 1.4 2007-02-11 00:55:16 burghardt Exp $
+
+*//*
+
+   ClamFS - An user-space anti-virus protected file system
+   Copyright (C) 2007 Krzysztof Burghardt.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -35,6 +40,12 @@ namespace clamfs {
 using namespace std;
 using namespace Poco;
 
+/*!\class ScanCache
+   \brief LRU cache for anti-virus scan results storage
+
+   LRU cache with time-based expiration. Based on Poco::ExpireLRUCache.
+   This cache stores anti-virus scan results for later use.
+*/
 class ScanCache: public ExpireLRUCache<ino_t, time_t> {
     public:
     	ScanCache(int elements, int expire);

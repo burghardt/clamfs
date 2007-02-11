@@ -1,8 +1,13 @@
-/*
-   ClamFS - Userspace anti-virus secured filesystem
-   Copyright (C) 2007 Krzysztof Burghardt.
+/*!\file scancache.cxx
 
-   $Id: scancache.cxx,v 1.2 2007-02-07 15:39:29 burghardt Exp $
+   \brief ScanCache (anti-virus scan result caching) routines
+
+   $Id: scancache.cxx,v 1.3 2007-02-11 00:52:17 burghardt Exp $
+
+*//*
+
+   ClamFS - An user-space anti-virus protected file system
+   Copyright (C) 2007 Krzysztof Burghardt.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
