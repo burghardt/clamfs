@@ -1,8 +1,13 @@
-/*
-   ClamFS - Userspace anti-virus secured filesystem
-   Copyright (C) 2007 Krzysztof Burghardt.
+/*!\file clamfs.hxx
 
-   $Id: clamfs.hxx,v 1.5 2007-02-09 21:21:21 burghardt Exp $
+   \brief ClamFS main file (header file)
+
+   $Id: clamfs.hxx,v 1.6 2007-02-11 02:14:04 burghardt Exp $
+
+*//*
+
+   ClamFS - An user-space anti-virus protected file system
+   Copyright (C) 2007 Krzysztof Burghardt.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -36,6 +41,12 @@
 #include <scancache.hxx>
 
 
+/*!\def FUSE_MAX_ARGS
+   \brief Maximal value of FUSE arguments counter
+   
+   Maximal value for argc (maximal length of argv array)
+   we can pass to libFUSE.
+*/
 #define FUSE_MAX_ARGS 32
 
 namespace clamfs {

@@ -1,8 +1,13 @@
-/*
-   ClamFS - Userspace anti-virus secured filesystem
-   Copyright (C) 2007 Krzysztof Burghardt.
+/*!\file clamav.hxx
 
-   $Id: clamav.hxx,v 1.5 2007-02-09 21:21:21 burghardt Exp $
+   \brief Clamd bindings (header file)
+
+   $Id: clamav.hxx,v 1.6 2007-02-11 02:09:47 burghardt Exp $
+
+*//*
+
+   ClamFS - An user-space anti-virus protected file system
+   Copyright (C) 2007 Krzysztof Burghardt.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
