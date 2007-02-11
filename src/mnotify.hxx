@@ -1,8 +1,13 @@
-/*
-   ClamFS - Userspace anti-virus secured filesystem
-   Copyright (C) 2007 Krzysztof Burghardt.
+/*!\file mnotify.hxx
 
-   $Id: mnotify.hxx,v 1.2 2007-02-09 21:21:21 burghardt Exp $
+   \brief Mail notification routines (header file)
+
+   $Id: mnotify.hxx,v 1.3 2007-02-11 01:19:21 burghardt Exp $
+
+*//*
+
+   ClamFS - An user-space anti-virus protected file system
+   Copyright (C) 2007 Krzysztof Burghardt.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -39,7 +44,13 @@
 namespace clamfs {
 
 using namespace std;
+/*!\namespace Poco
+   \brief Poco Foundation namespace
+*/   
 using namespace Poco;
+/*!\namespace Poco::Net
+   \brief Poco Network namespace
+*/   
 using namespace Poco::Net;
 
 extern RLogChannel *Debug;
