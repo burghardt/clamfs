@@ -1,8 +1,13 @@
-/*
-   ClamFS - Userspace anti-virus secured filesystem
-   Copyright (C) 2007 Krzysztof Burghardt.
+/*!\file rlog.cxx
 
-   $Id: rlog.cxx,v 1.4 2007-02-09 21:21:21 burghardt Exp $
+   \brief RLog logging routines
+
+   $Id: rlog.cxx,v 1.5 2007-02-11 01:02:04 burghardt Exp $
+
+*//*
+
+   ClamFS - An user-space anti-virus protected file system
+   Copyright (C) 2007 Krzysztof Burghardt.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,15 +28,27 @@
 
 namespace clamfs {
 
+/*!\brief Debug channel (debugging messages goes here) */
 RLogChannel *Debug = DEF_CHANNEL("debug", Log_Debug);
+/*!\brief Information channel (most messages goes here) */
 RLogChannel *Info = DEF_CHANNEL("info", Log_Info);
+/*!\brief Warning channel (warnings goes here) */
 RLogChannel *Warn = DEF_CHANNEL("warn", Log_Warning);
 
+/*!\brief Stdout logging node */
 static StdioNode *stdLog = NULL;
+/*!\brief Syslog logging node */
 static SyslogNode *logNode = NULL;
+/*!\brief Log file descriptor */
 static int fileLog = 0;
+/*!\brief Log file logging node */
 static StdioNode *fileLogNode = NULL;
 
+/*!\brief Opens stdio logging target
+   
+   This function opens stdio logging target
+   and subscribes all RLog channels for it.
+*/
 void RLogOpenStdio() {
 #ifndef NDEBUG
     stdLog = new StdioNode(STDOUT_FILENO, StdioNode::OutputContext |
@@ -43,6 +60,8 @@ void RLogOpenStdio() {
     DEBUG("initial log attached to stdio");
 }
 
+/*!\brief Closes stdio logging target
+*/
 void RLogCloseStdio() {
     DEBUG("will close initial stdio log");
     delete stdLog;
@@ -50,12 +69,23 @@ void RLogCloseStdio() {
     DEBUG("closed initial stdio log");
 }
 
+/*!\brief Opens syslog logging target
+
+   This function opens syslog logging target
+   and subscribes all RLog channels for it.
+*/
 void RLogOpenSyslog() {
     logNode = new SyslogNode("clamfs");
     logNode->subscribeTo( RLOG_CHANNEL("") );
     rLog(Info, "logs goes to syslog");
 }
 
+/*!\brief Opens log file logging target
+   \param filename log file name
+
+   This function opens log file logging target
+   and subscribes all RLog channels for it.
+*/
 void RLogOpenLogFile(const char *filename) {
     mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
 
@@ -75,6 +105,8 @@ void RLogOpenLogFile(const char *filename) {
     }
 }
 
+/*!\brief Closes log file logging target
+*/
 void RLogCloseLogFile() {
     if (fileLog > 0) { /* file open, close it */
 	delete fileLogNode;

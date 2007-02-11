@@ -1,8 +1,13 @@
-/*
-   ClamFS - Userspace anti-virus secured filesystem
-   Copyright (C) 2007 Krzysztof Burghardt.
+/*!\file rlog.hxx
 
-   $Id: rlog.hxx,v 1.4 2007-02-09 21:21:21 burghardt Exp $
+   \brief RLog logging routines (header file)
+
+   $Id: rlog.hxx,v 1.5 2007-02-11 01:06:14 burghardt Exp $
+
+*//*
+
+   ClamFS - An user-space anti-virus protected file system
+   Copyright (C) 2007 Krzysztof Burghardt.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -43,10 +48,23 @@
 namespace clamfs {
 
 using namespace std;
+/*!\namespace rlog
+   \brief RLog logging library namespace
+*/
 using namespace rlog;
 
-/* this helps to silence ClamFS and not include
-   any debugging messsages in final binary */
+/*!\def DEBUG
+   \brief Debugging macro
+   \param format printf()-like formated output string
+   \param args format string arguments
+
+   This macro depending on current (run-time) configuration
+   sends or omits debugging messsages to RLog. If ClamFS is
+   compiled with -DNDEBUG (normaly) it check if verbose has
+   been set in configuration options. If NDEBUG was not defined
+   (sources configured with --enable-gcc-debug) it always sends
+   messages (regardless of configuration file settings).
+*/
 #ifndef NDEBUG
 #define DEBUG(format, args...) \
     rLog(Debug, format, ## args);
