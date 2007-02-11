@@ -5,7 +5,7 @@ developed by ClamAV Project).
 To build ClamFS you need:
  * FUSE
  * GNU libCommonCpp (and libxml2 as it's dependency)
- * rLog
+ * RLog
  * POCO[1]
 
 As a run-time dependency you need:
