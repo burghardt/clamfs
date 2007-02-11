@@ -1,8 +1,13 @@
-/*
-   ClamFS - Userspace anti-virus secured filesystem
-   Copyright (C) 2007 Krzysztof Burghardt.
+/*!\file config.hxx
 
-   $Id: config.hxx,v 1.4 2007-02-09 21:21:21 burghardt Exp $
+   \brief Configuration file handling routines (header file)
+
+   $Id: config.hxx,v 1.5 2007-02-11 01:31:11 burghardt Exp $
+
+*//*
+
+   ClamFS - An user-space anti-virus protected file system
+   Copyright (C) 2007 Krzysztof Burghardt.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -36,19 +41,46 @@
 namespace clamfs {
 
 using namespace std;
+/*!\namespace ost
+   \brief GNU CommonC++ namespace
+*/
 using namespace ost;
 
+/*!\class ConfigParserXML
+   \brief Config pareser parses configuration file and stores configuration in clamfs::config
+*/
 class ConfigParserXML: public ifstream, public XMLStream {
     public:
+        /*!\brief Constructor for ConfigParserXML
+	   \param filename configuration file name
+	*/
 	ConfigParserXML(const char *filename);
+        /*!\brief Destructor for ConfigParserXML */
 	~ConfigParserXML();
     protected:
+        /*!\brief Opens configuration file
+	   \param filename configuration file name
+	*/
 	void Open(const char *filename);
+        /*!\brief Closes configuration file*/
 	void Close(void);
     private:
+        /*!\brief XMLStream virtual method called to read data
+	   \param buffer buffer to read from
+	   \param len how many characters to read
+	   \returns how many characters was read
+	 */
 	int read(unsigned char *buffer, size_t len);
+        /*!\brief XMLStream virtual method called at element start
+	   \param name name of element beginning precessed
+	   \param attr NULL terminated array of its atributes and their values
+	*/
 	void startElement(const unsigned char *name, const unsigned char **attr);
+        /*!\brief XMLStream virtual method called at element end
+	   \param name name of element which end was reached
+	 */
 	void endElement(const unsigned char *name);
+        /*!\brief Empty XMLStream virtual method, we do not need it */
 	void characters(const unsigned char *text, size_t len) { }
 
 };
