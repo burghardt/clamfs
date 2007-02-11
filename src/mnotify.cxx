@@ -1,8 +1,13 @@
-/*
-   ClamFS - Userspace anti-virus secured filesystem
-   Copyright (C) 2007 Krzysztof Burghardt.
+/*!\file mnotify.cxx
 
-   $Id: mnotify.cxx,v 1.2 2007-02-09 21:21:21 burghardt Exp $
+   \brief Mail notification routines
+
+   $Id: mnotify.cxx,v 1.3 2007-02-11 01:11:19 burghardt Exp $
+
+*//*
+
+   ClamFS - An user-space anti-virus protected file system
+   Copyright (C) 2007 Krzysztof Burghardt.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,11 +28,14 @@
 
 namespace clamfs {
 
-/*
- * Sends mail with notification message
- * (returns 0 on success or -1 on smtp error
- *  and -2 on insufficient parameters)
- */
+/*!\brief Send notification e-mail message 
+   \param mx mail exchanger (server)
+   \param recipient To: address
+   \param sender From: address
+   \param subject Subject: header
+   \param scanresult message from clamd
+   \returns 0 on success or -1 on smtp error and -2 on insufficient parameters
+*/
 int SendMailNotification(const char* mx, const char* recipient,
                          const char* sender, const char* subject,
 			 const char* scanresult) {
