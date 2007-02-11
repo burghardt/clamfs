@@ -8,7 +8,7 @@ Standards-Version: 3.7.2
 Package: clamfs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Userspace filesystem that performs anti virus scanning on access
- ClamFS is FUSE based userspace filesystem that performs anti virus
- scanning on access using clamd. Clamd is a file scanning service developed
- by clamav project.
+Description: An user-space anti-virus protected file system
+ ClamFS is a FUSE-based user-space file system for Linux with on-access
+ anti-virus file scanning through clamd daemon. Clamd (clamav-daemon) is
+ a file scanning service developed by ClamAV project.
