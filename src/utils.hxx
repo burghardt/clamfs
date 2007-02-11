@@ -1,8 +1,13 @@
-/*
-   ClamFS - Userspace anti-virus secured filesystem
-   Copyright (C) 2007 Krzysztof Burghardt.
+/*!\file utils.hxx
 
-   $Id: utils.hxx,v 1.3 2007-02-09 21:21:22 burghardt Exp $
+   \brief Misc routines (header file)
+
+   $Id: utils.hxx,v 1.4 2007-02-11 00:49:00 burghardt Exp $
+
+*//*
+
+   ClamFS - An user-space anti-virus protected file system
+   Copyright (C) 2007 Krzysztof Burghardt.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,6 +35,13 @@
 
 namespace clamfs {
 
+/*!\struct ltstr
+   \brief Comparison function for clamfs::config
+
+   A Strict Weak Ordering comparison function.
+   It is a Binary Predicate that compares two objects,
+   returning true if the first precedes the second.
+*/
 struct ltstr
 {
   bool operator()(const char *s1, const char *s2) const
