@@ -1,8 +1,13 @@
-/*
-   ClamFS - Userspace anti-virus secured filesystem
-   Copyright (C) 2007 Krzysztof Burghardt.
+/*!\file clamfs.cxx
 
-   $Id: clamfs.cxx,v 1.5 2007-02-09 21:21:21 burghardt Exp $
+   \brief ClamFS main file
+
+   $Id: clamfs.cxx,v 1.6 2007-02-11 02:19:37 burghardt Exp $
+
+*//*
+
+   ClamFS - An user-space anti-virus protected file system
+   Copyright (C) 2007 Krzysztof Burghardt.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -17,9 +22,9 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
 
-/*
+*//*
+
     Whole code of fusexmp_fh.c has been recopied (mainly for all hooks it contains).
     File fusexmp_fh.c comes with FUSE source code. Original copyright is below.
 
@@ -48,20 +53,27 @@
 
 using namespace clamfs;
 
+/*!\namespace clamfs
+   \brief ClamFS own namespace
+*/
 namespace clamfs {
 
+/*!\brief Saved file descriptor of our base directory */
 static int savefd;
+/*!\brief Stores all configuration options names and values */
 map <const char *, char *, ltstr> config;
-
+/*!\brief ScanCache instance (need by all threads thus global) */
 ScanCache *cache = NULL;
-
+/*!\brief Mutex need to serialize access to clamd (need by all threads thus global) */
 FastMutex scanMutex;
-
-}
 
 extern "C" {
 
-static char* clamfs_fixpath(const char* path)
+/*!\brief Fixes file path by prefixing it with "." (dot)
+   \param path path need to be fixed
+   \returns fixed path
+*/
+static inline char* fixpath(const char* path)
 {
     char* fixed=new char[strlen(path)+2];
     
@@ -72,11 +84,16 @@ static char* clamfs_fixpath(const char* path)
     return fixed;
 }
 
+/*!\brief FUSE getattr() callback
+   \param path file path
+   \param stbuf buffer to pass to lstat()
+   \returns 0 if lstat() returns without error on -errno otherwise
+*/
 static int clamfs_getattr(const char *path, struct stat *stbuf)
 {
     int res;
 
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     res = lstat(path, stbuf);
     if (res == -1)
         return -errno;
@@ -84,6 +101,12 @@ static int clamfs_getattr(const char *path, struct stat *stbuf)
     return 0;
 }
 
+/*!\brief FUSE fgetattr() callback
+   \param path file path
+   \param stbuf buffer to pass to lstat()
+   \param fi information about open files
+   \returns 0 if lstat() returns without error on -errno otherwise
+*/
 static int clamfs_fgetattr(const char *path, struct stat *stbuf,
                         struct fuse_file_info *fi)
 {
@@ -98,11 +121,16 @@ static int clamfs_fgetattr(const char *path, struct stat *stbuf,
     return 0;
 }
 
+/*!\brief FUSE access() callback
+   \param path file path
+   \param mask bit pattern
+   \returns 0 if access() returns without error on -errno otherwise
+*/
 static int clamfs_access(const char *path, int mask)
 {
     int res;
 
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     res = access(path, mask);
     if (res == -1)
         return -errno;
@@ -110,11 +138,17 @@ static int clamfs_access(const char *path, int mask)
     return 0;
 }
 
+/*!\brief FUSE readlink() callback
+   \param path file path
+   \param buf data buffer
+   \param size buffer size
+   \returns 0 if readlink() returns without error on -errno otherwise
+*/
 static int clamfs_readlink(const char *path, char *buf, size_t size)
 {
     int res;
 
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     res = readlink(path, buf, size - 1);
     if (res == -1)
         return -errno;
@@ -123,11 +157,16 @@ static int clamfs_readlink(const char *path, char *buf, size_t size)
     return 0;
 }
 
+/*!\brief FUSE opendir() callback
+   \param path directory path
+   \param fi information about open files
+   \returns 0 if opendir() returns without error on -errno otherwise
+*/
 static int clamfs_opendir(const char *path, struct fuse_file_info *fi)
 {
     DIR *dp;
 
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     dp = opendir(path);
     if (dp == NULL)
         return -errno;
@@ -136,11 +175,23 @@ static int clamfs_opendir(const char *path, struct fuse_file_info *fi)
     return 0;
 }
 
+/*!\brief Returns directory pointer from fuse_file_info
+   \param fi information about open files
+   \returns pointer to file handle
+*/
 static inline DIR *get_dirp(struct fuse_file_info *fi)
 {
     return (DIR *) (uintptr_t) fi->fh;
 }
 
+/*!\brief FUSE readdir() callback
+   \param path directory path
+   \param buf data buffer
+   \param filler directory content filter
+   \param offset directory poninter offset
+   \param fi information about open files
+   \returns always 0
+*/
 static int clamfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
                        off_t offset, struct fuse_file_info *fi)
 {
@@ -161,6 +212,11 @@ static int clamfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
     return 0;
 }
 
+/*!\brief FUSE releasedir() callback
+   \param path directory path
+   \param fi information about open files
+   \returns always 0
+*/
 static int clamfs_releasedir(const char *path, struct fuse_file_info *fi)
 {
     DIR *dp = get_dirp(fi);
@@ -169,11 +225,17 @@ static int clamfs_releasedir(const char *path, struct fuse_file_info *fi)
     return 0;
 }
 
+/*!\brief FUSE mknod() callback
+   \param path file path 
+   \param mode file permissions
+   \param rdev major and minor numbers of device special file
+   \returns 0 if mknod() returns without error on -errno otherwise
+*/
 static int clamfs_mknod(const char *path, mode_t mode, dev_t rdev)
 {
     int res;
 
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     if (S_ISFIFO(mode))
         res = mkfifo(path, mode);
     else
@@ -186,11 +248,16 @@ static int clamfs_mknod(const char *path, mode_t mode, dev_t rdev)
     return 0;
 }
 
+/*!\brief FUSE mkdir() callback
+   \param path file path
+   \param mode file permissions
+   \returns 0 if mkdir() returns without error on -errno otherwise
+*/
 static int clamfs_mkdir(const char *path, mode_t mode)
 {
     int res;
 
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     res = mkdir(path, mode);
     if (res == -1)
         return -errno;
@@ -200,11 +267,15 @@ static int clamfs_mkdir(const char *path, mode_t mode)
     return 0;
 }
 
+/*!\brief FUSE unlink() callback
+   \param path file path
+   \returns 0 if unlink() returns without error on -errno otherwise
+*/
 static int clamfs_unlink(const char *path)
 {
     int res;
 
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     res = unlink(path);
     if (res == -1)
         return -errno;
@@ -212,11 +283,15 @@ static int clamfs_unlink(const char *path)
     return 0;
 }
 
+/*!\brief FUSE rmdir() callback
+   \param path directory path
+   \returns 0 if rmdir() returns without error on -errno otherwise
+*/
 static int clamfs_rmdir(const char *path)
 {
     int res;
 
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     res = rmdir(path);
     if (res == -1)
         return -errno;
@@ -224,12 +299,17 @@ static int clamfs_rmdir(const char *path)
     return 0;
 }
 
+/*!\brief FUSE symlink() callback
+   \param from symlink name
+   \param to file path
+   \returns 0 if symlink() returns without error on -errno otherwise
+*/
 static int clamfs_symlink(const char *from, const char *to)
 {
     int res;
 
-    from = clamfs_fixpath(from);
-    to = clamfs_fixpath(to);
+    from = fixpath(from);
+    to = fixpath(to);
     res = symlink(from, to);
     if (res == -1)
         return -errno;
@@ -239,12 +319,17 @@ static int clamfs_symlink(const char *from, const char *to)
     return 0;
 }
 
+/*!\brief FUSE rename() callback
+   \param from old file name
+   \param to new file name
+   \returns 0 if rename() returns without error on -errno otherwise
+*/
 static int clamfs_rename(const char *from, const char *to)
 {
     int res;
 
-    from = clamfs_fixpath(from);
-    to = clamfs_fixpath(to);
+    from = fixpath(from);
+    to = fixpath(to);
     res = rename(from, to);
     if (res == -1)
         return -errno;
@@ -252,12 +337,17 @@ static int clamfs_rename(const char *from, const char *to)
     return 0;
 }
 
+/*!\brief FUSE link() callback
+   \param from link name
+   \param to file path
+   \returns 0 if link() returns without error on -errno otherwise
+*/
 static int clamfs_link(const char *from, const char *to)
 {
     int res;
 
-    from = clamfs_fixpath(from);
-    to = clamfs_fixpath(to);
+    from = fixpath(from);
+    to = fixpath(to);
     res = link(from, to);
     if (res == -1)
         return -errno;
@@ -267,11 +357,16 @@ static int clamfs_link(const char *from, const char *to)
     return 0;
 }
 
+/*!\brief FUSE chmod() callback
+   \param path file path
+   \param mode file permissions
+   \returns 0 if chmod() returns without error on -errno otherwise
+*/
 static int clamfs_chmod(const char *path, mode_t mode)
 {
     int res;
 
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     res = chmod(path, mode);
     if (res == -1)
         return -errno;
@@ -279,11 +374,17 @@ static int clamfs_chmod(const char *path, mode_t mode)
     return 0;
 }
 
+/*!\brief FUSE chown() callback
+   \param path file path
+   \param uid user id
+   \param gid group id
+   \returns 0 if chown() returns without error on -errno otherwise
+*/
 static int clamfs_chown(const char *path, uid_t uid, gid_t gid)
 {
     int res;
 
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     res = lchown(path, uid, gid);
     if (res == -1)
         return -errno;
@@ -291,11 +392,16 @@ static int clamfs_chown(const char *path, uid_t uid, gid_t gid)
     return 0;
 }
 
+/*!\brief FUSE truncate() callback
+   \param path file path
+   \param size requested size
+   \returns 0 if truncate() returns without error on -errno otherwise
+*/
 static int clamfs_truncate(const char *path, off_t size)
 {
     int res;
 
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     res = truncate(path, size);
     if (res == -1)
         return -errno;
@@ -303,6 +409,12 @@ static int clamfs_truncate(const char *path, off_t size)
     return 0;
 }
 
+/*!\brief FUSE ftruncate() callback
+   \param path file path
+   \param size requested size
+   \param fi information about open files
+   \returns 0 if ftruncate() returns without error on -errno otherwise
+*/
 static int clamfs_ftruncate(const char *path, off_t size,
                          struct fuse_file_info *fi)
 {
@@ -317,11 +429,16 @@ static int clamfs_ftruncate(const char *path, off_t size,
     return 0;
 }
 
+/*!\brief FUSE utime() callback
+   \param path file path
+   \param buf data buffer
+   \returns 0 if utime() returns without error on -errno otherwise
+*/
 static int clamfs_utime(const char *path, struct utimbuf *buf)
 {
     int res;
 
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     res = utime(path, buf);
     if (res == -1)
         return -errno;
@@ -329,12 +446,18 @@ static int clamfs_utime(const char *path, struct utimbuf *buf)
     return 0;
 }
 
+/*!\brief FUSE create() callback
+   \param path file path
+   \param mode file permissions
+   \param fi information about open files
+   \returns 0 if open() returns without error on -errno otherwise
+*/
 static int clamfs_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 {
     int res;
     int fd;
 
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     fd = open(path, fi->flags, mode);
     if (fd == -1)
         return -errno;
@@ -345,11 +468,16 @@ static int clamfs_create(const char *path, mode_t mode, struct fuse_file_info *f
     return 0;
 }
 
-static inline int clamfs_open_backend(const char *path, struct fuse_file_info *fi)
+/*!\brief Opens file and returns it file descriptor by fi->fh
+   \param path file path
+   \param fi information about open files
+   \returns 0 if open() returns without error on -errno otherwise
+*/
+static inline int open_backend(const char *path, struct fuse_file_info *fi)
 {
     int fd;
 
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     fd = open(path, fi->flags);
     if (fd == -1)
         return -errno;
@@ -358,6 +486,11 @@ static inline int clamfs_open_backend(const char *path, struct fuse_file_info *f
     return 0;
 }
 
+/*!\brief FUSE open() callback
+   \param path file path
+   \param fi information about open files
+   \returns 0 if open() returns without error on -errno otherwise
+*/
 static int clamfs_open(const char *path, struct fuse_file_info *fi)
 {
     int ret;
@@ -387,7 +520,7 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
 		    DEBUG("late cache hit for inode %ld", (unsigned long)file_stat.st_ino);
 		    
 		    /* file scanned and not changed, just open it */
-		    return clamfs_open_backend(path, fi);
+		    return open_backend(path, fi);
 		} else {
 		    DEBUG("late cache miss for inode %ld", (unsigned long)file_stat.st_ino);
 
@@ -410,7 +543,7 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
 		    *ptr_val = file_stat.st_mtime;
 
 		    /* and open it */
-		    return clamfs_open_backend(path, fi);
+		    return open_backend(path, fi);
 		}
 
 	    } else {
@@ -433,7 +566,7 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
 		cache->add(file_stat.st_ino, file_stat.st_mtime);
 
 		/* and open it */
-		return clamfs_open_backend(path, fi);
+		return open_backend(path, fi);
 		
 	    }
 	
@@ -456,9 +589,17 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
     /*
      * If no virus detected continue as usual
      */
-    return clamfs_open_backend(path, fi);
+    return open_backend(path, fi);
 }
 
+/*!\brief FUSE read() callback
+   \param path file path
+   \param buf data buffer
+   \param size buffer size
+   \param offset read offset
+   \param fi information about open files
+   \returns 0 if pread() returns without error on -errno otherwise
+*/
 static int clamfs_read(const char *path, char *buf, size_t size, off_t offset,
                     struct fuse_file_info *fi)
 {
@@ -472,6 +613,14 @@ static int clamfs_read(const char *path, char *buf, size_t size, off_t offset,
     return res;
 }
 
+/*!\brief FUSE write() callback
+   \param path file path
+   \param buf data buffer
+   \param size buffer size
+   \param offset read offset
+   \param fi information about open files
+   \returns 0 if pwrite() returns without error on -errno otherwise
+*/
 static int clamfs_write(const char *path, const char *buf, size_t size,
                      off_t offset, struct fuse_file_info *fi)
 {
@@ -485,11 +634,16 @@ static int clamfs_write(const char *path, const char *buf, size_t size,
     return res;
 }
 
+/*!\brief FUSE statfs() callback
+   \param path file path
+   \param stbuf data buffer
+   \returns 0 if statvfs() returns without error on -errno otherwise
+*/
 static int clamfs_statfs(const char *path, struct statvfs *stbuf)
 {
     int res;
 
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     res = statvfs(path, stbuf);
     if (res == -1)
         return -errno;
@@ -497,6 +651,11 @@ static int clamfs_statfs(const char *path, struct statvfs *stbuf)
     return 0;
 }
 
+/*!\brief FUSE release() callback
+   \param path file path
+   \param fi information about open files
+   \returns always 0
+*/
 static int clamfs_release(const char *path, struct fuse_file_info *fi)
 {
     (void) path;
@@ -505,6 +664,12 @@ static int clamfs_release(const char *path, struct fuse_file_info *fi)
     return 0;
 }
 
+/*!\brief FUSE fsync() callback
+   \param path file path
+   \param isdatasync data sync flag
+   \param fi information about open files
+   \returns 0 if f{data}sync() returns without error on -errno otherwise
+*/
 static int clamfs_fsync(const char *path, int isdatasync,
                      struct fuse_file_info *fi)
 {
@@ -526,43 +691,68 @@ static int clamfs_fsync(const char *path, int isdatasync,
 }
 
 #ifdef HAVE_SETXATTR
-/* xattr operations are optional and can safely be left unimplemented */
+/*!\brief FUSE setxattr() callback
+   \param path file path
+   \param name extended attribute name
+   \param value extended attribute value
+   \param size size of value
+   \param flags operation options
+   \returns 0 if lsetxattr() returns without error on -errno otherwise
+*/
 static int clamfs_setxattr(const char *path, const char *name, const char *value,
                         size_t size, int flags)
 {
     int res;
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     res = lsetxattr(path, name, value, size, flags);
     if (res == -1)
         return -errno;
     return 0;
 }
 
+/*!\brief FUSE getxattr() callback
+   \param path file path
+   \param name extended attribute name
+   \param value extended attribute value
+   \param size size of value
+   \returns 0 if lgetxattr() returns without error on -errno otherwise
+*/
 static int clamfs_getxattr(const char *path, const char *name, char *value,
                     size_t size)
 {
     int res;
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     res = lgetxattr(path, name, value, size);
     if (res == -1)
         return -errno;
     return res;
 }
 
+/*!\brief FUSE listxattr() callback
+   \param path file path
+   \param list list of extended attribute names
+   \param size size of list
+   \returns 0 if llistxattr() returns without error on -errno otherwise
+*/
 static int clamfs_listxattr(const char *path, char *list, size_t size)
 {
     int res;
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     res = llistxattr(path, list, size);
     if (res == -1)
         return -errno;
     return res;
 }
 
+/*!\brief FUSE removexattr() callback
+   \param path file path
+   \param name extended attribute name
+   \returns 0 if lremovexattr() returns without error on -errno otherwise
+*/
 static int clamfs_removexattr(const char *path, const char *name)
 {
     int res;
-    path = clamfs_fixpath(path);
+    path = fixpath(path);
     res = lremovexattr(path, name);
     if (res == -1)
         return -errno;
@@ -570,8 +760,11 @@ static int clamfs_removexattr(const char *path, const char *name)
 }
 #endif /* HAVE_SETXATTR */
 
-} /* extern "C" */
-
+/*!\brief ClamFS main()
+   \param argc arguments counter
+   \param argv arguments array
+   \returns 0 on success, error code otherwise
+*/
 int main(int argc, char *argv[])
 {
     int ret;
@@ -620,7 +813,7 @@ int main(int argc, char *argv[])
     umask(0);
 
     /*
-     * Open rLog
+     * Open RLog
      */    
     RLogInit(argc, argv);
     RLogOpenStdio();
@@ -630,7 +823,7 @@ int main(int argc, char *argv[])
     rLog(Info, "http://clamfs.sourceforge.net/");
 
     /*
-     * Check if we have one argument (other arguments are assumed rLog related)
+     * Check if we have one argument (other arguments are assumed RLog related)
      */
     if (argc < 2) {
 	rLog(Warn, "ClamFS need to be invoked with one parameter - location of configuration file");
@@ -688,7 +881,7 @@ int main(int argc, char *argv[])
      */
     rLog(Info,"chdir to our 'root' (%s)",config["root"]);
     if (chdir(config["root"]) < 0) {
-	int err = errno; /* copy errno, rLog can overwrite */
+	int err = errno; /* copy errno, RLog can overwrite */
 	rLog(Warn, "chdir failed: %s", strerror(err));
 	return err;
     }
@@ -757,5 +950,9 @@ int main(int argc, char *argv[])
 #endif
     return ret;
 }
+
+} /* extern "C" */
+
+} /* namespace clamfs */
 
 /* EoF */
