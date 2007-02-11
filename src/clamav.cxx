@@ -1,8 +1,13 @@
-/*
-   ClamFS - Userspace anti-virus secured filesystem
-   Copyright (C) 2007 Krzysztof Burghardt.
+/*!\file clamav.cxx
 
-   $Id: clamav.cxx,v 1.5 2007-02-09 21:21:21 burghardt Exp $
+   \brief Clamd bindings
+
+   $Id: clamav.cxx,v 1.6 2007-02-11 01:47:23 burghardt Exp $
+
+*//*
+
+   ClamFS - An user-space anti-virus protected file system
+   Copyright (C) 2007 Krzysztof Burghardt.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,9 +31,14 @@ namespace clamfs {
 extern map <const char *, char *, ltstr> config;
 extern FastMutex scanMutex;
 
-/*
- * Check if we can connect co clamd
- */
+/*!\def CHECK_CLAMD
+   \brief Check if we are connected to clamd
+   \param clamdSocket unixstream variable representing socket
+   
+   This macro is intended to easier to check if ClamFS is
+   connected to clamd socket. This code check socket condition
+   and if socket is not open returns -1.
+*/
 #define CHECK_CLAMD(clamdSocket) do {\
     if (!clamdSocket) {\
 	rLog(Warn, "error: cannot connect to clamd");\
@@ -36,11 +46,13 @@ extern FastMutex scanMutex;
     }\
 } while(0)
 
+/*!\brief Unix socket used to communicate with clamd */
 unixstream clamd;
 
-/*
- * Open connection to clamd through unix socket
- */
+/*!\brief Opens connection to clamd through unix socket
+   \param unixSocket name of unix socket
+   \returns 0 on success and -1 on failure
+*/
 int OpenClamav(const char *unixSocket) {
     DEBUG("attempt to open control connection to clamd via %s", unixSocket); 
 
@@ -51,9 +63,8 @@ int OpenClamav(const char *unixSocket) {
     return 0;
 }
 
-/*
- * Check clamd availability by sending PING command and checking for reply
- */
+/*!\brief Check clamd availability by sending PING command and checking the reply
+*/
 int PingClamav() {
     string reply;
 
@@ -70,20 +81,18 @@ int PingClamav() {
     return 0;
 }
 
-/*
- * Close clamd collection
- */
+/*!\brief Close clamd connection
+*/
 void CloseClamav() {
     DEBUG("closing clamd connection");
     clamd.close();
 }
 
-/*
- * Request anti virus scanning on file
- *
- * return: -1 - error opening clamd connection
- *          0 - OK (no virus found)
- *          1 - virus found or error
+/*!\brief Request anti-virus scanning on file
+   \param filename name of file to scan
+   \returns -1 one error when opening clamd connection,
+             0 if no virus found and
+	     1 if virus was found (or clamd error occurred)
  */
 int ClamavScanFile(const char *filename) {
     /* FIXME: PATH_MAX is obsolet on some systems and does not exist on other. */
@@ -120,7 +129,7 @@ int ClamavScanFile(const char *filename) {
     }
 
     /*
-     * Log result through rLog (if virus is found)
+     * Log result through RLog (if virus is found)
      */
     rLog(Warn, "%s", reply);
 
