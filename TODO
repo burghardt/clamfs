@@ -2,7 +2,6 @@
  TO DO
  =====
 
-* ability to define maximal file size can be scanned
 * file extension whitelist and blacklist (whitelisted files
   are never scanned and blacklisted are scanned even they are
   bigger than file limit)

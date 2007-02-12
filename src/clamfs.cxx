@@ -2,7 +2,7 @@
 
    \brief ClamFS main file
 
-   $Id: clamfs.cxx,v 1.6 2007-02-11 02:19:37 burghardt Exp $
+   $Id: clamfs.cxx,v 1.7 2007-02-12 00:42:40 burghardt Exp $
 
 *//*
 
@@ -489,7 +489,7 @@ static inline int open_backend(const char *path, struct fuse_file_info *fi)
 /*!\brief FUSE open() callback
    \param path file path
    \param fi information about open files
-   \returns 0 if open() returns without error on -errno otherwise
+   \returns result of open_backend() call or -EPERM if virus is detected
 */
 static int clamfs_open(const char *path, struct fuse_file_info *fi)
 {
@@ -503,6 +503,20 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
     char *real_path = new char[strlen(config["root"])+strlen(path)+1];
     strcpy(real_path, config["root"]);
     strcat(real_path, path);
+
+    /*
+     * Check file size (if option defined)
+     */
+    if (config["maximal-size"] != NULL) {
+	ret = lstat(real_path, &file_stat);
+	if (!ret) { /* got file stat without error */
+	    if (file_stat.st_size > atoi(config["maximal-size"])) { /* file too big */
+		rLog(Warn, "file %s excluded from anti-virus scan because file is too big (file size: %ld bytes)",
+		path, (long int)file_stat.st_size);
+		return open_backend(path, fi);
+	    }
+	}
+    }
 
     /*
      * Check if file is in cache
@@ -855,6 +869,17 @@ int main(int argc, char *argv[])
 #endif
 
     /*
+     * Check if minimal set of configuration options has been defined
+     * (any other option can be omitted but this three are mandatory)
+     */
+    if ((config["socket"] == NULL) ||
+        (config["root"] == NULL) ||
+	(config["mountpoint"] == NULL)) {
+	rLog(Warn, "socket, root and mountpoint must be defined");
+	return EXIT_FAILURE;
+    }
+
+    /*
      * Build argv for libFUSE
      */
     fuse_argv = new char *[FUSE_MAX_ARGS];
@@ -863,7 +888,8 @@ int main(int argc, char *argv[])
     fuse_argv[fuse_argc++] = argv[0]; /* copy program name */
     fuse_argv[fuse_argc++] = config["mountpoint"]; /* set mountpoint */
 
-    if (strncmp(config["public"], "yes", 3) == 0) {
+    if ((config["public"] != NULL) &&
+        (strncmp(config["public"], "yes", 3) == 0)) {
 	fuse_argv[fuse_argc++] = "-o";
 	fuse_argv[fuse_argc++] = "allow_other,default_permissions";
     }
@@ -904,15 +930,24 @@ int main(int argc, char *argv[])
     /*
      * Initialize cache
      */
-    if (atoi(config["entries"]) <= 0) {
+    if ((config["entries"] != NULL) &&
+	(atol(config["entries"]) <= 0)) {
 	rLog(Warn, "maximal cache entries count cannot be =< 0");
 	return EXIT_FAILURE;
     }
-    if (atoi(config["expire"]) <= 0) {
+    if ((config["expire"] != NULL) &&
+	(atol(config["expire"]) <= 0)) {
 	rLog(Warn, "maximal cache expire value cannot be =< 0");
 	return EXIT_FAILURE;
     }
-    cache = new ScanCache(atoi(config["entries"]), atoi(config["expire"]));
+    if ((config["entries"] != NULL) &&
+	(config["expire"] != NULL)) {
+	rLog(Info, "ScanCache initialized, %s entries will be kept for %s ms max.",
+	    config["entries"], config["expire"]);
+	cache = new ScanCache(atol(config["entries"]), atol(config["expire"]));
+    } else {
+	rLog(Warn, "ScanCache disabled, expect poor performance");
+    }
 
     /*
      * Open configured logging target
