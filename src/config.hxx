@@ -2,7 +2,7 @@
 
    \brief Configuration file handling routines (header file)
 
-   $Id: config.hxx,v 1.5 2007-02-11 01:31:11 burghardt Exp $
+   $Id: config.hxx,v 1.6 2007-02-12 00:35:36 burghardt Exp $
 
 *//*
 
@@ -82,7 +82,11 @@ class ConfigParserXML: public ifstream, public XMLStream {
 	void endElement(const unsigned char *name);
         /*!\brief Empty XMLStream virtual method, we do not need it */
 	void characters(const unsigned char *text, size_t len) { }
-
+    private:
+	/*!brief Forbid usage of copy constructor */
+        ConfigParserXML(const ConfigParserXML& aCache);
+	/*!brief Forbid usage of assignment operator */
+        ConfigParserXML& operator = (const ConfigParserXML& aCache);
 };
 
 } /* namespace clamfs */
