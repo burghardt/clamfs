@@ -1,20 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- Only three options are mandatory:
+      <clamd socket="" />
+      <filesystem root="" />
+      <filesystem mountpoint="" />
+
+     All other can be removed, but this will disable related subsystem.
+     For example removing <cache ... /> will disable caching completly. -->
+
 <clamfs>
 	<!-- Clamd socket -->
         <clamd socket="/var/run/clamav/clamd.ctl" />
 
-	<!-- Filesystem settings
+	<!-- File system settings
 	     root       - real directory to attach as our root
 	     mountpoint - where to attach our root
 	     public     - limit access to process owner only
-	                  or make filesystem publicly
+	                  or make file system publicly
 			  available for all users -->
-	<filesystem root="/tmp" mountpoint="/home/kb/src/clamfs/mountpoint" public="yes" />
+	<filesystem root="/usr" mountpoint="/home/kb/src/clamfs/mountpoint" /> <!-- public="yes" /> -->
+
+	<!-- Maximal file size (in bytes).
+	     This option can speed up access to large files, as they will be
+	     never scanned. On the other hand attacker can append long portion
+	     of junk at the end of file to make it big enough to be omitted. -->
+	<file maximal-size="2097152" /> <!-- 2MiB -->
 	
+	<!-- Whitelisted files are never scanned.
+	     This can speed up access to some files, but be careful with this,
+	     some data files like JPEG, RIFF or WMF can be prepared to cause
+	     problems (like buffers overflows) in applications and thus execute
+	     malicious code even not being executable itself. Finally even text
+	     files can have "modeline" causing problems in some buggy editors. -->
+<!-- unimplemented
+	<whitelist>
+	    <exclude extension="*.txt" />
+	    <exclude extension="*.c" />
+	    <exclude extension="*.h" />
+	</whitelist>
+-->
+
+	<!-- Blacklisted files are scanned regardless of their sizes -->	
+<!-- unimplemented
+	<blacklist>
+	    <include extension="*.exe" />
+	    <include extension="*.dll" />
+	    <include extension="*.sys" />
+	</blacklist>
+-->
 	<!-- How many entries to keep in cache and for how long (in ms) -->
-	<cache entries="8192" expire="3600000" />
-	
+	<cache entries="16384" expire="10800000" /> <!-- 3h -->
+
 	<!-- Logging method (stdout, syslog or file) -->
 	<!-- <log method="stdout" verbose="yes" /> -->
 	<log method="syslog" />
@@ -24,7 +60,7 @@
 	<!-- <mail server="localhost" to="root@localhost" from="clamfs@localhost"
 	     subject="ClamFS: Virus detected" /> -->
 	<!-- subject="ClamFS: Virus detected on @@HOSTNAME@@" /> -->
-	
+
 	<!-- Debug settings -->
 	<!-- <debug threads="no" fork="no" /> -->
 </clamfs>
