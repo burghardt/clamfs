@@ -2,7 +2,7 @@
 
    \brief ClamFS main file
 
-   $Id: clamfs.cxx,v 1.7 2007-02-12 00:42:40 burghardt Exp $
+   $Id: clamfs.cxx,v 1.8 2007-02-12 13:57:28 burghardt Exp $
 
 *//*
 
@@ -512,7 +512,9 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
 	if (!ret) { /* got file stat without error */
 	    if (file_stat.st_size > atoi(config["maximal-size"])) { /* file too big */
 		rLog(Warn, "file %s excluded from anti-virus scan because file is too big (file size: %ld bytes)",
-		path, (long int)file_stat.st_size);
+		    path, (long int)file_stat.st_size);
+		delete real_path;
+		real_path = NULL;
 		return open_backend(path, fi);
 	    }
 	}
