@@ -2,7 +2,7 @@
 
    \brief ScanCache (anti-virus scan result caching) routines (header file)
 
-   $Id: scancache.hxx,v 1.4 2007-02-11 00:55:16 burghardt Exp $
+   $Id: scancache.hxx,v 1.5 2007-02-12 00:21:20 burghardt Exp $
 
 *//*
 
@@ -48,7 +48,18 @@ using namespace Poco;
 */
 class ScanCache: public ExpireLRUCache<ino_t, time_t> {
     public:
-    	ScanCache(int elements, int expire);
+        /*!\brief Constructor for ScanCache
+	   \param elements maximal size of cache
+	   \param expire maximal TTL for entries
+        */
+    	ScanCache(long int elements, long int expire);
+	/*!\brief Destructor for ScanCache */
+	~ScanCache();
+    private:
+        /*!brief Forbid usage of copy constructor */
+	ScanCache(const ScanCache& aCache);
+        /*!brief Forbid usage of assignment operator */
+	ScanCache& operator = (const ScanCache& aCache);
 };
 
 } /* namespace clamfs */

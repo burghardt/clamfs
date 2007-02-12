@@ -2,7 +2,7 @@
 
    \brief ScanCache (anti-virus scan result caching) routines
 
-   $Id: scancache.cxx,v 1.3 2007-02-11 00:52:17 burghardt Exp $
+   $Id: scancache.cxx,v 1.4 2007-02-12 00:21:20 burghardt Exp $
 
 *//*
 
@@ -28,8 +28,11 @@
 
 namespace clamfs {
 
-ScanCache::ScanCache(int elements, int expire) {
-    ExpireLRUCache<ino_t, time_t>::ExpireLRUCache<ino_t, time_t>(elements, expire);
+ScanCache::ScanCache(long int elements, long int expire):
+    ExpireLRUCache<ino_t, time_t>::ExpireLRUCache<ino_t, time_t>(elements, expire) {
+}
+
+ScanCache::~ScanCache() {
 }
 
 } /* namespace clamfs */
