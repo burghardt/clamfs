@@ -2,7 +2,7 @@
 
    \brief Clamd bindings
 
-   $Id: clamav.cxx,v 1.6 2007-02-11 01:47:23 burghardt Exp $
+   $Id: clamav.cxx,v 1.7 2007-02-17 20:58:11 burghardt Exp $
 
 *//*
 
@@ -131,7 +131,8 @@ int ClamavScanFile(const char *filename) {
     /*
      * Log result through RLog (if virus is found)
      */
-    rLog(Warn, "%s", reply);
+    rLog(Warn, "(%s:%d) (%s:%d) %s", getcallername(), fuse_get_context()->pid,
+	getusername(), fuse_get_context()->uid, reply);
 
     /*
      * Send mail notification

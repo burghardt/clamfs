@@ -2,7 +2,6 @@
  TO DO
  =====
 
-* more verbose logging (user name/id, process name/id, etc.)
 * file extension whitelist and blacklist (whitelisted files
   are never scanned and blacklisted are scanned even they are
   bigger than file limit)

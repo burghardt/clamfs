@@ -2,7 +2,7 @@
 
    \brief Mail notification routines
 
-   $Id: mnotify.cxx,v 1.3 2007-02-11 01:11:19 burghardt Exp $
+   $Id: mnotify.cxx,v 1.4 2007-02-17 20:58:11 burghardt Exp $
 
 *//*
 
@@ -54,18 +54,22 @@ int SendMailNotification(const char* mx, const char* recipient,
      */
     try {
 	MailMessage mmsg;
-	string body;
+	stringstream body;
 
         mmsg.setSender(sender);
 	mmsg.addRecipient(MailRecipient(MailRecipient::PRIMARY_RECIPIENT, recipient));
 	mmsg.setSubject(subject);
 
-	body += "Hello ClamFS User,\r\n\r\n";
-	body += "This is an automatic notification about virus found.\r\n\r\n";
-	body += "ClamAV reported malicious file:\r\n";
-	body += scanresult;
+	body << "Hello ClamFS User," << endl << endl;
+	body << "This is an automatic notification about virus found." << endl << endl;
+	body << "Executable name: " << getcallername() << endl;
+	body << "            PID: " << fuse_get_context()->pid << endl << endl;
+	body << "       Username: " << getusername() << endl;
+	body << "            UID: " << fuse_get_context()->uid << endl << endl;
+	body << "ClamAV reported malicious file:" << endl;
+	body << scanresult << endl;
 	
-	mmsg.addContent(new StringPartSource(body));
+	mmsg.addContent(new StringPartSource(body.str()));
 
 	SMTPClientSession session(mx);
 	session.login();

@@ -2,7 +2,7 @@
 
    \brief Mail notification routines (header file)
 
-   $Id: mnotify.hxx,v 1.3 2007-02-11 01:19:21 burghardt Exp $
+   $Id: mnotify.hxx,v 1.4 2007-02-17 20:58:14 burghardt Exp $
 
 *//*
 
@@ -29,6 +29,7 @@
 
 #include <config.h>
 
+#include <sstream>
 #include <Poco/Exception.h>
 #include <Poco/Net/MailMessage.h>
 #include <Poco/Net/MailRecipient.h>

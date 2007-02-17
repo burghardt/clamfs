@@ -2,7 +2,7 @@
 
    \brief Misc routines (header file)
 
-   $Id: utils.hxx,v 1.4 2007-02-11 00:49:00 burghardt Exp $
+   $Id: utils.hxx,v 1.5 2007-02-17 20:58:14 burghardt Exp $
 
 *//*
 
@@ -29,6 +29,9 @@
 
 #include <config.h>
 
+#include <fuse.h>
+#include <pwd.h>
+
 #ifdef DMALLOC
 #include <dmalloc.h>
 #endif
@@ -49,6 +52,33 @@ struct ltstr
         return strcmp(s1, s2) < 0;
     }
 };
+
+/*!\brief Returns the name of the process which accessed the file system
+   \returns pointer to buffer contains process name
+*//*
+
+    This function was written by Remi Flament <rflament at laposte dot net>
+    Copyright (c) 2005 - 2007, Remi Flament
+    License: GNU GPL
+
+*/
+static inline char* getcallername() {
+    char filename[100];
+    sprintf(filename, "/proc/%d/cmdline", fuse_get_context()->pid);
+    FILE * proc=fopen(filename, "rt");
+    char cmdline[256] = "";
+    fread(cmdline, sizeof(cmdline), 1, proc);
+    fclose(proc);
+    return strdup(cmdline);
+}
+
+/*!\brief Returns the name of the user accessed the filesystem
+   \returns pointer to buffer contains user name */
+static inline char* getusername() {
+    struct passwd s_pwd;
+    s_pwd = *getpwuid(fuse_get_context()->uid);
+    return strdup(s_pwd.pw_name);
+}
 
 } /* namespace clamfs */
 
