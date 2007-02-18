@@ -2,7 +2,7 @@
 
    \brief Mail notification routines (header file)
 
-   $Id: mnotify.hxx,v 1.4 2007-02-17 20:58:14 burghardt Exp $
+   $Id: mnotify.hxx,v 1.5 2007-02-18 15:19:55 burghardt Exp $
 
 *//*
 
@@ -41,6 +41,7 @@
 #endif
 
 #include <rlog.hxx>
+#include <utils.hxx>
 
 namespace clamfs {
 
