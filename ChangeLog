@@ -1,3 +1,9 @@
+2007-02-18  Krzysztof Burghardt
+
+	* src/clamfs.cxx: clamfs_open(): add whitelist and blacklist match
+	of file extension 
+	* configure.ac: bumped to 0.9.0
+
 2007-02-12  Krzysztof Burghardt
 
 	* src/clamfs.cxx: main(): add sanity check of configuration

@@ -3,6 +3,15 @@
  =============
 
  *******************
+ 0.9.0 (18 Feb 2007)
+ *******************
+
+* Extensions whitelist and blacklist.
+* More verbose logging (user name/id, process name/id).
+* AV scan exclude based on file size.
+* Sanity check of configuration.
+
+ *******************
  0.5.0 (09 Feb 2007)
  *******************
 

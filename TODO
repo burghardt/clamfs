@@ -2,9 +2,6 @@
  TO DO
  =====
 
-* file extension whitelist and blacklist (whitelisted files
-  are never scanned and blacklisted are scanned even they are
-  bigger than file limit)
 * negative cache (cache information about infected files)
 * file system statistics (files accessed, files scanned,
   excluded files, cache hit/miss, viruses detected, etc.)

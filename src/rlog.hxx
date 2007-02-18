@@ -2,7 +2,7 @@
 
    \brief RLog logging routines (header file)
 
-   $Id: rlog.hxx,v 1.5 2007-02-11 01:06:14 burghardt Exp $
+   $Id: rlog.hxx,v 1.6 2007-02-18 19:01:01 burghardt Exp $
 
 *//*
 
@@ -41,9 +41,8 @@
 #include <dmalloc.h>
 #endif
 
-#ifdef NDEBUG
+#include <config.hxx>
 #include <utils.hxx>
-#endif
 
 namespace clamfs {
 
@@ -69,7 +68,6 @@ using namespace rlog;
 #define DEBUG(format, args...) \
     rLog(Debug, format, ## args);
 #else
-extern map <const char *, char *, ltstr> config;
 #define DEBUG(format, args...) do { \
     if ((config["verbose"] != NULL) && \
 	(strncmp(config["verbose"], "yes", 3) == 0)) { \

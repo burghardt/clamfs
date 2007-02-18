@@ -2,7 +2,7 @@
 
    \brief Configuration file handling routines (header file)
 
-   $Id: config.hxx,v 1.6 2007-02-12 00:35:36 burghardt Exp $
+   $Id: config.hxx,v 1.7 2007-02-18 19:01:01 burghardt Exp $
 
 *//*
 
@@ -30,6 +30,7 @@
 #include <config.h>
 
 #include <map>
+#include <ext/hash_map>
 #include <cc++/xml.h>
 
 #ifdef DMALLOC
@@ -41,10 +42,29 @@
 namespace clamfs {
 
 using namespace std;
+/*!\namespace __gnu_cxx
+   \brief GNU C++ namespace
+*/
+using namespace __gnu_cxx;
 /*!\namespace ost
    \brief GNU CommonC++ namespace
 */
 using namespace ost;
+
+/*!\enum acl_item
+   \brief Enumeration of Access List Items
+*/
+enum acl_item { none = 0, blacklisted, whitelisted };
+
+/*!\typedef exthm_t
+   \brief Extension Hash Map
+*/
+typedef hash_map <const char*, acl_item, hash <const char*>, eqstr> exthm_t;
+
+/*!\typedef config_t
+   \brief ClamFS Configuration
+*/
+typedef map <const char *, char *, ltstr> config_t;
 
 /*!\class ConfigParserXML
    \brief Config pareser parses configuration file and stores configuration in clamfs::config

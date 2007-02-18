@@ -2,7 +2,7 @@
 
    \brief Mail notification routines
 
-   $Id: mnotify.cxx,v 1.4 2007-02-17 20:58:11 burghardt Exp $
+   $Id: mnotify.cxx,v 1.5 2007-02-18 19:01:01 burghardt Exp $
 
 *//*
 
@@ -75,7 +75,7 @@ int SendMailNotification(const char* mx, const char* recipient,
 	session.login();
 	session.sendMessage(mmsg);
 	session.close();
-    } catch (Exception& exc) {
+    } catch (Poco::Exception& exc) {
 	rLog(Info, "Got exception when sending mail notification: %s", exc.displayText().c_str());
 	return 1;
     }

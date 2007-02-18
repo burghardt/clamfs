@@ -2,7 +2,7 @@
 
    \brief Misc routines (header file)
 
-   $Id: utils.hxx,v 1.5 2007-02-17 20:58:14 burghardt Exp $
+   $Id: utils.hxx,v 1.6 2007-02-18 19:01:01 burghardt Exp $
 
 *//*
 
@@ -45,11 +45,21 @@ namespace clamfs {
    It is a Binary Predicate that compares two objects,
    returning true if the first precedes the second.
 */
-struct ltstr
-{
-  bool operator()(const char *s1, const char *s2) const
-    {
-        return strcmp(s1, s2) < 0;
+struct ltstr {
+    bool operator()(const char *s1, const char *s2) const {
+	return strcmp(s1, s2) < 0;
+    }
+};
+
+/*!\struct eqstr
+   \brief Equality function for clamfs::extensions
+
+   Equality function is a Binary Predicate that compares
+   two objects, returning true if the they identical.
+*/
+struct eqstr {
+    bool operator()(const char* s1, const char* s2) const {
+	return strcmp(s1, s2) == 0;
     }
 };
 

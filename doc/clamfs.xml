@@ -18,7 +18,7 @@
 	     public     - limit access to process owner only
 	                  or make file system publicly
 			  available for all users -->
-	<filesystem root="/usr" mountpoint="/home/kb/src/clamfs/mountpoint" /> <!-- public="yes" /> -->
+	<filesystem root="/tmp" mountpoint="/clamfs/tmp" /> <!-- public="yes" /> -->
 
 	<!-- Maximal file size (in bytes).
 	     This option can speed up access to large files, as they will be
@@ -32,22 +32,27 @@
 	     problems (like buffers overflows) in applications and thus execute
 	     malicious code even not being executable itself. Finally even text
 	     files can have "modeline" causing problems in some buggy editors. -->
-<!-- unimplemented
 	<whitelist>
-	    <exclude extension="*.txt" />
-	    <exclude extension="*.c" />
-	    <exclude extension="*.h" />
+	    <exclude extension="txt" /> <!-- text files -->
+	    <exclude extension="dbx" /> <!-- form ClamWin -->
+	    <exclude extension="tbb" /> <!-- form ClamWin -->
+	    <exclude extension="pst" /> <!-- form ClamWin -->
+	    <exclude extension="dat" /> <!-- form ClamWin -->
+	    <exclude extension="log" /> <!-- form ClamWin -->
+	    <exclude extension="nsf" /> <!-- form ClamWin -->
+	    <exclude extension="ntf" /> <!-- form ClamWin -->
 	</whitelist>
--->
 
 	<!-- Blacklisted files are scanned regardless of their sizes -->	
-<!-- unimplemented
 	<blacklist>
-	    <include extension="*.exe" />
-	    <include extension="*.dll" />
-	    <include extension="*.sys" />
+	    <include extension="exe" /> <!-- executable file -->
+	    <include extension="com" /> <!-- executable file -->
+	    <include extension="dll" /> <!-- library -->
+	    <include extension="sys" /> <!-- system file / driver -->
+	    <include extension="vbs" /> <!-- Visual Basic Script -->
+	    <include extension="bat" /> <!-- DOS Batch file -->
 	</blacklist>
--->
+
 	<!-- How many entries to keep in cache and for how long (in ms) -->
 	<cache entries="16384" expire="10800000" /> <!-- 3h -->
 

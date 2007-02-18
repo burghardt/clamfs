@@ -2,7 +2,7 @@
 
    \brief RLog logging routines
 
-   $Id: rlog.cxx,v 1.5 2007-02-11 01:02:04 burghardt Exp $
+   $Id: rlog.cxx,v 1.6 2007-02-18 19:01:01 burghardt Exp $
 
 *//*
 
@@ -27,6 +27,8 @@
 #include <rlog.hxx>
 
 namespace clamfs {
+
+extern config_t config;
 
 /*!\brief Debug channel (debugging messages goes here) */
 RLogChannel *Debug = DEF_CHANNEL("debug", Log_Debug);

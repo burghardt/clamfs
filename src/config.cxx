@@ -2,7 +2,7 @@
 
    \brief Configuration file handling routines
 
-   $Id: config.cxx,v 1.4 2007-02-11 01:42:57 burghardt Exp $
+   $Id: config.cxx,v 1.5 2007-02-18 19:01:01 burghardt Exp $
 
 *//*
 
@@ -28,7 +28,8 @@
 
 namespace clamfs {
 
-extern map <const char *, char *, ltstr> config;
+extern config_t config;
+extern exthm_t* extensions;
 
 ConfigParserXML::ConfigParserXML(const char *filename) {
     Open(filename);
@@ -60,8 +61,8 @@ int ConfigParserXML::read(unsigned char *buffer, size_t len) {
 }
 
 /*
- * Store configuration in map<const char *, char *, ltstr>
- * and (if debug enabled) dump parsed configuration file to cout
+ * Store configuration in clamfs::config and (if debug enabled)
+ * dump parsed configuration file to cout
  */
 void ConfigParserXML::startElement(const unsigned char *name, const unsigned char **attr) {
 const unsigned char *option;
@@ -73,7 +74,16 @@ const unsigned char *value;
 	while(*attr) {
 	    option = *(attr++);
 	    value = *(attr++);
-	    config[strdup((const char *)option)] = strdup((const char *)value);
+	    if (strncmp((const char *)name, "exclude", 7) == 0) {
+		if (extensions == NULL)
+		    extensions = new exthm_t;
+		(*extensions)[strdup((const char *)value)] = whitelisted;
+	    } else if (strncmp((const char *)name, "include", 7) == 0) {
+		if (extensions == NULL)
+		    extensions = new exthm_t;
+		(*extensions)[strdup((const char *)value)] = blacklisted;
+	    } else
+		config[strdup((const char *)option)] = strdup((const char *)value);
 #ifndef NDEBUG
 	    cout << " " << option;
 	    cout << "=" << value;

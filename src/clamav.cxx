@@ -2,7 +2,7 @@
 
    \brief Clamd bindings
 
-   $Id: clamav.cxx,v 1.7 2007-02-17 20:58:11 burghardt Exp $
+   $Id: clamav.cxx,v 1.8 2007-02-18 19:01:01 burghardt Exp $
 
 *//*
 
@@ -28,7 +28,7 @@
 
 namespace clamfs {
 
-extern map <const char *, char *, ltstr> config;
+extern config_t config;
 extern FastMutex scanMutex;
 
 /*!\def CHECK_CLAMD

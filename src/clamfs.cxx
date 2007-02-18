@@ -2,7 +2,7 @@
 
    \brief ClamFS main file
 
-   $Id: clamfs.cxx,v 1.9 2007-02-17 20:58:11 burghardt Exp $
+   $Id: clamfs.cxx,v 1.10 2007-02-18 19:01:01 burghardt Exp $
 
 *//*
 
@@ -58,13 +58,19 @@ using namespace clamfs;
 */
 namespace clamfs {
 
+/*
+ * Things needed by all threads (thus global and threads safe)
+ */
+
 /*!\brief Saved file descriptor of our base directory */
 static int savefd;
 /*!\brief Stores all configuration options names and values */
-map <const char *, char *, ltstr> config;
-/*!\brief ScanCache instance (need by all threads thus global) */
+config_t config;
+/*!\brief ScanCache instance */
 ScanCache *cache = NULL;
-/*!\brief Mutex need to serialize access to clamd (need by all threads thus global) */
+/*!\brief Stores whitelisted and blacklisted file extensions */
+exthm_t *extensions = NULL;
+/*!\brief Mutex need to serialize access to clamd */
 FastMutex scanMutex;
 
 extern "C" {
@@ -493,7 +499,8 @@ static inline int open_backend(const char *path, struct fuse_file_info *fi)
 */
 static int clamfs_open(const char *path, struct fuse_file_info *fi)
 {
-    int ret;
+    int ret = 1;
+    bool file_is_blacklisted = false;
     int scan_result;
     struct stat file_stat;
 
@@ -505,9 +512,34 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
     strcat(real_path, path);
 
     /*
+     * Check extension ACL
+     */
+    if (extensions != NULL) {
+	char *ext = rindex(path, '.'); /* find last dot */
+	if (ext != NULL) {
+	    ++ext; /* omit dot */
+	    switch ((*extensions)[ext]) {
+		case whitelisted:
+		    rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because extension whitelisted ", getcallername(),
+			fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path);
+		    delete real_path;
+		    real_path = NULL;
+		    return open_backend(path, fi);
+		case blacklisted:
+		    file_is_blacklisted = true;
+		    rLog(Warn, "(%s:%d) (%s:%d) %s: forced anti-virus scan because extension blacklisted ", getcallername(),
+			fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path);
+		    break;
+		default:
+		    DEBUG("Extension not found in ACL");
+	    }
+	}
+    }
+
+    /*
      * Check file size (if option defined)
      */
-    if (config["maximal-size"] != NULL) {
+    if ((config["maximal-size"] != NULL) && (file_is_blacklisted == false)) {
 	ret = lstat(real_path, &file_stat);
 	if (!ret) { /* got file stat without error */
 	    if (file_stat.st_size > atoi(config["maximal-size"])) { /* file too big */
@@ -524,7 +556,8 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
      * Check if file is in cache
      */
     if (cache != NULL) { /* only if cache initalized */
-	ret = lstat(real_path, &file_stat);
+	if (ret)
+	    ret = lstat(real_path, &file_stat);
 	if (!ret) { /* got file stat without error */
 	
 	    if (cache->has(file_stat.st_ino)) {
@@ -848,7 +881,7 @@ int main(int argc, char *argv[])
     }
 
     /*
-     * Load XML configuration file, parse it and fill in map<...> config
+     * Load XML configuration file, parse it and fill in clamfs::config
      */
     ConfigParserXML cp(argv[1]);
     if (config.size() == 0) {
@@ -858,12 +891,12 @@ int main(int argc, char *argv[])
 
 #ifndef NDEBUG
     /*
-     * Dump configuration form map <...>
+     * Dump configuration form clamfs::config
      */
     cout << "--- begin of config dump ---" << endl;
-    map <const char *, char *, ltstr>::iterator m_begin = config.begin();
-    map <const char *, char *, ltstr>::iterator m_end   = config.end();
-    while ( m_begin != m_end ) {
+    config_t::iterator m_begin = config.begin();
+    config_t::iterator m_end   = config.end();
+    while (m_begin != m_end) {
 	cout << (*m_begin).first << ": " << (*m_begin).second << endl;
 	++m_begin;
     }
@@ -967,6 +1000,13 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	    }		
 	}
+    }
+
+    /*
+     * Print size of extensions ACL
+     */
+    if (extensions != NULL) {
+	rLog(Info, "extension ACL size is %d entries", (int)extensions->size());
     }
 
     /*
