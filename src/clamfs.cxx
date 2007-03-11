@@ -2,7 +2,7 @@
 
    \brief ClamFS main file
 
-   $Id: clamfs.cxx,v 1.10 2007-02-18 19:01:01 burghardt Exp $
+   $Id: clamfs.cxx,v 1.11 2007-03-11 11:00:41 burghardt Exp $
 
 *//*
 
@@ -923,10 +923,19 @@ int main(int argc, char *argv[])
     fuse_argv[fuse_argc++] = argv[0]; /* copy program name */
     fuse_argv[fuse_argc++] = config["mountpoint"]; /* set mountpoint */
 
-    if ((config["public"] != NULL) &&
+    if ((config["public"] != NULL) && /* public */
         (strncmp(config["public"], "yes", 3) == 0)) {
 	fuse_argv[fuse_argc++] = "-o";
-	fuse_argv[fuse_argc++] = "allow_other,default_permissions";
+	if ((config["nonempty"] != NULL) && /* public and nonempty */
+	    (strncmp(config["nonempty"], "yes", 3) == 0)) {
+	    fuse_argv[fuse_argc++] = "allow_other,default_permissions,nonempty";
+	} else { /* public without nonempty */
+	    fuse_argv[fuse_argc++] = "allow_other,default_permissions";
+	}
+    } else if ((config["nonempty"] != NULL) && /* private and nonempty */
+	(strncmp(config["nonempty"], "yes", 3) == 0)) {
+	fuse_argv[fuse_argc++] = "-o";
+	fuse_argv[fuse_argc++] = "nonempty";
     }
     
     if ((config["threads"] != NULL) &&

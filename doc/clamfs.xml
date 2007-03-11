@@ -15,10 +15,11 @@
 	<!-- File system settings
 	     root       - real directory to attach as our root
 	     mountpoint - where to attach our root
-	     public     - limit access to process owner only
-	                  or make file system publicly
-			  available for all users -->
-	<filesystem root="/tmp" mountpoint="/clamfs/tmp" /> <!-- public="yes" /> -->
+	     public     - limit access to process owner only or make
+	    		  file system publicly available for all users
+	     nonempty	- allow mount to directory which contains
+	    		  files or sub-directories -->
+	<filesystem root="/tmp" mountpoint="/clamfs/tmp" public="yes" nonempty="yes" />
 
 	<!-- Maximal file size (in bytes).
 	     This option can speed up access to large files, as they will be
@@ -51,6 +52,7 @@
 	    <include extension="sys" /> <!-- system file / driver -->
 	    <include extension="vbs" /> <!-- Visual Basic Script -->
 	    <include extension="bat" /> <!-- DOS Batch file -->
+	    <include extension="cmd" /> <!-- Windows Command file -->
 	</blacklist>
 
 	<!-- How many entries to keep in cache and for how long (in ms) -->
