@@ -82,6 +82,5 @@ AC_CONFIG_FILES([Makefile
  src/Makefile
  doc/Makefile
  doc/svg/Makefile
- debian/Makefile
  ])
 AC_OUTPUT

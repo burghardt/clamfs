@@ -3,6 +3,13 @@
  =============
 
  *******************
+ 0.9.1 (17 Mar 2007)
+ *******************
+
+* Removed debian directory.
+* Add option nonempty to allow mount in non-empty directory.
+
+ *******************
  0.9.0 (18 Feb 2007)
  *******************
 

@@ -13,5 +13,4 @@ As a run-time dependency you need:
 
 [1] - POCO version 1.2.8 contain 4-BSDL licensed files and thus you
       should avoid linking it against any GPL licensed code. I strongly
-      advise using current SVN version (as license issues has been fixed)
-      or if you are using Debian GNU/Linux - package from Debian-mentors.
+      advise using version 1.2.9 (as license issues has been fixed).

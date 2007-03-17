@@ -1,1 +1,1 @@
-SUBDIRS = src doc debian
+SUBDIRS = src doc
