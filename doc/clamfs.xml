@@ -41,7 +41,6 @@
         <exclude extension="ntf" /> <!-- form ClamWin -->
         <exclude extension="pst" /> <!-- form ClamWin -->
         <exclude extension="tbb" /> <!-- form ClamWin -->
-        <exclude extension="txt" /> <!-- Text file -->
     </whitelist>
 
     <!-- Blacklisted files are scanned regardless of their sizes -->	
