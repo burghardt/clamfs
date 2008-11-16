@@ -9,65 +9,98 @@
      For example removing <cache ... /> will disable caching completly. -->
 
 <clamfs>
-	<!-- Clamd socket -->
-        <clamd socket="/var/run/clamav/clamd.ctl" />
+    <!-- Clamd socket -->
+    <clamd socket="/var/run/clamav/clamd.ctl" />
 
-	<!-- File system settings
-	     root       - real directory to attach as our root
-	     mountpoint - where to attach our root
-	     public     - limit access to process owner only or make
-	    		  file system publicly available for all users
-	     nonempty	- allow mount to directory which contains
-	    		  files or sub-directories -->
-	<filesystem root="/tmp" mountpoint="/clamfs/tmp" public="yes" nonempty="yes" />
+    <!-- File system settings
+         root       - real directory to attach as our root
+         mountpoint - where to attach our root
+         public     - limit access to process owner only or make
+                      file system publicly available for all users
+         nonempty	- allow mount to directory which contains
+                      files or sub-directories -->
+    <filesystem root="/tmp" mountpoint="/clamfs/tmp" public="yes" nonempty="yes" />
 
-	<!-- Maximal file size (in bytes).
-	     This option can speed up access to large files, as they will be
-	     never scanned. On the other hand attacker can append long portion
-	     of junk at the end of file to make it big enough to be omitted. -->
-	<file maximal-size="2097152" /> <!-- 2MiB -->
-	
-	<!-- Whitelisted files are never scanned.
-	     This can speed up access to some files, but be careful with this,
-	     some data files like JPEG, RIFF or WMF can be prepared to cause
-	     problems (like buffers overflows) in applications and thus execute
-	     malicious code even not being executable itself. Finally even text
-	     files can have "modeline" causing problems in some buggy editors. -->
-	<whitelist>
-	    <exclude extension="txt" /> <!-- text files -->
-	    <exclude extension="dbx" /> <!-- form ClamWin -->
-	    <exclude extension="tbb" /> <!-- form ClamWin -->
-	    <exclude extension="pst" /> <!-- form ClamWin -->
-	    <exclude extension="dat" /> <!-- form ClamWin -->
-	    <exclude extension="log" /> <!-- form ClamWin -->
-	    <exclude extension="nsf" /> <!-- form ClamWin -->
-	    <exclude extension="ntf" /> <!-- form ClamWin -->
-	</whitelist>
+    <!-- Maximal file size (in bytes).
+         This option can speed up access to large files, as they will be
+         never scanned. On the other hand attacker can append long portion
+         of junk at the end of file to make it big enough to be omitted. -->
+    <file maximal-size="2097152" /> <!-- 2MiB -->
+    
+    <!-- Whitelisted files are never scanned.
+         This can speed up access to some files, but be careful with this,
+         some data files like JPEG, RIFF or WMF can be prepared to cause
+         problems (like buffers overflows) in applications and thus execute
+         malicious code even not being executable itself. Finally even text
+         files can have "modeline" causing problems in some buggy editors. -->
+    <whitelist>
+        <exclude extension="dat" /> <!-- form ClamWin -->
+        <exclude extension="dbx" /> <!-- form ClamWin -->
+        <exclude extension="log" /> <!-- form ClamWin -->
+        <exclude extension="nsf" /> <!-- form ClamWin -->
+        <exclude extension="ntf" /> <!-- form ClamWin -->
+        <exclude extension="pst" /> <!-- form ClamWin -->
+        <exclude extension="tbb" /> <!-- form ClamWin -->
+        <exclude extension="txt" /> <!-- Text file -->
+    </whitelist>
 
-	<!-- Blacklisted files are scanned regardless of their sizes -->	
-	<blacklist>
-	    <include extension="exe" /> <!-- executable file -->
-	    <include extension="com" /> <!-- executable file -->
-	    <include extension="dll" /> <!-- library -->
-	    <include extension="sys" /> <!-- system file / driver -->
-	    <include extension="vbs" /> <!-- Visual Basic Script -->
-	    <include extension="bat" /> <!-- DOS Batch file -->
-	    <include extension="cmd" /> <!-- Windows Command file -->
-	</blacklist>
+    <!-- Blacklisted files are scanned regardless of their sizes -->	
+    <blacklist>
+        <include extension="ade" /> <!-- Access project extension file -->
+        <include extension="adp" /> <!-- Access project file -->
+        <include extension="asx" /> <!-- ASF redirector or ActiveSite script -->
+        <include extension="bas" /> <!-- Visual Basic class module file -->
+        <include extension="bat" /> <!-- DOS batch file -->
+        <include extension="chm" /> <!-- HTML Help, compiled help file -->
+        <include extension="cmd" /> <!-- Windows command file -->
+        <include extension="com" /> <!-- Executable file -->
+        <include extension="cpl" /> <!-- Windows control panel file -->
+        <include extension="crt" /> <!-- Certificate file -->
+        <include extension="dll" /> <!-- Dynamic-link library file -->
+        <include extension="exe" /> <!-- Executable file -->
+        <include extension="hlp" /> <!-- Microsoft Help file -->
+        <include extension="hta" /> <!-- HTML Application -->
+        <include extension="inf" /> <!-- Windows information or setup file -->
+        <include extension="ins" /> <!-- Install script file -->
+        <include extension="isp" /> <!-- Internet Service Provider settings -->
+        <include extension="jse" /> <!-- JScript Encoded script file -->
+        <include extension="js" />  <!-- JavaScript file -->
+        <include extension="lnk" /> <!-- Windows shortcut file -->
+        <include extension="mda" /> <!-- Access add-in (VBA script) file -->
+        <include extension="mdz" /> <!-- Access Wizard template file -->
+        <include extension="msc" /> <!-- Microsoft Management Console file -->
+        <include extension="msi" /> <!-- Windows Installer file -->
+        <include extension="msp" /> <!-- Windows Installer patch file -->
+        <include extension="mst" /> <!-- Windows SDK Setup Transform Script -->
+        <include extension="pcd" /> <!-- Visual Test P-Code Compiled Script -->
+        <include extension="pif" /> <!-- Windows program information file -->
+        <include extension="reg" /> <!-- Windows registry data file -->
+        <include extension="scr" /> <!-- Windows screensaver file -->
+        <include extension="sct" /> <!-- Windows Script Component file -->
+        <include extension="shs" /> <!-- Shell Scrap object file -->
+        <include extension="sys" /> <!-- System file (driver) -->
+        <include extension="url" /> <!-- Internet Location (URL) file -->
+        <include extension="vbe" /> <!-- Visual Basic script file -->
+        <include extension="vbs" /> <!-- Visual Basic script file -->
+        <include extension="vb" />  <!-- Visual Basic script file -->
+        <include extension="wsc" /> <!-- Windows scripting component file -->
+        <include extension="wsf" /> <!-- Windows scripting file -->
+        <include extension="wsh" /> <!-- Windows Scripting Host file -->
+    </blacklist>
 
-	<!-- How many entries to keep in cache and for how long (in ms) -->
-	<cache entries="16384" expire="10800000" /> <!-- 3h -->
+    <!-- How many entries to keep in cache and for how long (in ms) -->
+    <cache entries="16384" expire="10800000" /> <!-- 3h -->
 
-	<!-- Logging method (stdout, syslog or file) -->
-	<!-- <log method="stdout" verbose="yes" /> -->
-	<log method="syslog" />
-	<!-- <log method="file" filename="/var/log/clamfs.log" verbose="no" /> -->
+    <!-- Logging method (stdout, syslog or file) -->
+    <!-- <log method="stdout" verbose="yes" /> -->
+    <log method="syslog" />
+    <!-- <log method="file" filename="/var/log/clamfs.log" verbose="no" /> -->
 
-	<!-- Send mail when virus is found -->
-	<!-- <mail server="localhost" to="root@localhost" from="clamfs@localhost"
-	     subject="ClamFS: Virus detected" /> -->
-	<!-- subject="ClamFS: Virus detected on @@HOSTNAME@@" /> -->
+    <!-- Send mail when virus is found -->
+    <!-- <mail server="localhost" to="root@localhost" from="clamfs@localhost"
+         subject="ClamFS: Virus detected" /> -->
+    <!-- subject="ClamFS: Virus detected on @@HOSTNAME@@" /> -->
 
-	<!-- Debug settings -->
-	<!-- <debug threads="no" fork="no" /> -->
+    <!-- Debug settings -->
+    <!-- <debug threads="no" fork="no" /> -->
 </clamfs>
