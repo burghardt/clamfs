@@ -2,7 +2,7 @@
 
    \brief Clamd bindings
 
-   $Id: clamav.cxx,v 1.9 2008-11-19 21:55:32 burghardt Exp $
+   $Id: clamav.cxx,v 1.10 2008-11-19 21:59:08 burghardt Exp $
 
 *//*
 
@@ -41,7 +41,7 @@ extern FastMutex scanMutex;
 */
 #define CHECK_CLAMD(clamdSocket) do {\
     if (!clamdSocket) {\
-        Log(Warn, "error: cannot connect to clamd");\
+        rLog(Warn, "error: cannot connect to clamd");\
         return -1;\
     }\
 } while(0)
