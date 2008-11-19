@@ -2,7 +2,7 @@
 
    \brief Mail notification routines
 
-   $Id: mnotify.cxx,v 1.5 2007-02-18 19:01:01 burghardt Exp $
+   $Id: mnotify.cxx,v 1.6 2008-11-19 21:55:32 burghardt Exp $
 
 *//*
 
@@ -38,46 +38,46 @@ namespace clamfs {
 */
 int SendMailNotification(const char* mx, const char* recipient,
                          const char* sender, const char* subject,
-			 const char* scanresult) {
+                         const char* scanresult) {
     /*
      * Check if all parameters are defined
      */
     if ((mx == NULL) ||
         (recipient == NULL) ||
-	(sender == NULL) ||
-	(subject == NULL) ||
-	(scanresult == NULL))
-	return -2;
+        (sender == NULL) ||
+        (subject == NULL) ||
+        (scanresult == NULL))
+        return -2;
 
     /*
      * Try to send message
      */
     try {
-	MailMessage mmsg;
-	stringstream body;
+        MailMessage mmsg;
+        stringstream body;
 
         mmsg.setSender(sender);
-	mmsg.addRecipient(MailRecipient(MailRecipient::PRIMARY_RECIPIENT, recipient));
-	mmsg.setSubject(subject);
+        mmsg.addRecipient(MailRecipient(MailRecipient::PRIMARY_RECIPIENT, recipient));
+        mmsg.setSubject(subject);
 
-	body << "Hello ClamFS User," << endl << endl;
-	body << "This is an automatic notification about virus found." << endl << endl;
-	body << "Executable name: " << getcallername() << endl;
-	body << "            PID: " << fuse_get_context()->pid << endl << endl;
-	body << "       Username: " << getusername() << endl;
-	body << "            UID: " << fuse_get_context()->uid << endl << endl;
-	body << "ClamAV reported malicious file:" << endl;
-	body << scanresult << endl;
-	
-	mmsg.addContent(new StringPartSource(body.str()));
+        body << "Hello ClamFS User," << endl << endl;
+        body << "This is an automatic notification about virus found." << endl << endl;
+        body << "Executable name: " << getcallername() << endl;
+        body << "            PID: " << fuse_get_context()->pid << endl << endl;
+        body << "       Username: " << getusername() << endl;
+        body << "            UID: " << fuse_get_context()->uid << endl << endl;
+        body << "ClamAV reported malicious file:" << endl;
+        body << scanresult << endl;
 
-	SMTPClientSession session(mx);
-	session.login();
-	session.sendMessage(mmsg);
-	session.close();
+        mmsg.addContent(new StringPartSource(body.str()));
+
+        SMTPClientSession session(mx);
+        session.login();
+        session.sendMessage(mmsg);
+        session.close();
     } catch (Poco::Exception& exc) {
-	rLog(Info, "Got exception when sending mail notification: %s", exc.displayText().c_str());
-	return 1;
+        rLog(Info, "Got exception when sending mail notification: %s", exc.displayText().c_str());
+        return 1;
     }
 
     return 0;

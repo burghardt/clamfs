@@ -2,7 +2,7 @@
 
    \brief ClamFS main file (header file)
 
-   $Id: clamfs.hxx,v 1.6 2007-02-11 02:14:04 burghardt Exp $
+   $Id: clamfs.hxx,v 1.7 2008-11-19 21:55:32 burghardt Exp $
 
 *//*
 
@@ -43,7 +43,7 @@
 
 /*!\def FUSE_MAX_ARGS
    \brief Maximal value of FUSE arguments counter
-   
+
    Maximal value for argc (maximal length of argv array)
    we can pass to libFUSE.
 */

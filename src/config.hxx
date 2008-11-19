@@ -2,7 +2,7 @@
 
    \brief Configuration file handling routines (header file)
 
-   $Id: config.hxx,v 1.7 2007-02-18 19:01:01 burghardt Exp $
+   $Id: config.hxx,v 1.8 2008-11-19 21:55:32 burghardt Exp $
 
 *//*
 
@@ -72,40 +72,40 @@ typedef map <const char *, char *, ltstr> config_t;
 class ConfigParserXML: public ifstream, public XMLStream {
     public:
         /*!\brief Constructor for ConfigParserXML
-	   \param filename configuration file name
-	*/
-	ConfigParserXML(const char *filename);
+           \param filename configuration file name
+        */
+        ConfigParserXML(const char *filename);
         /*!\brief Destructor for ConfigParserXML */
-	~ConfigParserXML();
+        ~ConfigParserXML();
     protected:
         /*!\brief Opens configuration file
-	   \param filename configuration file name
-	*/
-	void Open(const char *filename);
+           \param filename configuration file name
+        */
+        void Open(const char *filename);
         /*!\brief Closes configuration file*/
-	void Close(void);
+        void Close(void);
     private:
         /*!\brief XMLStream virtual method called to read data
-	   \param buffer buffer to read from
-	   \param len how many characters to read
-	   \returns how many characters was read
-	 */
-	int read(unsigned char *buffer, size_t len);
+           \param buffer buffer to read from
+           \param len how many characters to read
+           \returns how many characters was read
+         */
+        int read(unsigned char *buffer, size_t len);
         /*!\brief XMLStream virtual method called at element start
-	   \param name name of element beginning precessed
-	   \param attr NULL terminated array of its atributes and their values
-	*/
-	void startElement(const unsigned char *name, const unsigned char **attr);
+           \param name name of element beginning precessed
+           \param attr NULL terminated array of its atributes and their values
+        */
+        void startElement(const unsigned char *name, const unsigned char **attr);
         /*!\brief XMLStream virtual method called at element end
-	   \param name name of element which end was reached
-	 */
-	void endElement(const unsigned char *name);
+           \param name name of element which end was reached
+         */
+        void endElement(const unsigned char *name);
         /*!\brief Empty XMLStream virtual method, we do not need it */
-	void characters(const unsigned char *text, size_t len) { }
+        void characters(const unsigned char *text, size_t len) { }
     private:
-	/*!brief Forbid usage of copy constructor */
+        /*!brief Forbid usage of copy constructor */
         ConfigParserXML(const ConfigParserXML& aCache);
-	/*!brief Forbid usage of assignment operator */
+        /*!brief Forbid usage of assignment operator */
         ConfigParserXML& operator = (const ConfigParserXML& aCache);
 };
 

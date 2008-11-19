@@ -2,7 +2,7 @@
 
    \brief RLog logging routines (header file)
 
-   $Id: rlog.hxx,v 1.6 2007-02-18 19:01:01 burghardt Exp $
+   $Id: rlog.hxx,v 1.7 2008-11-19 21:55:32 burghardt Exp $
 
 *//*
 
@@ -70,8 +70,8 @@ using namespace rlog;
 #else
 #define DEBUG(format, args...) do { \
     if ((config["verbose"] != NULL) && \
-	(strncmp(config["verbose"], "yes", 3) == 0)) { \
-	rLog(Debug, format, ## args); \
+        (strncmp(config["verbose"], "yes", 3) == 0)) { \
+        rLog(Debug, format, ## args); \
     } \
 } while(0)
 #endif

@@ -2,7 +2,7 @@
 
    \brief Misc routines (header file)
 
-   $Id: utils.hxx,v 1.6 2007-02-18 19:01:01 burghardt Exp $
+   $Id: utils.hxx,v 1.7 2008-11-19 21:55:32 burghardt Exp $
 
 *//*
 
@@ -47,7 +47,7 @@ namespace clamfs {
 */
 struct ltstr {
     bool operator()(const char *s1, const char *s2) const {
-	return strcmp(s1, s2) < 0;
+        return strcmp(s1, s2) < 0;
     }
 };
 
@@ -59,7 +59,7 @@ struct ltstr {
 */
 struct eqstr {
     bool operator()(const char* s1, const char* s2) const {
-	return strcmp(s1, s2) == 0;
+        return strcmp(s1, s2) == 0;
     }
 };
 

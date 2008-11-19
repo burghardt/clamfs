@@ -2,7 +2,7 @@
 
    \brief Clamd bindings
 
-   $Id: clamav.cxx,v 1.8 2007-02-18 19:01:01 burghardt Exp $
+   $Id: clamav.cxx,v 1.9 2008-11-19 21:55:32 burghardt Exp $
 
 *//*
 
@@ -34,15 +34,15 @@ extern FastMutex scanMutex;
 /*!\def CHECK_CLAMD
    \brief Check if we are connected to clamd
    \param clamdSocket unixstream variable representing socket
-   
+
    This macro is intended to easier to check if ClamFS is
    connected to clamd socket. This code check socket condition
    and if socket is not open returns -1.
 */
 #define CHECK_CLAMD(clamdSocket) do {\
     if (!clamdSocket) {\
-	rLog(Warn, "error: cannot connect to clamd");\
-	return -1;\
+        Log(Warn, "error: cannot connect to clamd");\
+        return -1;\
     }\
 } while(0)
 
@@ -68,13 +68,13 @@ int OpenClamav(const char *unixSocket) {
 int PingClamav() {
     string reply;
 
-    CHECK_CLAMD(clamd);   
+    CHECK_CLAMD(clamd);
     clamd << "PING" << endl;
     clamd >> reply;
-    
+
     if (reply != "PONG") {
         rLog(Warn, "invalid reply for PING received: %s", reply.c_str());
-	return -1;
+        return -1;
     }
 
     DEBUG("got valid reply for PING command, clamd works");
@@ -92,7 +92,7 @@ void CloseClamav() {
    \param filename name of file to scan
    \returns -1 one error when opening clamd connection,
              0 if no virus found and
-	     1 if virus was found (or clamd error occurred)
+         1 if virus was found (or clamd error occurred)
  */
 int ClamavScanFile(const char *filename) {
     /* FIXME: PATH_MAX is obsolet on some systems and does not exist on other. */
@@ -110,7 +110,8 @@ int ClamavScanFile(const char *filename) {
      */
     DEBUG("started scanning file %s", filename);
     OpenClamav(config["socket"]);
-    if (!clamd) return -1;
+    if (!clamd)
+        return -1;
 
     /*
      * Scan file using SCAN method
@@ -123,22 +124,22 @@ int ClamavScanFile(const char *filename) {
      * Chceck for scan results
      */
     if (strncmp(reply + strlen(reply) - 2, "OK", 2) == 0 ||
-	strncmp(reply + strlen(reply) - 10, "Empty file", 10) == 0) {
+        strncmp(reply + strlen(reply) - 10, "Empty file", 10) == 0) {
         DEBUG("%s", reply);
-	return 0;
+        return 0;
     }
 
     /*
      * Log result through RLog (if virus is found)
      */
     rLog(Warn, "(%s:%d) (%s:%d) %s", getcallername(), fuse_get_context()->pid,
-	getusername(), fuse_get_context()->uid, reply);
+        getusername(), fuse_get_context()->uid, reply);
 
     /*
      * Send mail notification
      */
     SendMailNotification(config["server"], config["to"],
-			 config["from"], config["subject"], reply);
+             config["from"], config["subject"], reply);
 
     return 1;
 }

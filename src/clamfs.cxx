@@ -2,7 +2,7 @@
 
    \brief ClamFS main file
 
-   $Id: clamfs.cxx,v 1.11 2007-03-11 11:00:41 burghardt Exp $
+   $Id: clamfs.cxx,v 1.12 2008-11-19 21:55:32 burghardt Exp $
 
 *//*
 
@@ -82,11 +82,11 @@ extern "C" {
 static inline char* fixpath(const char* path)
 {
     char* fixed=new char[strlen(path)+2];
-    
+
     fchdir(savefd);
     strcpy(fixed,".");
     strcat(fixed,path);
-    
+
     return fixed;
 }
 
@@ -249,7 +249,7 @@ static int clamfs_mknod(const char *path, mode_t mode, dev_t rdev)
     if (res == -1)
         return -errno;
     else
-	res = lchown(path, fuse_get_context()->uid, fuse_get_context()->gid);
+    res = lchown(path, fuse_get_context()->uid, fuse_get_context()->gid);
 
     return 0;
 }
@@ -268,7 +268,7 @@ static int clamfs_mkdir(const char *path, mode_t mode)
     if (res == -1)
         return -errno;
     else
-	res = lchown(path, fuse_get_context()->uid, fuse_get_context()->gid);
+    res = lchown(path, fuse_get_context()->uid, fuse_get_context()->gid);
 
     return 0;
 }
@@ -320,7 +320,7 @@ static int clamfs_symlink(const char *from, const char *to)
     if (res == -1)
         return -errno;
     else
-	res = lchown(from, fuse_get_context()->uid, fuse_get_context()->gid);
+    res = lchown(from, fuse_get_context()->uid, fuse_get_context()->gid);
 
     return 0;
 }
@@ -358,7 +358,7 @@ static int clamfs_link(const char *from, const char *to)
     if (res == -1)
         return -errno;
     else
-	res = lchown(from, fuse_get_context()->uid, fuse_get_context()->gid);
+    res = lchown(from, fuse_get_context()->uid, fuse_get_context()->gid);
 
     return 0;
 }
@@ -468,7 +468,7 @@ static int clamfs_create(const char *path, mode_t mode, struct fuse_file_info *f
     if (fd == -1)
         return -errno;
     else
-	res = lchown(path, fuse_get_context()->uid, fuse_get_context()->gid);
+    res = lchown(path, fuse_get_context()->uid, fuse_get_context()->gid);
 
     fi->fh = fd;
     return 0;
@@ -515,111 +515,111 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
      * Check extension ACL
      */
     if (extensions != NULL) {
-	char *ext = rindex(path, '.'); /* find last dot */
-	if (ext != NULL) {
-	    ++ext; /* omit dot */
-	    switch ((*extensions)[ext]) {
-		case whitelisted:
-		    rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because extension whitelisted ", getcallername(),
-			fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path);
-		    delete real_path;
-		    real_path = NULL;
-		    return open_backend(path, fi);
-		case blacklisted:
-		    file_is_blacklisted = true;
-		    rLog(Warn, "(%s:%d) (%s:%d) %s: forced anti-virus scan because extension blacklisted ", getcallername(),
-			fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path);
-		    break;
-		default:
-		    DEBUG("Extension not found in ACL");
-	    }
-	}
+    char *ext = rindex(path, '.'); /* find last dot */
+    if (ext != NULL) {
+        ++ext; /* omit dot */
+        switch ((*extensions)[ext]) {
+        case whitelisted:
+            rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because extension whitelisted ", getcallername(),
+            fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path);
+            delete real_path;
+            real_path = NULL;
+            return open_backend(path, fi);
+        case blacklisted:
+            file_is_blacklisted = true;
+            rLog(Warn, "(%s:%d) (%s:%d) %s: forced anti-virus scan because extension blacklisted ", getcallername(),
+            fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path);
+            break;
+        default:
+            DEBUG("Extension not found in ACL");
+        }
+    }
     }
 
     /*
      * Check file size (if option defined)
      */
     if ((config["maximal-size"] != NULL) && (file_is_blacklisted == false)) {
-	ret = lstat(real_path, &file_stat);
-	if (!ret) { /* got file stat without error */
-	    if (file_stat.st_size > atoi(config["maximal-size"])) { /* file too big */
-		rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because file is too big (file size: %ld bytes)",
-		    getcallername(), fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path, (long int)file_stat.st_size);
-		delete real_path;
-		real_path = NULL;
-		return open_backend(path, fi);
-	    }
-	}
+    ret = lstat(real_path, &file_stat);
+    if (!ret) { /* got file stat without error */
+        if (file_stat.st_size > atoi(config["maximal-size"])) { /* file too big */
+        rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because file is too big (file size: %ld bytes)",
+            getcallername(), fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path, (long int)file_stat.st_size);
+        delete real_path;
+        real_path = NULL;
+        return open_backend(path, fi);
+        }
+    }
     }
 
     /*
      * Check if file is in cache
      */
     if (cache != NULL) { /* only if cache initalized */
-	if (ret)
-	    ret = lstat(real_path, &file_stat);
-	if (!ret) { /* got file stat without error */
-	
-	    if (cache->has(file_stat.st_ino)) {
-		Poco::SharedPtr<time_t> ptr_val;
-		DEBUG("early cache hit for inode %ld", (unsigned long)file_stat.st_ino);
-		ptr_val = cache->get(file_stat.st_ino);
-		
-		if (*ptr_val == file_stat.st_mtime) {
-		    DEBUG("late cache hit for inode %ld", (unsigned long)file_stat.st_ino);
-		    
-		    /* file scanned and not changed, just open it */
-		    return open_backend(path, fi);
-		} else {
-		    DEBUG("late cache miss for inode %ld", (unsigned long)file_stat.st_ino);
+    if (ret)
+        ret = lstat(real_path, &file_stat);
+    if (!ret) { /* got file stat without error */
 
-		    /*
-		     * Scan file when file it was changed
-		     */
-		    scan_result = ClamavScanFile(real_path);
-	    	    delete real_path;
-		    real_path = NULL;
+        if (cache->has(file_stat.st_ino)) {
+        Poco::SharedPtr<time_t> ptr_val;
+        DEBUG("early cache hit for inode %ld", (unsigned long)file_stat.st_ino);
+        ptr_val = cache->get(file_stat.st_ino);
 
-	    	    /*
-	             * Check for scan results
-	    	     */
-	    	    if (scan_result != 0) { /* delete from cache and return -EPERM error if virus was found */
-			cache->remove(file_stat.st_ino);
-			return -EPERM;
-		    }
-		
-		    /* file was clean so update cache */
-		    *ptr_val = file_stat.st_mtime;
+        if (*ptr_val == file_stat.st_mtime) {
+            DEBUG("late cache hit for inode %ld", (unsigned long)file_stat.st_ino);
 
-		    /* and open it */
-		    return open_backend(path, fi);
-		}
+            /* file scanned and not changed, just open it */
+            return open_backend(path, fi);
+        } else {
+            DEBUG("late cache miss for inode %ld", (unsigned long)file_stat.st_ino);
 
-	    } else {
-		DEBUG("cache miss for inode %ld", (unsigned long)file_stat.st_ino);
-		
-	        /*
-	         * Scan file when file is not in cache
-	         */
-	        scan_result = ClamavScanFile(real_path);
-	        delete real_path;
-		real_path = NULL;
+            /*
+             * Scan file when file it was changed
+             */
+            scan_result = ClamavScanFile(real_path);
+                delete real_path;
+            real_path = NULL;
 
-	        /*
-	         * Check for scan results
-	         */
-	        if (scan_result != 0) /* return -EPERM error if virus was found */
-		    return -EPERM;
-		
-		/* file was clean so add it to cache */
-		cache->add(file_stat.st_ino, file_stat.st_mtime);
+                /*
+                 * Check for scan results
+                 */
+                if (scan_result != 0) { /* delete from cache and return -EPERM error if virus was found */
+            cache->remove(file_stat.st_ino);
+            return -EPERM;
+            }
 
-		/* and open it */
-		return open_backend(path, fi);
-		
-	    }
-	
-	}
+            /* file was clean so update cache */
+            *ptr_val = file_stat.st_mtime;
+
+            /* and open it */
+            return open_backend(path, fi);
+        }
+
+        } else {
+        DEBUG("cache miss for inode %ld", (unsigned long)file_stat.st_ino);
+
+            /*
+             * Scan file when file is not in cache
+             */
+            scan_result = ClamavScanFile(real_path);
+            delete real_path;
+        real_path = NULL;
+
+            /*
+             * Check for scan results
+             */
+            if (scan_result != 0) /* return -EPERM error if virus was found */
+            return -EPERM;
+
+        /* file was clean so add it to cache */
+        cache->add(file_stat.st_ino, file_stat.st_mtime);
+
+        /* and open it */
+        return open_backend(path, fi);
+
+        }
+
+    }
     }
 
     /*
@@ -633,7 +633,7 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
      * Check for scan results
      */
     if (scan_result != 0) /* return -EPERM error if virus was found */
-	return -EPERM;
+    return -EPERM;
 
     /*
      * If no virus detected continue as usual
@@ -826,44 +826,44 @@ int main(int argc, char *argv[])
      */
     memset(&clamfs_oper, 0, sizeof(fuse_operations));
 
-    clamfs_oper.getattr		= clamfs_getattr;
-    clamfs_oper.fgetattr	= clamfs_fgetattr;
-    clamfs_oper.access		= clamfs_access;
-    clamfs_oper.readlink	= clamfs_readlink;
-    clamfs_oper.opendir		= clamfs_opendir;
-    clamfs_oper.readdir		= clamfs_readdir;
-    clamfs_oper.releasedir	= clamfs_releasedir;
-    clamfs_oper.mknod		= clamfs_mknod;
-    clamfs_oper.mkdir		= clamfs_mkdir;
-    clamfs_oper.symlink		= clamfs_symlink;
-    clamfs_oper.unlink		= clamfs_unlink;
-    clamfs_oper.rmdir		= clamfs_rmdir;
-    clamfs_oper.rename		= clamfs_rename;
-    clamfs_oper.link		= clamfs_link;
-    clamfs_oper.chmod		= clamfs_chmod;
-    clamfs_oper.chown		= clamfs_chown;
-    clamfs_oper.truncate	= clamfs_truncate;
-    clamfs_oper.ftruncate	= clamfs_ftruncate;
-    clamfs_oper.utime		= clamfs_utime;
-    clamfs_oper.create		= clamfs_create;
-    clamfs_oper.open		= clamfs_open;
-    clamfs_oper.read		= clamfs_read;
-    clamfs_oper.write		= clamfs_write;
-    clamfs_oper.statfs		= clamfs_statfs;
-    clamfs_oper.release		= clamfs_release;
-    clamfs_oper.fsync		= clamfs_fsync;
+    clamfs_oper.getattr     = clamfs_getattr;
+    clamfs_oper.fgetattr    = clamfs_fgetattr;
+    clamfs_oper.access      = clamfs_access;
+    clamfs_oper.readlink    = clamfs_readlink;
+    clamfs_oper.opendir     = clamfs_opendir;
+    clamfs_oper.readdir     = clamfs_readdir;
+    clamfs_oper.releasedir  = clamfs_releasedir;
+    clamfs_oper.mknod       = clamfs_mknod;
+    clamfs_oper.mkdir       = clamfs_mkdir;
+    clamfs_oper.symlink     = clamfs_symlink;
+    clamfs_oper.unlink      = clamfs_unlink;
+    clamfs_oper.rmdir       = clamfs_rmdir;
+    clamfs_oper.rename      = clamfs_rename;
+    clamfs_oper.link        = clamfs_link;
+    clamfs_oper.chmod       = clamfs_chmod;
+    clamfs_oper.chown       = clamfs_chown;
+    clamfs_oper.truncate    = clamfs_truncate;
+    clamfs_oper.ftruncate   = clamfs_ftruncate;
+    clamfs_oper.utime       = clamfs_utime;
+    clamfs_oper.create      = clamfs_create;
+    clamfs_oper.open        = clamfs_open;
+    clamfs_oper.read        = clamfs_read;
+    clamfs_oper.write       = clamfs_write;
+    clamfs_oper.statfs      = clamfs_statfs;
+    clamfs_oper.release     = clamfs_release;
+    clamfs_oper.fsync       = clamfs_fsync;
 #ifdef HAVE_SETXATTR
-    clamfs_oper.setxattr	= clamfs_setxattr;
-    clamfs_oper.getxattr	= clamfs_getxattr;
-    clamfs_oper.listxattr	= clamfs_listxattr;
-    clamfs_oper.removexattr	= clamfs_removexattr;
+    clamfs_oper.setxattr    = clamfs_setxattr;
+    clamfs_oper.getxattr    = clamfs_getxattr;
+    clamfs_oper.listxattr   = clamfs_listxattr;
+    clamfs_oper.removexattr = clamfs_removexattr;
 #endif
 
     umask(0);
 
     /*
      * Open RLog
-     */    
+     */
     RLogInit(argc, argv);
     RLogOpenStdio();
 
@@ -875,9 +875,9 @@ int main(int argc, char *argv[])
      * Check if we have one argument (other arguments are assumed RLog related)
      */
     if (argc < 2) {
-	rLog(Warn, "ClamFS need to be invoked with one parameter - location of configuration file");
-	rLog(Warn, "Example: %s /etc/clamfs/home.xml", argv[0]);
-	return EXIT_FAILURE;
+    rLog(Warn, "ClamFS need to be invoked with one parameter - location of configuration file");
+    rLog(Warn, "Example: %s /etc/clamfs/home.xml", argv[0]);
+    return EXIT_FAILURE;
     }
 
     /*
@@ -885,8 +885,8 @@ int main(int argc, char *argv[])
      */
     ConfigParserXML cp(argv[1]);
     if (config.size() == 0) {
-	rLog(Warn, "No configuration has been loaded");
-	return EXIT_FAILURE;
+    rLog(Warn, "No configuration has been loaded");
+    return EXIT_FAILURE;
     }
 
 #ifndef NDEBUG
@@ -897,8 +897,8 @@ int main(int argc, char *argv[])
     config_t::iterator m_begin = config.begin();
     config_t::iterator m_end   = config.end();
     while (m_begin != m_end) {
-	cout << (*m_begin).first << ": " << (*m_begin).second << endl;
-	++m_begin;
+    cout << (*m_begin).first << ": " << (*m_begin).second << endl;
+    ++m_begin;
     }
     cout << "--- end of config dump ---" << endl;
 #endif
@@ -909,9 +909,9 @@ int main(int argc, char *argv[])
      */
     if ((config["socket"] == NULL) ||
         (config["root"] == NULL) ||
-	(config["mountpoint"] == NULL)) {
-	rLog(Warn, "socket, root and mountpoint must be defined");
-	return EXIT_FAILURE;
+    (config["mountpoint"] == NULL)) {
+    rLog(Warn, "socket, root and mountpoint must be defined");
+    return EXIT_FAILURE;
     }
 
     /*
@@ -925,35 +925,35 @@ int main(int argc, char *argv[])
 
     if ((config["public"] != NULL) && /* public */
         (strncmp(config["public"], "yes", 3) == 0)) {
-	fuse_argv[fuse_argc++] = "-o";
-	if ((config["nonempty"] != NULL) && /* public and nonempty */
-	    (strncmp(config["nonempty"], "yes", 3) == 0)) {
-	    fuse_argv[fuse_argc++] = "allow_other,default_permissions,nonempty";
-	} else { /* public without nonempty */
-	    fuse_argv[fuse_argc++] = "allow_other,default_permissions";
-	}
-    } else if ((config["nonempty"] != NULL) && /* private and nonempty */
-	(strncmp(config["nonempty"], "yes", 3) == 0)) {
-	fuse_argv[fuse_argc++] = "-o";
-	fuse_argv[fuse_argc++] = "nonempty";
+    fuse_argv[fuse_argc++] = "-o";
+    if ((config["nonempty"] != NULL) && /* public and nonempty */
+        (strncmp(config["nonempty"], "yes", 3) == 0)) {
+        fuse_argv[fuse_argc++] = "allow_other,default_permissions,nonempty";
+    } else { /* public without nonempty */
+        fuse_argv[fuse_argc++] = "allow_other,default_permissions";
     }
-    
+    } else if ((config["nonempty"] != NULL) && /* private and nonempty */
+    (strncmp(config["nonempty"], "yes", 3) == 0)) {
+    fuse_argv[fuse_argc++] = "-o";
+    fuse_argv[fuse_argc++] = "nonempty";
+    }
+
     if ((config["threads"] != NULL) &&
         (strncmp(config["threads"], "no", 2) == 0))
-	fuse_argv[fuse_argc++] = "-s";
+    fuse_argv[fuse_argc++] = "-s";
 
     if ((config["fork"] != NULL) &&
         (strncmp(config["fork"], "no", 2) == 0))
-	fuse_argv[fuse_argc++] = "-f";
+    fuse_argv[fuse_argc++] = "-f";
 
     /*
      * Change our current directory to "root" of our filesystem
      */
     rLog(Info,"chdir to our 'root' (%s)",config["root"]);
     if (chdir(config["root"]) < 0) {
-	int err = errno; /* copy errno, RLog can overwrite */
-	rLog(Warn, "chdir failed: %s", strerror(err));
-	return err;
+    int err = errno; /* copy errno, RLog can overwrite */
+    rLog(Warn, "chdir failed: %s", strerror(err));
+    return err;
     }
     savefd = open(".", 0);
 
@@ -961,13 +961,13 @@ int main(int argc, char *argv[])
      * Check if clamd is available for clamfs
      */
     if ((ret = OpenClamav(config["socket"])) != 0) {
-	rLog(Warn, "cannot start without running clamd, make sure it works");
-	return ret;
+    rLog(Warn, "cannot start without running clamd, make sure it works");
+    return ret;
     }
 
     if ((ret = PingClamav()) != 0) {
-	rLog(Warn, "cannot start without running clamd, make sure it works");
-	return ret;
+    rLog(Warn, "cannot start without running clamd, make sure it works");
+    return ret;
     }
     CloseClamav();
 
@@ -975,54 +975,54 @@ int main(int argc, char *argv[])
      * Initialize cache
      */
     if ((config["entries"] != NULL) &&
-	(atol(config["entries"]) <= 0)) {
-	rLog(Warn, "maximal cache entries count cannot be =< 0");
-	return EXIT_FAILURE;
+    (atol(config["entries"]) <= 0)) {
+    rLog(Warn, "maximal cache entries count cannot be =< 0");
+    return EXIT_FAILURE;
     }
     if ((config["expire"] != NULL) &&
-	(atol(config["expire"]) <= 0)) {
-	rLog(Warn, "maximal cache expire value cannot be =< 0");
-	return EXIT_FAILURE;
+    (atol(config["expire"]) <= 0)) {
+    rLog(Warn, "maximal cache expire value cannot be =< 0");
+    return EXIT_FAILURE;
     }
     if ((config["entries"] != NULL) &&
-	(config["expire"] != NULL)) {
-	rLog(Info, "ScanCache initialized, %s entries will be kept for %s ms max.",
-	    config["entries"], config["expire"]);
-	cache = new ScanCache(atol(config["entries"]), atol(config["expire"]));
+    (config["expire"] != NULL)) {
+    rLog(Info, "ScanCache initialized, %s entries will be kept for %s ms max.",
+        config["entries"], config["expire"]);
+    cache = new ScanCache(atol(config["entries"]), atol(config["expire"]));
     } else {
-	rLog(Warn, "ScanCache disabled, expect poor performance");
+    rLog(Warn, "ScanCache disabled, expect poor performance");
     }
 
     /*
      * Open configured logging target
      */
     if (config["method"] != NULL) {
-	if (strncmp(config["method"], "syslog", 6) == 0) {
-	    RLogOpenSyslog();
-	    RLogCloseStdio();
-	} else if (strncmp(config["method"], "file", 4) == 0) {
-	    if (config["filename"] != NULL) {
-		RLogOpenLogFile(config["filename"]);
-		RLogCloseStdio();
-	    } else {
-		rLog(Warn, "logging method 'file' choosen, but no log 'filename' given");
-		return EXIT_FAILURE;
-	    }		
-	}
+    if (strncmp(config["method"], "syslog", 6) == 0) {
+        RLogOpenSyslog();
+        RLogCloseStdio();
+    } else if (strncmp(config["method"], "file", 4) == 0) {
+        if (config["filename"] != NULL) {
+        RLogOpenLogFile(config["filename"]);
+        RLogCloseStdio();
+        } else {
+        rLog(Warn, "logging method 'file' choosen, but no log 'filename' given");
+        return EXIT_FAILURE;
+        }
+    }
     }
 
     /*
      * Print size of extensions ACL
      */
     if (extensions != NULL) {
-	rLog(Info, "extension ACL size is %d entries", (int)extensions->size());
+    rLog(Info, "extension ACL size is %d entries", (int)extensions->size());
     }
 
     /*
      * Start FUSE
      */
     ret = fuse_main(fuse_argc, fuse_argv, &clamfs_oper);
-    
+
     rLog(Info, "deleting cache");
     delete cache;
     cache = NULL;

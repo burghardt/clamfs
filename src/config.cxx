@@ -2,7 +2,7 @@
 
    \brief Configuration file handling routines
 
-   $Id: config.cxx,v 1.5 2007-02-18 19:01:01 burghardt Exp $
+   $Id: config.cxx,v 1.6 2008-11-19 21:55:32 burghardt Exp $
 
 *//*
 
@@ -71,24 +71,24 @@ const unsigned char *value;
     cout << "<" << name;
 #endif
     if(attr) {
-	while(*attr) {
-	    option = *(attr++);
-	    value = *(attr++);
-	    if (strncmp((const char *)name, "exclude", 7) == 0) {
-		if (extensions == NULL)
-		    extensions = new exthm_t;
-		(*extensions)[strdup((const char *)value)] = whitelisted;
-	    } else if (strncmp((const char *)name, "include", 7) == 0) {
-		if (extensions == NULL)
-		    extensions = new exthm_t;
-		(*extensions)[strdup((const char *)value)] = blacklisted;
-	    } else
-		config[strdup((const char *)option)] = strdup((const char *)value);
+        while(*attr) {
+            option = *(attr++);
+            value = *(attr++);
+            if (strncmp((const char *)name, "exclude", 7) == 0) {
+                if (extensions == NULL)
+                    extensions = new exthm_t;
+                (*extensions)[strdup((const char *)value)] = whitelisted;
+            } else if (strncmp((const char *)name, "include", 7) == 0) {
+                if (extensions == NULL)
+                    extensions = new exthm_t;
+                (*extensions)[strdup((const char *)value)] = blacklisted;
+            } else
+                config[strdup((const char *)option)] = strdup((const char *)value);
 #ifndef NDEBUG
-	    cout << " " << option;
-	    cout << "=" << value;
+            cout << " " << option;
+            cout << "=" << value;
 #endif
-	}
+        }
     }
 #ifndef NDEBUG
     cout << ">" << endl;

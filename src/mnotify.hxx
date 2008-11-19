@@ -2,7 +2,7 @@
 
    \brief Mail notification routines (header file)
 
-   $Id: mnotify.hxx,v 1.5 2007-02-18 15:19:55 burghardt Exp $
+   $Id: mnotify.hxx,v 1.6 2008-11-19 21:55:32 burghardt Exp $
 
 *//*
 
@@ -48,11 +48,11 @@ namespace clamfs {
 using namespace std;
 /*!\namespace Poco
    \brief Poco Foundation namespace
-*/   
+*/
 using namespace Poco;
 /*!\namespace Poco::Net
    \brief Poco Network namespace
-*/   
+*/
 using namespace Poco::Net;
 
 extern RLogChannel *Debug;
@@ -61,7 +61,7 @@ extern RLogChannel *Warn;
 
 int SendMailNotification(const char* mx, const char* recipient,
                          const char* sender, const char* subject,
-			 const char* scanresult);
+                         const char* scanresult);
 
 } /* namespace clamfs */
 

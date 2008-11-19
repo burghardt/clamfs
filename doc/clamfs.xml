@@ -26,7 +26,7 @@
          never scanned. On the other hand attacker can append long portion
          of junk at the end of file to make it big enough to be omitted. -->
     <file maximal-size="2097152" /> <!-- 2MiB -->
-    
+
     <!-- Whitelisted files are never scanned.
          This can speed up access to some files, but be careful with this,
          some data files like JPEG, RIFF or WMF can be prepared to cause

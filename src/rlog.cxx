@@ -2,7 +2,7 @@
 
    \brief RLog logging routines
 
-   $Id: rlog.cxx,v 1.6 2007-02-18 19:01:01 burghardt Exp $
+   $Id: rlog.cxx,v 1.7 2008-11-19 21:55:32 burghardt Exp $
 
 *//*
 
@@ -47,14 +47,14 @@ static int fileLog = 0;
 static StdioNode *fileLogNode = NULL;
 
 /*!\brief Opens stdio logging target
-   
+
    This function opens stdio logging target
    and subscribes all RLog channels for it.
 */
 void RLogOpenStdio() {
 #ifndef NDEBUG
     stdLog = new StdioNode(STDOUT_FILENO, StdioNode::OutputContext |
-	StdioNode::OutputThreadId | StdioNode::OutputColor);
+    StdioNode::OutputThreadId | StdioNode::OutputColor);
 #else
     stdLog = new StdioNode(STDOUT_FILENO);
 #endif
@@ -95,15 +95,15 @@ void RLogOpenLogFile(const char *filename) {
     if (fileLog > 0) { /* file open succesful */
 #ifndef NDEBUG
         fileLogNode = new StdioNode(fileLog, StdioNode::OutputContext |
-	    StdioNode::OutputThreadId);
+        StdioNode::OutputThreadId);
 #else
-	fileLogNode = new StdioNode(fileLog);
+    fileLogNode = new StdioNode(fileLog);
 #endif
-	fileLogNode->subscribeTo( RLOG_CHANNEL("") );
+    fileLogNode->subscribeTo( RLOG_CHANNEL("") );
         rLog(Info, "log goes to file %s", filename);
     } else { /* file open failed */
-	rLog(Warn, "cannot open log file %s", filename);
-	exit(EXIT_FAILURE);
+    rLog(Warn, "cannot open log file %s", filename);
+    exit(EXIT_FAILURE);
     }
 }
 
@@ -111,9 +111,9 @@ void RLogOpenLogFile(const char *filename) {
 */
 void RLogCloseLogFile() {
     if (fileLog > 0) { /* file open, close it */
-	delete fileLogNode;
-	fileLogNode = NULL;
-	close(fileLog);
+    delete fileLogNode;
+    fileLogNode = NULL;
+    close(fileLog);
     }
 }
 
