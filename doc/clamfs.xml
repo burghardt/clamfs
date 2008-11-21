@@ -17,7 +17,7 @@
          mountpoint - where to attach our root
          public     - limit access to process owner only or make
                       file system publicly available for all users
-         nonempty	- allow mount to directory which contains
+         nonempty   - allow mount to directory which contains
                       files or sub-directories -->
     <filesystem root="/tmp" mountpoint="/clamfs/tmp" public="yes" nonempty="yes" />
 
@@ -43,7 +43,7 @@
         <exclude extension="tbb" /> <!-- form ClamWin -->
     </whitelist>
 
-    <!-- Blacklisted files are scanned regardless of their sizes -->	
+    <!-- Blacklisted files are scanned regardless of their sizes -->
     <blacklist>
         <include extension="ade" /> <!-- Access project extension file -->
         <include extension="adp" /> <!-- Access project file -->
