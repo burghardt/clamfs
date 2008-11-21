@@ -2,7 +2,7 @@
 
    \brief ClamFS main file
 
-   $Id: clamfs.cxx,v 1.14 2008-11-21 22:38:47 burghardt Exp $
+   $Id: clamfs.cxx,v 1.15 2008-11-21 23:58:11 burghardt Exp $
 
 *//*
 
@@ -561,15 +561,18 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
         if (!ret) { /* got file stat without error */
 
             if (cache->has(file_stat.st_ino)) {
-                Poco::SharedPtr<time_t> ptr_val;
+                Poco::SharedPtr<CachedResult> ptr_val;
                 DEBUG("early cache hit for inode %ld", (unsigned long)file_stat.st_ino);
                 ptr_val = cache->get(file_stat.st_ino);
 
-                if (*ptr_val == file_stat.st_mtime) {
+                if (ptr_val->scanTimestamp == file_stat.st_mtime) {
                     DEBUG("late cache hit for inode %ld", (unsigned long)file_stat.st_ino);
 
-                    /* file scanned and not changed, just open it */
-                    return open_backend(path, fi);
+                    /* file scanned and not changed, was it clean? */
+                    if (ptr_val->isClean)
+                        return open_backend(path, fi); /* Yes, it was */
+                    else
+                        return -EPERM; /* No, that file wa infected */
                 } else {
                     DEBUG("late cache miss for inode %ld", (unsigned long)file_stat.st_ino);
 
@@ -581,18 +584,19 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
                     real_path = NULL;
 
                     /*
-                     * Check for scan results
+                     * Check for scan results and update cache
                      */
-                    if (scan_result != 0) { /* delete from cache and return -EPERM error if virus was found */
-                        cache->remove(file_stat.st_ino);
+                    Poco::SharedPtr<CachedResult> ptr_val;
+                    ptr_val = cache->get(file_stat.st_ino);
+                    ptr_val->scanTimestamp = file_stat.st_mtime;
+                    if (scan_result != 0) { /* virus found */
+                        ptr_val->isClean = false;
                         return -EPERM;
+                    } else {
+                        ptr_val->isClean = true;
+                        /* file is clean, open it */
+                        return open_backend(path, fi);
                     }
-
-                    /* file was clean so update cache */
-                    *ptr_val = file_stat.st_mtime;
-
-                    /* and open it */
-                    return open_backend(path, fi);
                 }
 
             } else {
@@ -608,14 +612,16 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
                 /*
                  * Check for scan results
                  */
-                if (scan_result != 0) /* return -EPERM error if virus was found */
+                if (scan_result != 0) { /* virus found */
+                    CachedResult result(false, file_stat.st_mtime);
+                    cache->add(file_stat.st_ino, result);
                     return -EPERM;
-
-                /* file was clean so add it to cache */
-                cache->add(file_stat.st_ino, file_stat.st_mtime);
-
-                /* and open it */
-                return open_backend(path, fi);
+                } else {
+                    CachedResult result(true, file_stat.st_mtime);
+                    cache->add(file_stat.st_ino, result);
+                    /* file is clean, open it */
+                    return open_backend(path, fi);
+                }
 
             }
 

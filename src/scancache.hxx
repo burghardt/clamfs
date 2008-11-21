@@ -2,7 +2,7 @@
 
    \brief ScanCache (anti-virus scan result caching) routines (header file)
 
-   $Id: scancache.hxx,v 1.7 2008-11-21 21:16:45 burghardt Exp $
+   $Id: scancache.hxx,v 1.8 2008-11-21 23:58:11 burghardt Exp $
 
 *//*
 
@@ -40,13 +40,35 @@ namespace clamfs {
 using namespace std;
 using namespace Poco;
 
+/*!\class CachedResult
+   \brief ScanCache element for per file anti-virus scan result storage
+
+   CachedResult provides information about last scan time and anti-virus
+   scan result. This is used to store each file scan result in ScanCache.
+*/
+class CachedResult {
+    public:
+        /*!\brief Constructor for CachedResult
+           \param isFileClean anti-virus scan result flag
+           \param scanFileTimestamp last scan timestamp
+        */
+        CachedResult(bool isFileClean, time_t scanFileTimestamp);
+        /*!\brief Destructor for CachedResult */
+        ~CachedResult();
+
+        /*!\brief anti-virus scan result flag */
+        bool isClean;
+        /*!\brief last scan timestamp */
+        time_t scanTimestamp;
+};
+
 /*!\class ScanCache
    \brief LRU cache for anti-virus scan results storage
 
    LRU cache with time-based expiration. Based on Poco::ExpireLRUCache.
    This cache stores anti-virus scan results for later use.
 */
-class ScanCache: public ExpireLRUCache<ino_t, time_t> {
+class ScanCache: public ExpireLRUCache<ino_t, CachedResult> {
     public:
         /*!\brief Constructor for ScanCache
            \param elements maximal size of cache

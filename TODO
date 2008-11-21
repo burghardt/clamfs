@@ -2,7 +2,6 @@
  TO DO
  =====
 
-* negative cache (cache information about infected files)
 * file system statistics (files accessed, files scanned,
   excluded files, cache hit/miss, viruses detected, etc.)
 * better configuration file handling (preferably using POCO)

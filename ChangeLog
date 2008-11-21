@@ -1,30 +1,35 @@
+2008-11-22  Krzysztof Burghardt
+
+    * src/clamfs.cxx, src/scancache.cxx, src/scancache.hxx: add negative cache
+    (cache information about infected files)
+
 2007-03-17  Krzysztof Burghardt
 
-	* debian: directory removed
-	* configure.ac: bumped to 0.9.1
+    * debian: directory removed
+    * configure.ac: bumped to 0.9.1
 
 2007-03-11  Krzysztof Burghardt
 
-	* src/clamfs.cxx: main(): add option to mount into non-empty directory
+    * src/clamfs.cxx: main(): add option to mount into non-empty directory
 
 2007-02-18  Krzysztof Burghardt
 
-	* src/clamfs.cxx: clamfs_open(): add whitelist and blacklist match
-	of file extension 
-	* configure.ac: bumped to 0.9.0
+    * src/clamfs.cxx: clamfs_open(): add whitelist and blacklist match
+    of file extension 
+    * configure.ac: bumped to 0.9.0
 
 2007-02-12  Krzysztof Burghardt
 
-	* src/clamfs.cxx: main(): add sanity check of configuration
-	* src/clamfs.cxx: clamfs_open(): add exclude from anti-virus scan
-	based on file size
+    * src/clamfs.cxx: main(): add sanity check of configuration
+    * src/clamfs.cxx: clamfs_open(): add exclude from anti-virus scan
+    based on file size
 
 2007-02-11  Krzysztof Burghardt
 
-	* src/clamfs.cxx: clamfs_fixpath() renamed to fixpath()
-	* src/clamfs.cxx: clamfs_open_backend() renamed to open_backend()
-	* configure.ac: bumped to 0.7.0
+    * src/clamfs.cxx: clamfs_fixpath() renamed to fixpath()
+    * src/clamfs.cxx: clamfs_open_backend() renamed to open_backend()
+    * configure.ac: bumped to 0.7.0
 
 2007-02-09  Krzysztof Burghardt
 
-	* configure.ac: bumped to 0.5.0
+    * configure.ac: bumped to 0.5.0
