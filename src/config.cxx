@@ -2,7 +2,7 @@
 
    \brief Configuration file handling routines
 
-   $Id: config.cxx,v 1.6 2008-11-19 21:55:32 burghardt Exp $
+   $Id: config.cxx,v 1.7 2008-11-21 21:16:45 burghardt Exp $
 
 *//*
 
@@ -24,12 +24,12 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <config.hxx>
+#include "config.hxx"
 
 namespace clamfs {
 
 extern config_t config;
-extern exthm_t* extensions;
+extern extum_t* extensions;
 
 ConfigParserXML::ConfigParserXML(const char *filename) {
     Open(filename);
@@ -76,11 +76,11 @@ const unsigned char *value;
             value = *(attr++);
             if (strncmp((const char *)name, "exclude", 7) == 0) {
                 if (extensions == NULL)
-                    extensions = new exthm_t;
+                    extensions = new extum_t;
                 (*extensions)[strdup((const char *)value)] = whitelisted;
             } else if (strncmp((const char *)name, "include", 7) == 0) {
                 if (extensions == NULL)
-                    extensions = new exthm_t;
+                    extensions = new extum_t;
                 (*extensions)[strdup((const char *)value)] = blacklisted;
             } else
                 config[strdup((const char *)option)] = strdup((const char *)value);

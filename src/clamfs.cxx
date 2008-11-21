@@ -2,7 +2,7 @@
 
    \brief ClamFS main file
 
-   $Id: clamfs.cxx,v 1.12 2008-11-19 21:55:32 burghardt Exp $
+   $Id: clamfs.cxx,v 1.13 2008-11-21 21:16:45 burghardt Exp $
 
 *//*
 
@@ -35,7 +35,7 @@
     See the file COPYING.
 */
 
-#include <config.h>
+#include "config.h"
 
 #include <fuse.h>
 #include <stdio.h>
@@ -48,8 +48,8 @@
 #include <sys/xattr.h>
 #endif
 
-#include <clamfs.hxx>
-#include <utils.hxx>
+#include "clamfs.hxx"
+#include "utils.hxx"
 
 using namespace clamfs;
 
@@ -69,7 +69,7 @@ config_t config;
 /*!\brief ScanCache instance */
 ScanCache *cache = NULL;
 /*!\brief Stores whitelisted and blacklisted file extensions */
-exthm_t *extensions = NULL;
+extum_t *extensions = NULL;
 /*!\brief Mutex need to serialize access to clamd */
 FastMutex scanMutex;
 
@@ -875,9 +875,9 @@ int main(int argc, char *argv[])
      * Check if we have one argument (other arguments are assumed RLog related)
      */
     if (argc < 2) {
-    rLog(Warn, "ClamFS need to be invoked with one parameter - location of configuration file");
-    rLog(Warn, "Example: %s /etc/clamfs/home.xml", argv[0]);
-    return EXIT_FAILURE;
+        rLog(Warn, "ClamFS need to be invoked with one parameter - location of configuration file");
+        rLog(Warn, "Example: %s /etc/clamfs/home.xml", argv[0]);
+        return EXIT_FAILURE;
     }
 
     /*
@@ -885,8 +885,8 @@ int main(int argc, char *argv[])
      */
     ConfigParserXML cp(argv[1]);
     if (config.size() == 0) {
-    rLog(Warn, "No configuration has been loaded");
-    return EXIT_FAILURE;
+        rLog(Warn, "No configuration has been loaded");
+        return EXIT_FAILURE;
     }
 
 #ifndef NDEBUG
@@ -897,8 +897,8 @@ int main(int argc, char *argv[])
     config_t::iterator m_begin = config.begin();
     config_t::iterator m_end   = config.end();
     while (m_begin != m_end) {
-    cout << (*m_begin).first << ": " << (*m_begin).second << endl;
-    ++m_begin;
+        cout << (*m_begin).first << ": " << (*m_begin).second << endl;
+        ++m_begin;
     }
     cout << "--- end of config dump ---" << endl;
 #endif
@@ -909,9 +909,9 @@ int main(int argc, char *argv[])
      */
     if ((config["socket"] == NULL) ||
         (config["root"] == NULL) ||
-    (config["mountpoint"] == NULL)) {
-    rLog(Warn, "socket, root and mountpoint must be defined");
-    return EXIT_FAILURE;
+        (config["mountpoint"] == NULL)) {
+        rLog(Warn, "socket, root and mountpoint must be defined");
+        return EXIT_FAILURE;
     }
 
     /*
@@ -925,35 +925,36 @@ int main(int argc, char *argv[])
 
     if ((config["public"] != NULL) && /* public */
         (strncmp(config["public"], "yes", 3) == 0)) {
-    fuse_argv[fuse_argc++] = "-o";
-    if ((config["nonempty"] != NULL) && /* public and nonempty */
-        (strncmp(config["nonempty"], "yes", 3) == 0)) {
-        fuse_argv[fuse_argc++] = "allow_other,default_permissions,nonempty";
-    } else { /* public without nonempty */
-        fuse_argv[fuse_argc++] = "allow_other,default_permissions";
-    }
+        fuse_argv[fuse_argc++] = strdup("-o");
+        if ((config["nonempty"] != NULL) && /* public and nonempty */
+            (strncmp(config["nonempty"], "yes", 3) == 0)) {
+            fuse_argv[fuse_argc++] =
+                strdup("allow_other,default_permissions,nonempty");
+        } else { /* public without nonempty */
+            fuse_argv[fuse_argc++] = strdup("allow_other,default_permissions");
+        }
     } else if ((config["nonempty"] != NULL) && /* private and nonempty */
-    (strncmp(config["nonempty"], "yes", 3) == 0)) {
-    fuse_argv[fuse_argc++] = "-o";
-    fuse_argv[fuse_argc++] = "nonempty";
+        (strncmp(config["nonempty"], "yes", 3) == 0)) {
+        fuse_argv[fuse_argc++] = strdup("-o");
+        fuse_argv[fuse_argc++] = strdup("nonempty");
     }
 
     if ((config["threads"] != NULL) &&
         (strncmp(config["threads"], "no", 2) == 0))
-    fuse_argv[fuse_argc++] = "-s";
+        fuse_argv[fuse_argc++] = strdup("-s");
 
     if ((config["fork"] != NULL) &&
         (strncmp(config["fork"], "no", 2) == 0))
-    fuse_argv[fuse_argc++] = "-f";
+        fuse_argv[fuse_argc++] = strdup("-f");
 
     /*
      * Change our current directory to "root" of our filesystem
      */
     rLog(Info,"chdir to our 'root' (%s)",config["root"]);
     if (chdir(config["root"]) < 0) {
-    int err = errno; /* copy errno, RLog can overwrite */
-    rLog(Warn, "chdir failed: %s", strerror(err));
-    return err;
+        int err = errno; /* copy errno, RLog can overwrite */
+        rLog(Warn, "chdir failed: %s", strerror(err));
+        return err;
     }
     savefd = open(".", 0);
 
@@ -961,13 +962,13 @@ int main(int argc, char *argv[])
      * Check if clamd is available for clamfs
      */
     if ((ret = OpenClamav(config["socket"])) != 0) {
-    rLog(Warn, "cannot start without running clamd, make sure it works");
-    return ret;
+        rLog(Warn, "cannot start without running clamd, make sure it works");
+        return ret;
     }
 
     if ((ret = PingClamav()) != 0) {
-    rLog(Warn, "cannot start without running clamd, make sure it works");
-    return ret;
+        rLog(Warn, "cannot start without running clamd, make sure it works");
+        return ret;
     }
     CloseClamav();
 
@@ -975,47 +976,47 @@ int main(int argc, char *argv[])
      * Initialize cache
      */
     if ((config["entries"] != NULL) &&
-    (atol(config["entries"]) <= 0)) {
-    rLog(Warn, "maximal cache entries count cannot be =< 0");
-    return EXIT_FAILURE;
+        (atol(config["entries"]) <= 0)) {
+        rLog(Warn, "maximal cache entries count cannot be =< 0");
+        return EXIT_FAILURE;
     }
     if ((config["expire"] != NULL) &&
-    (atol(config["expire"]) <= 0)) {
-    rLog(Warn, "maximal cache expire value cannot be =< 0");
-    return EXIT_FAILURE;
+        (atol(config["expire"]) <= 0)) {
+        rLog(Warn, "maximal cache expire value cannot be =< 0");
+        return EXIT_FAILURE;
     }
     if ((config["entries"] != NULL) &&
-    (config["expire"] != NULL)) {
-    rLog(Info, "ScanCache initialized, %s entries will be kept for %s ms max.",
+        (config["expire"] != NULL)) {
+        rLog(Info, "ScanCache initialized, %s entries will be kept for %s ms max.",
         config["entries"], config["expire"]);
-    cache = new ScanCache(atol(config["entries"]), atol(config["expire"]));
+        cache = new ScanCache(atol(config["entries"]), atol(config["expire"]));
     } else {
-    rLog(Warn, "ScanCache disabled, expect poor performance");
+        rLog(Warn, "ScanCache disabled, expect poor performance");
     }
 
     /*
      * Open configured logging target
      */
     if (config["method"] != NULL) {
-    if (strncmp(config["method"], "syslog", 6) == 0) {
-        RLogOpenSyslog();
-        RLogCloseStdio();
-    } else if (strncmp(config["method"], "file", 4) == 0) {
-        if (config["filename"] != NULL) {
-        RLogOpenLogFile(config["filename"]);
-        RLogCloseStdio();
-        } else {
-        rLog(Warn, "logging method 'file' choosen, but no log 'filename' given");
-        return EXIT_FAILURE;
+        if (strncmp(config["method"], "syslog", 6) == 0) {
+            RLogOpenSyslog();
+            RLogCloseStdio();
+        } else if (strncmp(config["method"], "file", 4) == 0) {
+            if (config["filename"] != NULL) {
+                RLogOpenLogFile(config["filename"]);
+                RLogCloseStdio();
+            } else {
+                rLog(Warn, "logging method 'file' choosen, but no log 'filename' given");
+                return EXIT_FAILURE;
+            }
         }
-    }
     }
 
     /*
      * Print size of extensions ACL
      */
     if (extensions != NULL) {
-    rLog(Info, "extension ACL size is %d entries", (int)extensions->size());
+        rLog(Info, "extension ACL size is %d entries", (int)extensions->size());
     }
 
     /*

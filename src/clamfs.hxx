@@ -2,7 +2,7 @@
 
    \brief ClamFS main file (header file)
 
-   $Id: clamfs.hxx,v 1.7 2008-11-19 21:55:32 burghardt Exp $
+   $Id: clamfs.hxx,v 1.8 2008-11-21 21:16:45 burghardt Exp $
 
 *//*
 
@@ -27,7 +27,7 @@
 #ifndef CLAMFS_CLAMFS_HXX
 #define CLAMFS_CLAMFS_HXX
 
-#include <config.h>
+#include "config.h"
 
 #include <Poco/Mutex.h>
 
@@ -35,11 +35,11 @@
 #include <dmalloc.h>
 #endif
 
-#include <rlog.hxx>
-#include <config.hxx>
-#include <clamav.hxx>
-#include <scancache.hxx>
-
+#include "rlog.hxx"
+#include "config.hxx"
+#include "clamav.hxx"
+#include "scancache.hxx"
+#include "stats.hxx"
 
 /*!\def FUSE_MAX_ARGS
    \brief Maximal value of FUSE arguments counter

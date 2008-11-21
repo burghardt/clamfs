@@ -2,7 +2,7 @@
 
    \brief Mail notification routines
 
-   $Id: mnotify.cxx,v 1.6 2008-11-19 21:55:32 burghardt Exp $
+   $Id: mnotify.cxx,v 1.7 2008-11-21 21:16:45 burghardt Exp $
 
 *//*
 
@@ -24,7 +24,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <mnotify.hxx>
+#include "mnotify.hxx"
 
 namespace clamfs {
 

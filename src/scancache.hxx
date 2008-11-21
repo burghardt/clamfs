@@ -2,7 +2,7 @@
 
    \brief ScanCache (anti-virus scan result caching) routines (header file)
 
-   $Id: scancache.hxx,v 1.6 2008-11-19 21:55:32 burghardt Exp $
+   $Id: scancache.hxx,v 1.7 2008-11-21 21:16:45 burghardt Exp $
 
 *//*
 
@@ -27,7 +27,7 @@
 #ifndef CLAMFS_SCANCACHE_HXX
 #define CLAMFS_SCANCACHE_HXX
 
-#include <config.h>
+#include "config.h"
 
 #include <Poco/ExpireLRUCache.h>
 

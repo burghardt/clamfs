@@ -6,4 +6,5 @@ clamfs_SOURCES=clamfs.cxx clamfs.hxx \
                clamav.cxx clamav.hxx \
                scancache.cxx scancache.hxx \
                mnotify.cxx mnotify.hxx \
+               stats.cpp stats.hpp \
                utils.hxx

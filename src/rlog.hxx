@@ -2,7 +2,7 @@
 
    \brief RLog logging routines (header file)
 
-   $Id: rlog.hxx,v 1.7 2008-11-19 21:55:32 burghardt Exp $
+   $Id: rlog.hxx,v 1.8 2008-11-21 21:16:45 burghardt Exp $
 
 *//*
 
@@ -27,7 +27,7 @@
 #ifndef CLAMFS_RLOG_HXX
 #define CLAMFS_RLOG_HXX
 
-#include <config.h>
+#include "config.h"
 
 #include <cc++/file.h>
 
@@ -41,8 +41,8 @@
 #include <dmalloc.h>
 #endif
 
-#include <config.hxx>
-#include <utils.hxx>
+#include "config.hxx"
+#include "utils.hxx"
 
 namespace clamfs {
 

@@ -2,7 +2,7 @@
 
    \brief Mail notification routines (header file)
 
-   $Id: mnotify.hxx,v 1.6 2008-11-19 21:55:32 burghardt Exp $
+   $Id: mnotify.hxx,v 1.7 2008-11-21 21:16:45 burghardt Exp $
 
 *//*
 
@@ -27,7 +27,7 @@
 #ifndef CLAMFS_MNOTIFY_HXX
 #define CLAMFS_MNOTIFY_HXX
 
-#include <config.h>
+#include "config.h"
 
 #include <sstream>
 #include <Poco/Exception.h>
@@ -40,8 +40,8 @@
 #include <dmalloc.h>
 #endif
 
-#include <rlog.hxx>
-#include <utils.hxx>
+#include "rlog.hxx"
+#include "utils.hxx"
 
 namespace clamfs {
 

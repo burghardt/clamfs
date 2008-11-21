@@ -2,7 +2,7 @@
 
    \brief Clamd bindings
 
-   $Id: clamav.cxx,v 1.10 2008-11-19 21:59:08 burghardt Exp $
+   $Id: clamav.cxx,v 1.11 2008-11-21 21:16:45 burghardt Exp $
 
 *//*
 
@@ -24,7 +24,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <clamav.hxx>
+#include "clamav.hxx"
 
 namespace clamfs {
 

@@ -2,7 +2,7 @@
 
    \brief Misc routines (header file)
 
-   $Id: utils.hxx,v 1.7 2008-11-19 21:55:32 burghardt Exp $
+   $Id: utils.hxx,v 1.8 2008-11-21 21:16:45 burghardt Exp $
 
 *//*
 
@@ -27,7 +27,7 @@
 #ifndef CLAMFS_UTILS_HXX
 #define CLAMFS_UTILS_HXX
 
-#include <config.h>
+#include "config.h"
 
 #include <fuse.h>
 #include <pwd.h>

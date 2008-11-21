@@ -2,7 +2,7 @@
 
    \brief Clamd bindings (header file)
 
-   $Id: clamav.hxx,v 1.6 2007-02-11 02:09:47 burghardt Exp $
+   $Id: clamav.hxx,v 1.7 2008-11-21 21:16:45 burghardt Exp $
 
 *//*
 
@@ -27,7 +27,7 @@
 #ifndef CLAMFS_CLAMAV_HXX
 #define CLAMFS_CLAMAV_HXX
 
-#include <config.h>
+#include "config.h"
 
 #include <cc++/file.h>
 #include <cc++/unix.h>
@@ -39,9 +39,9 @@
 #include <dmalloc.h>
 #endif
 
-#include <config.hxx>
-#include <rlog.hxx>
-#include <mnotify.hxx>
+#include "config.hxx"
+#include "rlog.hxx"
+#include "mnotify.hxx"
 
 namespace clamfs {
 

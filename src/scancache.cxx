@@ -2,7 +2,7 @@
 
    \brief ScanCache (anti-virus scan result caching) routines
 
-   $Id: scancache.cxx,v 1.4 2007-02-12 00:21:20 burghardt Exp $
+   $Id: scancache.cxx,v 1.5 2008-11-21 21:16:45 burghardt Exp $
 
 *//*
 
@@ -24,7 +24,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <scancache.hxx>
+#include "scancache.hxx"
 
 namespace clamfs {
 

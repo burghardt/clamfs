@@ -2,7 +2,7 @@
 
    \brief Configuration file handling routines (header file)
 
-   $Id: config.hxx,v 1.8 2008-11-19 21:55:32 burghardt Exp $
+   $Id: config.hxx,v 1.9 2008-11-21 21:16:45 burghardt Exp $
 
 *//*
 
@@ -27,25 +27,41 @@
 #ifndef CLAMFS_CONFIG_HXX
 #define CLAMFS_CONFIG_HXX
 
-#include <config.h>
+#include "config.h"
 
 #include <map>
-#include <ext/hash_map>
+#if (COMPILER == COMPILER_GNU) && (__GNUC__ >= 4)
+#include <tr1/unordered_map>
+#else
+#include <hash_map>
+#endif
 #include <cc++/xml.h>
 
 #ifdef DMALLOC
 #include <dmalloc.h>
 #endif
 
-#include <utils.hxx>
+#include "utils.hxx"
 
 namespace clamfs {
 
+/*!\namespace std
+   \brief STanDard namespace
+*/
 using namespace std;
+
+#if (COMPILER == COMPILER_GNU) && (__GNUC__ >= 4)
+/*!\namespace tr1
+   \brief ISO/IEC TR 19768 namespace
+*/
+using namespace tr1;
+#else
 /*!\namespace __gnu_cxx
    \brief GNU C++ namespace
 */
 using namespace __gnu_cxx;
+#endif
+
 /*!\namespace ost
    \brief GNU CommonC++ namespace
 */
@@ -56,10 +72,14 @@ using namespace ost;
 */
 enum acl_item { none = 0, blacklisted, whitelisted };
 
-/*!\typedef exthm_t
-   \brief Extension Hash Map
+/*!\typedef extum_t
+   \brief Extension Unordered Map
 */
-typedef hash_map <const char*, acl_item, hash <const char*>, eqstr> exthm_t;
+#if (COMPILER == COMPILER_GNU) && (__GNUC__ >= 4)
+typedef unordered_map <const char*, acl_item, hash <const char*>, eqstr> extum_t;
+#else
+typedef hash_map <const char*, acl_item, hash <const char*>, eqstr> extum_t;
+#endif
 
 /*!\typedef config_t
    \brief ClamFS Configuration
