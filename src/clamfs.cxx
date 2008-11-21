@@ -2,7 +2,7 @@
 
    \brief ClamFS main file
 
-   $Id: clamfs.cxx,v 1.13 2008-11-21 21:16:45 burghardt Exp $
+   $Id: clamfs.cxx,v 1.14 2008-11-21 22:38:47 burghardt Exp $
 
 *//*
 
@@ -515,111 +515,111 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
      * Check extension ACL
      */
     if (extensions != NULL) {
-    char *ext = rindex(path, '.'); /* find last dot */
-    if (ext != NULL) {
-        ++ext; /* omit dot */
-        switch ((*extensions)[ext]) {
-        case whitelisted:
-            rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because extension whitelisted ", getcallername(),
-            fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path);
-            delete real_path;
-            real_path = NULL;
-            return open_backend(path, fi);
-        case blacklisted:
-            file_is_blacklisted = true;
-            rLog(Warn, "(%s:%d) (%s:%d) %s: forced anti-virus scan because extension blacklisted ", getcallername(),
-            fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path);
-            break;
-        default:
-            DEBUG("Extension not found in ACL");
+        char *ext = rindex(path, '.'); /* find last dot */
+        if (ext != NULL) {
+            ++ext; /* omit dot */
+            switch ((*extensions)[ext]) {
+                case whitelisted:
+                    rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because extension whitelisted ", getcallername(),
+                    fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path);
+                    delete real_path;
+                    real_path = NULL;
+                    return open_backend(path, fi);
+                case blacklisted:
+                    file_is_blacklisted = true;
+                    rLog(Warn, "(%s:%d) (%s:%d) %s: forced anti-virus scan because extension blacklisted ", getcallername(),
+                    fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path);
+                    break;
+                default:
+                    DEBUG("Extension not found in ACL");
+            }
         }
-    }
     }
 
     /*
      * Check file size (if option defined)
      */
     if ((config["maximal-size"] != NULL) && (file_is_blacklisted == false)) {
-    ret = lstat(real_path, &file_stat);
-    if (!ret) { /* got file stat without error */
-        if (file_stat.st_size > atoi(config["maximal-size"])) { /* file too big */
-        rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because file is too big (file size: %ld bytes)",
-            getcallername(), fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path, (long int)file_stat.st_size);
-        delete real_path;
-        real_path = NULL;
-        return open_backend(path, fi);
+        ret = lstat(real_path, &file_stat);
+        if (!ret) { /* got file stat without error */
+            if (file_stat.st_size > atoi(config["maximal-size"])) { /* file too big */
+                rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because file is too big (file size: %ld bytes)",
+                getcallername(), fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path, (long int)file_stat.st_size);
+                delete real_path;
+                real_path = NULL;
+                return open_backend(path, fi);
+            }
         }
-    }
     }
 
     /*
      * Check if file is in cache
      */
     if (cache != NULL) { /* only if cache initalized */
-    if (ret)
-        ret = lstat(real_path, &file_stat);
-    if (!ret) { /* got file stat without error */
+        if (ret)
+            ret = lstat(real_path, &file_stat);
+        if (!ret) { /* got file stat without error */
 
-        if (cache->has(file_stat.st_ino)) {
-        Poco::SharedPtr<time_t> ptr_val;
-        DEBUG("early cache hit for inode %ld", (unsigned long)file_stat.st_ino);
-        ptr_val = cache->get(file_stat.st_ino);
+            if (cache->has(file_stat.st_ino)) {
+                Poco::SharedPtr<time_t> ptr_val;
+                DEBUG("early cache hit for inode %ld", (unsigned long)file_stat.st_ino);
+                ptr_val = cache->get(file_stat.st_ino);
 
-        if (*ptr_val == file_stat.st_mtime) {
-            DEBUG("late cache hit for inode %ld", (unsigned long)file_stat.st_ino);
+                if (*ptr_val == file_stat.st_mtime) {
+                    DEBUG("late cache hit for inode %ld", (unsigned long)file_stat.st_ino);
 
-            /* file scanned and not changed, just open it */
-            return open_backend(path, fi);
-        } else {
-            DEBUG("late cache miss for inode %ld", (unsigned long)file_stat.st_ino);
+                    /* file scanned and not changed, just open it */
+                    return open_backend(path, fi);
+                } else {
+                    DEBUG("late cache miss for inode %ld", (unsigned long)file_stat.st_ino);
 
-            /*
-             * Scan file when file it was changed
-             */
-            scan_result = ClamavScanFile(real_path);
+                    /*
+                     * Scan file when file it was changed
+                     */
+                    scan_result = ClamavScanFile(real_path);
+                    delete real_path;
+                    real_path = NULL;
+
+                    /*
+                     * Check for scan results
+                     */
+                    if (scan_result != 0) { /* delete from cache and return -EPERM error if virus was found */
+                        cache->remove(file_stat.st_ino);
+                        return -EPERM;
+                    }
+
+                    /* file was clean so update cache */
+                    *ptr_val = file_stat.st_mtime;
+
+                    /* and open it */
+                    return open_backend(path, fi);
+                }
+
+            } else {
+                DEBUG("cache miss for inode %ld", (unsigned long)file_stat.st_ino);
+
+                /*
+                 * Scan file when file is not in cache
+                 */
+                scan_result = ClamavScanFile(real_path);
                 delete real_path;
-            real_path = NULL;
+                real_path = NULL;
 
                 /*
                  * Check for scan results
                  */
-                if (scan_result != 0) { /* delete from cache and return -EPERM error if virus was found */
-            cache->remove(file_stat.st_ino);
-            return -EPERM;
+                if (scan_result != 0) /* return -EPERM error if virus was found */
+                    return -EPERM;
+
+                /* file was clean so add it to cache */
+                cache->add(file_stat.st_ino, file_stat.st_mtime);
+
+                /* and open it */
+                return open_backend(path, fi);
+
             }
 
-            /* file was clean so update cache */
-            *ptr_val = file_stat.st_mtime;
-
-            /* and open it */
-            return open_backend(path, fi);
         }
-
-        } else {
-        DEBUG("cache miss for inode %ld", (unsigned long)file_stat.st_ino);
-
-            /*
-             * Scan file when file is not in cache
-             */
-            scan_result = ClamavScanFile(real_path);
-            delete real_path;
-        real_path = NULL;
-
-            /*
-             * Check for scan results
-             */
-            if (scan_result != 0) /* return -EPERM error if virus was found */
-            return -EPERM;
-
-        /* file was clean so add it to cache */
-        cache->add(file_stat.st_ino, file_stat.st_mtime);
-
-        /* and open it */
-        return open_backend(path, fi);
-
-        }
-
-    }
     }
 
     /*
@@ -633,7 +633,7 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
      * Check for scan results
      */
     if (scan_result != 0) /* return -EPERM error if virus was found */
-    return -EPERM;
+        return -EPERM;
 
     /*
      * If no virus detected continue as usual
