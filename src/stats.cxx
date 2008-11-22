@@ -2,7 +2,7 @@
 
    \brief Statistics (fs, av, cache, etc.) routines
 
-   $Id: stats.cxx,v 1.1 2008-11-21 21:17:54 burghardt Exp $
+   $Id: stats.cxx,v 1.2 2008-11-22 13:09:33 burghardt Exp $
 
 *//*
 
@@ -29,9 +29,36 @@
 namespace clamfs {
 
 Stats::Stats() {
+    earlyCacheHit = 0;
+    earlyCacheMiss = 0;
+    lateCacheHit = 0;
+    lateCacheMiss = 0;
+
+    whitelistHit = 0;
+    blacklistHit = 0;
+
+    tooBigFile = 0;
+
+    openCalled = 0;
+    openAllowed = 0;
+    openDenied = 0;
 }
 
 Stats::~Stats() {
+}
+
+void Stats::dumpToLog() {
+    rLog(Info, "--- begin of statistics ---");
+    rLog(Info, "Early cache hit: %llu", earlyCacheHit);
+    rLog(Info, "Early cache miss: %llu", earlyCacheMiss);
+    rLog(Info, "Late cache hit: %llu", lateCacheMiss);
+    rLog(Info, "Late cache miss: %llu", lateCacheMiss);
+    rLog(Info, "Whitelist hit: %llu", whitelistHit);
+    rLog(Info, "Whitelist miss: %llu", blacklistHit);
+    rLog(Info, "Files bigger than maximal-size: %llu", tooBigFile);
+    rLog(Info, "open() function called %llu times (allowed: %llu, denied: %llu)",
+            openCalled, openAllowed, openDenied);
+    rLog(Info, "--- end of statistics ---");
 }
 
 } /* namespace clamfs */

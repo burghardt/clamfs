@@ -2,7 +2,7 @@
 
    \brief Statistics (fs, av, cache, etc.) routines (header file)
 
-   $Id: stats.hxx,v 1.1 2008-11-21 21:17:54 burghardt Exp $
+   $Id: stats.hxx,v 1.2 2008-11-22 13:09:33 burghardt Exp $
 
 *//*
 
@@ -33,9 +33,13 @@
 #include <dmalloc.h>
 #endif
 
+#include "rlog.hxx"
+
 namespace clamfs {
 
 using namespace std;
+
+extern RLogChannel *Info;
 
 /*!\class Stats
    \brief Statistics module for ClamFS fs, av, cache and more
@@ -52,12 +56,59 @@ class Stats {
         Stats();
         /*!\brief Destructor for Stats */
         ~Stats();
+
+        /*!\brief Dump statistics to log */
+        void dumpToLog();
+
     private:
-        /*!brief Forbid usage of copy constructor */
+        /*!\brief Forbid usage of copy constructor */
         Stats(const Stats& aStats);
-        /*!brief Forbid usage of assignment operator */
+        /*!\brief Forbid usage of assignment operator */
         Stats& operator = (const Stats& aStats);
+
+    public:
+        /*!\brief early cache hit counter */
+        unsigned long long earlyCacheHit;
+        /*!\brief early cache miss counter */
+        unsigned long long earlyCacheMiss;
+        /*!\brief late cache hit counter */
+        unsigned long long lateCacheHit;
+        /*!\brief late cache miss counter */
+        unsigned long long lateCacheMiss;
+
+        /*!\brief whitelist hit counter */
+        unsigned long long whitelistHit;
+        /*!\brief blacklist hit counter */
+        unsigned long long blacklistHit;
+
+        /*!\brief files bigger than maximal-size hit counter */
+        unsigned long long tooBigFile;
+
+        /*!\brief open() function call counter */
+        unsigned long long openCalled;
+        /*!\brief open() call allowed by AV counter */
+        unsigned long long openAllowed;
+        /*!\brief open() call denied by AV counter */
+        unsigned long long openDenied;
 };
+
+/*!\brief extern to access stats pointer from clamfs.cxx */
+extern Stats* stats;
+
+/*!\def INC_STAT_COUNTER
+   \brief Increment statistic module counter
+   \param counter name of counter to increment
+
+   This macro is intended to easier update ClamFS stats module
+   counters. This macro check if stats module was initialized
+   and if so updates statistic counters.
+*/
+#define INC_STAT_COUNTER(counter) do {\
+    if (stats) {\
+        ++(stats->counter);\
+    }\
+} while(0)
+
 
 } /* namespace clamfs */
 

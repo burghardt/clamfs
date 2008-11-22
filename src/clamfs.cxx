@@ -2,7 +2,7 @@
 
    \brief ClamFS main file
 
-   $Id: clamfs.cxx,v 1.16 2008-11-22 11:09:30 burghardt Exp $
+   $Id: clamfs.cxx,v 1.17 2008-11-22 13:09:33 burghardt Exp $
 
 *//*
 
@@ -68,6 +68,8 @@ static int savefd;
 config_t config;
 /*!\brief ScanCache instance */
 ScanCache *cache = NULL;
+/*!\brief Stats instance */
+Stats *stats = NULL;
 /*!\brief Stores whitelisted and blacklisted file extensions */
 extum_t *extensions = NULL;
 /*!\brief Mutex need to serialize access to clamd */
@@ -994,10 +996,21 @@ int main(int argc, char *argv[])
     if ((config["entries"] != NULL) &&
         (config["expire"] != NULL)) {
         rLog(Info, "ScanCache initialized, %s entries will be kept for %s ms max.",
-        config["entries"], config["expire"]);
+            config["entries"], config["expire"]);
         cache = new ScanCache(atol(config["entries"]), atol(config["expire"]));
     } else {
         rLog(Warn, "ScanCache disabled, expect poor performance");
+    }
+
+    /*
+     * Initialize stats
+     */
+    if ((config["atexit"] != NULL) &&
+        (strncmp(config["atexit"], "yes", 3) == 0)) {
+        rLog(Info, "Statistics module initialized");
+        stats = new Stats();
+    } else {
+        rLog(Info, "Statistics module disabled");
     }
 
     /*
@@ -1030,9 +1043,19 @@ int main(int argc, char *argv[])
      */
     ret = fuse_main(fuse_argc, fuse_argv, &clamfs_oper);
 
-    rLog(Info, "deleting cache");
-    delete cache;
-    cache = NULL;
+    if (cache) {
+        rLog(Info, "deleting cache");
+        delete cache;
+        cache = NULL;
+    }
+
+    if (stats) {
+        stats->dumpToLog();
+
+        rLog(Info, "deleting stats");
+        delete stats;
+        stats = NULL;
+    }
 
     rLog(Info, "closing logging targets");
     RLogCloseLogFile();
