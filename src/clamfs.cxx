@@ -2,7 +2,7 @@
 
    \brief ClamFS main file
 
-   $Id: clamfs.cxx,v 1.15 2008-11-21 23:58:11 burghardt Exp $
+   $Id: clamfs.cxx,v 1.16 2008-11-22 11:09:30 burghardt Exp $
 
 *//*
 
@@ -572,7 +572,7 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
                     if (ptr_val->isClean)
                         return open_backend(path, fi); /* Yes, it was */
                     else
-                        return -EPERM; /* No, that file wa infected */
+                        return -EPERM; /* No, that file was infected */
                 } else {
                     DEBUG("late cache miss for inode %ld", (unsigned long)file_stat.st_ino);
 
