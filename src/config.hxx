@@ -2,7 +2,7 @@
 
    \brief Configuration file handling routines (header file)
 
-   $Id: config.hxx,v 1.10 2008-11-22 15:14:42 burghardt Exp $
+   $Id: config.hxx,v 1.11 2008-11-22 15:29:55 burghardt Exp $
 
 *//*
 
@@ -30,11 +30,7 @@
 #include "config.h"
 
 #include <map>
-#if (COMPILER == COMPILER_GNU) && (__GNUC__ >= 4)
 #include <tr1/unordered_map>
-#else
-#include <hash_map>
-#endif
 #include <cc++/xml.h>
 
 #ifdef DMALLOC
@@ -50,17 +46,10 @@ namespace clamfs {
 */
 using namespace std;
 
-#if (COMPILER == COMPILER_GNU) && (__GNUC__ >= 4)
 /*!\namespace tr1
    \brief ISO/IEC TR 19768 namespace
 */
 using namespace tr1;
-#else
-/*!\namespace __gnu_cxx
-   \brief GNU C++ namespace
-*/
-using namespace __gnu_cxx;
-#endif
 
 /*!\namespace ost
    \brief GNU CommonC++ namespace
@@ -75,11 +64,7 @@ enum acl_item { none = 0, blacklisted, whitelisted };
 /*!\typedef extum_t
    \brief Extension Unordered Map
 */
-#if (COMPILER == COMPILER_GNU) && (__GNUC__ >= 4)
 typedef unordered_map <string, acl_item> extum_t;
-#else
-typedef hash_map <string, acl_item> extum_t;
-#endif
 
 /*!\typedef config_t
    \brief ClamFS Configuration
