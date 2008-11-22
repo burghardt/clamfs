@@ -2,7 +2,7 @@
 
    \brief Configuration file handling routines
 
-   $Id: config.cxx,v 1.7 2008-11-21 21:16:45 burghardt Exp $
+   $Id: config.cxx,v 1.8 2008-11-22 15:14:42 burghardt Exp $
 
 *//*
 
@@ -77,11 +77,11 @@ const unsigned char *value;
             if (strncmp((const char *)name, "exclude", 7) == 0) {
                 if (extensions == NULL)
                     extensions = new extum_t;
-                (*extensions)[strdup((const char *)value)] = whitelisted;
+                (*extensions)[(const char *)value] = whitelisted;
             } else if (strncmp((const char *)name, "include", 7) == 0) {
                 if (extensions == NULL)
                     extensions = new extum_t;
-                (*extensions)[strdup((const char *)value)] = blacklisted;
+                (*extensions)[(const char *)value] = blacklisted;
             } else
                 config[strdup((const char *)option)] = strdup((const char *)value);
 #ifndef NDEBUG

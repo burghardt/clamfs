@@ -2,7 +2,7 @@
 
    \brief Configuration file handling routines (header file)
 
-   $Id: config.hxx,v 1.9 2008-11-21 21:16:45 burghardt Exp $
+   $Id: config.hxx,v 1.10 2008-11-22 15:14:42 burghardt Exp $
 
 *//*
 
@@ -76,9 +76,9 @@ enum acl_item { none = 0, blacklisted, whitelisted };
    \brief Extension Unordered Map
 */
 #if (COMPILER == COMPILER_GNU) && (__GNUC__ >= 4)
-typedef unordered_map <const char*, acl_item, hash <const char*>, eqstr> extum_t;
+typedef unordered_map <string, acl_item> extum_t;
 #else
-typedef hash_map <const char*, acl_item, hash <const char*>, eqstr> extum_t;
+typedef hash_map <string, acl_item> extum_t;
 #endif
 
 /*!\typedef config_t

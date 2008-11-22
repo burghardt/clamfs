@@ -2,7 +2,7 @@
 
    \brief ClamFS main file
 
-   $Id: clamfs.cxx,v 1.18 2008-11-22 13:45:25 burghardt Exp $
+   $Id: clamfs.cxx,v 1.19 2008-11-22 15:14:42 burghardt Exp $
 
 *//*
 
@@ -522,23 +522,29 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
         char *ext = rindex(path, '.'); /* find last dot */
         if (ext != NULL) {
             ++ext; /* omit dot */
-            switch ((*extensions)[ext]) {
-                case whitelisted:
-                    INC_STAT_COUNTER(whitelistHit);
-                    rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because extension whitelisted ", getcallername(),
-                    fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path);
-                    delete real_path;
-                    real_path = NULL;
-                    INC_STAT_COUNTER(openAllowed);
-                    return open_backend(path, fi);
-                case blacklisted:
-                    INC_STAT_COUNTER(blacklistHit);
-                    file_is_blacklisted = true;
-                    rLog(Warn, "(%s:%d) (%s:%d) %s: forced anti-virus scan because extension blacklisted ", getcallername(),
-                    fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path);
-                    break;
-                default:
-                    DEBUG("Extension not found in ACL");
+            extum_t::const_iterator extumConstIter;
+            extumConstIter = extensions->find(ext);
+            if (extumConstIter != extensions->end()) {
+                switch (extumConstIter->second) {
+                    case whitelisted:
+                        INC_STAT_COUNTER(whitelistHit);
+                        rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because extension whitelisted ", getcallername(),
+                        fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path);
+                        delete real_path;
+                        real_path = NULL;
+                        INC_STAT_COUNTER(openAllowed);
+                        return open_backend(path, fi);
+                    case blacklisted:
+                        INC_STAT_COUNTER(blacklistHit);
+                        file_is_blacklisted = true;
+                        rLog(Warn, "(%s:%d) (%s:%d) %s: forced anti-virus scan because extension blacklisted ", getcallername(),
+                        fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path);
+                        break;
+                    default:
+                        DEBUG("Extension found in unordered_map, but with unknown ACL type");
+                }
+            } else {
+                DEBUG("Extension not found in unordered_map");
             }
         }
     }
@@ -1076,6 +1082,12 @@ int main(int argc, char *argv[])
         rLog(Info, "deleting stats");
         delete stats;
         stats = NULL;
+    }
+
+    if (extensions != NULL) {
+        rLog(Info, "deleting extensions ACL");
+        delete extensions;
+        extensions = NULL;
     }
 
     rLog(Info, "closing logging targets");
