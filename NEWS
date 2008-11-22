@@ -7,6 +7,7 @@
  *******************
 
 * Add negative cache (cache information about infected files).
+* Add filesystem statistics (config: <stats atexit="yes" />).
 
  *******************
  0.9.1 (17 Mar 2007)

@@ -2,7 +2,7 @@
 
    \brief ClamFS main file
 
-   $Id: clamfs.cxx,v 1.17 2008-11-22 13:09:33 burghardt Exp $
+   $Id: clamfs.cxx,v 1.18 2008-11-22 13:45:25 burghardt Exp $
 
 *//*
 
@@ -506,6 +506,8 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
     int scan_result;
     struct stat file_stat;
 
+    INC_STAT_COUNTER(openCalled);
+
     /*
      * Build file path in real filesystem tree
      */
@@ -522,12 +524,15 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
             ++ext; /* omit dot */
             switch ((*extensions)[ext]) {
                 case whitelisted:
+                    INC_STAT_COUNTER(whitelistHit);
                     rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because extension whitelisted ", getcallername(),
                     fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path);
                     delete real_path;
                     real_path = NULL;
+                    INC_STAT_COUNTER(openAllowed);
                     return open_backend(path, fi);
                 case blacklisted:
+                    INC_STAT_COUNTER(blacklistHit);
                     file_is_blacklisted = true;
                     rLog(Warn, "(%s:%d) (%s:%d) %s: forced anti-virus scan because extension blacklisted ", getcallername(),
                     fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path);
@@ -545,10 +550,12 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
         ret = lstat(real_path, &file_stat);
         if (!ret) { /* got file stat without error */
             if (file_stat.st_size > atoi(config["maximal-size"])) { /* file too big */
+                INC_STAT_COUNTER(tooBigFile);
                 rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because file is too big (file size: %ld bytes)",
                 getcallername(), fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path, (long int)file_stat.st_size);
                 delete real_path;
                 real_path = NULL;
+                INC_STAT_COUNTER(openAllowed);
                 return open_backend(path, fi);
             }
         }
@@ -564,18 +571,24 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
 
             if (cache->has(file_stat.st_ino)) {
                 Poco::SharedPtr<CachedResult> ptr_val;
+                INC_STAT_COUNTER(earlyCacheHit);
                 DEBUG("early cache hit for inode %ld", (unsigned long)file_stat.st_ino);
                 ptr_val = cache->get(file_stat.st_ino);
 
                 if (ptr_val->scanTimestamp == file_stat.st_mtime) {
+                    INC_STAT_COUNTER(lateCacheHit);
                     DEBUG("late cache hit for inode %ld", (unsigned long)file_stat.st_ino);
 
                     /* file scanned and not changed, was it clean? */
-                    if (ptr_val->isClean)
+                    if (ptr_val->isClean) {
+                        INC_STAT_COUNTER(openAllowed);
                         return open_backend(path, fi); /* Yes, it was */
-                    else
+                    } else {
+                        INC_STAT_COUNTER(openDenied);
                         return -EPERM; /* No, that file was infected */
+                    }
                 } else {
+                    INC_STAT_COUNTER(lateCacheMiss);
                     DEBUG("late cache miss for inode %ld", (unsigned long)file_stat.st_ino);
 
                     /*
@@ -593,16 +606,19 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
                     ptr_val->scanTimestamp = file_stat.st_mtime;
                     if (scan_result != 0) { /* virus found */
                         ptr_val->isClean = false;
+                        INC_STAT_COUNTER(openDenied);
                         return -EPERM;
                     } else {
                         ptr_val->isClean = true;
+                        INC_STAT_COUNTER(openAllowed);
                         /* file is clean, open it */
                         return open_backend(path, fi);
                     }
                 }
 
             } else {
-                DEBUG("cache miss for inode %ld", (unsigned long)file_stat.st_ino);
+                INC_STAT_COUNTER(earlyCacheMiss);
+                DEBUG("early cache miss for inode %ld", (unsigned long)file_stat.st_ino);
 
                 /*
                  * Scan file when file is not in cache
@@ -617,10 +633,12 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
                 if (scan_result != 0) { /* virus found */
                     CachedResult result(false, file_stat.st_mtime);
                     cache->add(file_stat.st_ino, result);
+                    INC_STAT_COUNTER(openDenied);
                     return -EPERM;
                 } else {
                     CachedResult result(true, file_stat.st_mtime);
                     cache->add(file_stat.st_ino, result);
+                    INC_STAT_COUNTER(openAllowed);
                     /* file is clean, open it */
                     return open_backend(path, fi);
                 }
@@ -640,12 +658,15 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
     /*
      * Check for scan results
      */
-    if (scan_result != 0) /* return -EPERM error if virus was found */
+    if (scan_result != 0) { /* return -EPERM error if virus was found */
+        INC_STAT_COUNTER(openDenied);
         return -EPERM;
+    }
 
     /*
      * If no virus detected continue as usual
      */
+    INC_STAT_COUNTER(openAllowed);
     return open_backend(path, fi);
 }
 

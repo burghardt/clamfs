@@ -2,8 +2,6 @@
  TO DO
  =====
 
-* file system statistics (files accessed, files scanned,
-  excluded files, cache hit/miss, viruses detected, etc.)
 * better configuration file handling (preferably using POCO)
 * ability to set all parameters from command line?
 * mount helper?

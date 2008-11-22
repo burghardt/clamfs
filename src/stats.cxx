@@ -2,7 +2,7 @@
 
    \brief Statistics (fs, av, cache, etc.) routines
 
-   $Id: stats.cxx,v 1.2 2008-11-22 13:09:33 burghardt Exp $
+   $Id: stats.cxx,v 1.3 2008-11-22 13:45:25 burghardt Exp $
 
 *//*
 
@@ -51,10 +51,10 @@ void Stats::dumpToLog() {
     rLog(Info, "--- begin of statistics ---");
     rLog(Info, "Early cache hit: %llu", earlyCacheHit);
     rLog(Info, "Early cache miss: %llu", earlyCacheMiss);
-    rLog(Info, "Late cache hit: %llu", lateCacheMiss);
+    rLog(Info, "Late cache hit: %llu", lateCacheHit);
     rLog(Info, "Late cache miss: %llu", lateCacheMiss);
     rLog(Info, "Whitelist hit: %llu", whitelistHit);
-    rLog(Info, "Whitelist miss: %llu", blacklistHit);
+    rLog(Info, "Blacklist hit: %llu", blacklistHit);
     rLog(Info, "Files bigger than maximal-size: %llu", tooBigFile);
     rLog(Info, "open() function called %llu times (allowed: %llu, denied: %llu)",
             openCalled, openAllowed, openDenied);
