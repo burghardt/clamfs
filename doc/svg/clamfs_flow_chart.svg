@@ -2,7 +2,7 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:cc="http://creativecommons.org/ns#"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
@@ -12,14 +12,22 @@
    height="1052.3622047"
    id="svg3807"
    sodipodi:version="0.32"
-   inkscape:version="0.44.1"
+   inkscape:version="0.46"
    sodipodi:docbase="/home/kb/doc/ClamFS/images"
    sodipodi:docname="clamfs_flow_chart.svg"
    inkscape:export-filename="/home/kb/doc/ClamFS/images/clamfs_flow_chart.png"
    inkscape:export-xdpi="23.77"
-   inkscape:export-ydpi="23.77">
+   inkscape:export-ydpi="23.77"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <defs
      id="defs3809">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective3048" />
     <marker
        inkscape:stockid="Arrow2Lend"
        orient="auto"
@@ -68,14 +76,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="0"
      inkscape:zoom="0.35355339"
-     inkscape:cx="327.57441"
-     inkscape:cy="767.52838"
+     inkscape:cx="716.96919"
+     inkscape:cy="753.75708"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
-     inkscape:window-width="1106"
-     inkscape:window-height="846"
+     inkscape:window-width="1022"
+     inkscape:window-height="728"
      inkscape:window-x="0"
-     inkscape:window-y="0" />
+     inkscape:window-y="19"
+     showgrid="false" />
   <metadata
      id="metadata3812">
     <rdf:RDF>
@@ -162,7 +171,7 @@
     </g>
     <g
        id="g4067"
-       transform="translate(25.45585,141.4214)">
+       transform="translate(98.994957,449.71995)">
       <rect
          ry="14.999998"
          rx="14.999996"
@@ -171,12 +180,12 @@
          height="143.5542"
          width="394.55423"
          id="rect3851"
-         style="fill:lime;fill-opacity:1;fill-rule:nonzero;stroke:black;stroke-width:2.87436175;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+         style="fill:#00ff00;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:2.87436175;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
       <text
          id="text3853"
          y="372.92331"
          x="93.117188"
-         style="font-size:48px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         style="font-size:48px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
          xml:space="preserve"><tspan
            y="372.92331"
            x="93.117188"
@@ -208,7 +217,7 @@
     </g>
     <g
        id="g4072"
-       transform="translate(-251.73,342.2396)">
+       transform="translate(192.33306,132.936)">
       <rect
          ry="14.999998"
          rx="14.999996"
@@ -217,12 +226,12 @@
          height="143.5542"
          width="394.55423"
          id="rect3890"
-         style="fill:red;fill-opacity:1;fill-rule:nonzero;stroke:black;stroke-width:2.87436175;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+         style="fill:#ff0000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:2.87436175;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
       <text
          id="text3892"
          y="548.55487"
          x="536.63617"
-         style="font-size:64px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+         style="font-size:64px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
          xml:space="preserve"><tspan
            y="548.55487"
            x="536.63617"
@@ -281,8 +290,8 @@
        inkscape:connection-start="#g3865"
        inkscape:connection-end="#g3870" />
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 243.96857,569.66446 L 75.306407,974.7013"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 256.71278,877.96301 L 136.1013,974.7013"
        id="path4091"
        inkscape:connector-type="polyline"
        inkscape:connection-start="#g4067"
@@ -338,75 +347,45 @@
        inkscape:connection-start="#g3870"
        inkscape:connection-end="#g4119" />
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 584.76012,431.86784 L 473.17016,455.09259"
+       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 706.50592,463.72454 L 424.96347,731.53445"
        id="path4128"
        inkscape:connector-type="polyline"
        inkscape:connection-start="#g4119"
        inkscape:connection-end="#g4067" />
     <text
        xml:space="preserve"
-       style="font-size:48px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="481.09406"
-       y="407.66647"
+       style="font-size:48px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="546.14789"
+       y="523.63196"
        id="text6084"><tspan
          sodipodi:role="line"
          id="tspan6086"
-         x="481.09406"
-         y="407.66647">No</tspan></text>
+         x="546.14789"
+         y="523.63196">No</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:48px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-       x="782.70874"
-       y="517.97516"
+       style="font-size:48px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
+       x="864.73309"
+       y="520.80359"
        id="text6088"><tspan
          sodipodi:role="line"
          id="tspan6090"
-         x="782.70874"
-         y="517.97516">Yes</tspan></text>
-    <g
-       id="g2592"
-       transform="translate(11.22092,154.3143)">
-      <rect
-         ry="14.999998"
-         rx="14.999996"
-         y="452.9184"
-         x="514.62494"
-         height="143.5542"
-         width="394.55423"
-         id="rect2594"
-         style="fill:red;fill-opacity:1;fill-rule:nonzero;stroke:black;stroke-width:2.87436175;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
-      <text
-         id="text2596"
-         y="539.6076"
-         x="516.50171"
-         style="font-size:40px;font-style:normal;font-weight:normal;fill:black;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Bitstream Vera Sans"
-         xml:space="preserve"><tspan
-           y="539.6076"
-           x="516.50171"
-           sodipodi:role="line"
-           id="tspan2600">remove form cache</tspan></text>
-    </g>
+         x="864.73309"
+         y="520.80359">Yes</tspan></text>
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none;marker-end:url(#Arrow2Lend)"
-       d="M 768.15867,463.72454 L 738.43873,605.79552"
-       id="path2604"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 812.9587,463.72454 L 861.56309,584.41722"
+       id="path3050"
        inkscape:connector-type="polyline"
        inkscape:connection-start="#g4119"
-       inkscape:connection-end="#g2592" />
-    <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none;marker-end:url(#Arrow2Lend)"
-       d="M 615.54143,752.22408 L 554.56585,793.72082"
-       id="path2606"
-       inkscape:connector-type="polyline"
-       inkscape:connection-start="#g2592"
        inkscape:connection-end="#g4072" />
     <path
-       style="fill:none;fill-opacity:0.75;fill-rule:evenodd;stroke:black;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none;marker-end:url(#Arrow2Lend)"
-       d="M 284.29143,940.14938 L 207.51198,974.7013"
-       id="path2608"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;marker-end:url(#Arrow2Lend);stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 692.33307,711.46479 L 546.70927,750.91544"
+       id="path3052"
        inkscape:connector-type="polyline"
        inkscape:connection-start="#g4072"
-       inkscape:connection-end="#g4062" />
+       inkscape:connection-end="#g4067" />
   </g>
 </svg>
