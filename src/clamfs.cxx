@@ -2,7 +2,7 @@
 
    \brief ClamFS main file
 
-   $Id: clamfs.cxx,v 1.19 2008-11-22 15:14:42 burghardt Exp $
+   $Id: clamfs.cxx,v 1.20 2008-11-23 16:04:24 burghardt Exp $
 
 *//*
 
@@ -507,6 +507,13 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
     struct stat file_stat;
 
     INC_STAT_COUNTER(openCalled);
+
+    /*
+     * Dump stats to log periodically
+     */
+    if (stats) {
+        stats->periodicDumpToLog();
+    }
 
     /*
      * Build file path in real filesystem tree
@@ -1032,10 +1039,14 @@ int main(int argc, char *argv[])
     /*
      * Initialize stats
      */
-    if ((config["atexit"] != NULL) &&
+    if ((config["every"] != NULL) &&
+        (atol(config["every"]) != 0)) {
+        rLog(Info, "Statistics module initialized");
+        stats = new Stats(atol(config["every"]));
+    } else if ((config["atexit"] != NULL) &&
         (strncmp(config["atexit"], "yes", 3) == 0)) {
         rLog(Info, "Statistics module initialized");
-        stats = new Stats();
+        stats = new Stats(0);
     } else {
         rLog(Info, "Statistics module disabled");
     }
@@ -1077,7 +1088,10 @@ int main(int argc, char *argv[])
     }
 
     if (stats) {
-        stats->dumpToLog();
+        if ((config["atexit"] != NULL) &&
+            (strncmp(config["atexit"], "yes", 3) == 0)) {
+            stats->dumpToLog();
+        }
 
         rLog(Info, "deleting stats");
         delete stats;

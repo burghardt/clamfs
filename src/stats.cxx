@@ -2,7 +2,7 @@
 
    \brief Statistics (fs, av, cache, etc.) routines
 
-   $Id: stats.cxx,v 1.3 2008-11-22 13:45:25 burghardt Exp $
+   $Id: stats.cxx,v 1.4 2008-11-23 16:04:24 burghardt Exp $
 
 *//*
 
@@ -28,7 +28,7 @@
 
 namespace clamfs {
 
-Stats::Stats() {
+Stats::Stats(time_t dumpEvery) {
     earlyCacheHit = 0;
     earlyCacheMiss = 0;
     lateCacheHit = 0;
@@ -42,6 +42,9 @@ Stats::Stats() {
     openCalled = 0;
     openAllowed = 0;
     openDenied = 0;
+
+    lastdump = time(NULL);
+    every = dumpEvery;
 }
 
 Stats::~Stats() {
@@ -59,6 +62,17 @@ void Stats::dumpToLog() {
     rLog(Info, "open() function called %llu times (allowed: %llu, denied: %llu)",
             openCalled, openAllowed, openDenied);
     rLog(Info, "--- end of statistics ---");
+}
+
+void Stats::periodicDumpToLog() {
+    if (!every)
+        return;
+
+    time_t current = time(NULL);
+    if ((current - lastdump) > every) {
+        dumpToLog();
+        lastdump = current;
+    }
 }
 
 } /* namespace clamfs */

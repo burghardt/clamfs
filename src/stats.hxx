@@ -2,7 +2,7 @@
 
    \brief Statistics (fs, av, cache, etc.) routines (header file)
 
-   $Id: stats.hxx,v 1.2 2008-11-22 13:09:33 burghardt Exp $
+   $Id: stats.hxx,v 1.3 2008-11-23 16:04:24 burghardt Exp $
 
 *//*
 
@@ -53,18 +53,27 @@ class Stats {
            \param elements maximal size of cache
            \param expire maximal TTL for entries
         */
-        Stats();
+        Stats(time_t dumpEvery = 0);
         /*!\brief Destructor for Stats */
         ~Stats();
 
         /*!\brief Dump statistics to log */
         void dumpToLog();
 
+         /*!\brief Periodically dump statistics to log */
+        void periodicDumpToLog();
+
     private:
         /*!\brief Forbid usage of copy constructor */
         Stats(const Stats& aStats);
         /*!\brief Forbid usage of assignment operator */
         Stats& operator = (const Stats& aStats);
+
+        /*!\brief Timestamp of last stats dump */
+        time_t lastdump;
+
+        /*!\brief Dump stats every seconds */
+        time_t every;
 
     public:
         /*!\brief early cache hit counter */
