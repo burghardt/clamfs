@@ -87,11 +87,11 @@
         <include extension="wsh" /> <!-- Windows Scripting Host file -->
     </blacklist>
 
-    <!-- How many entries to keep in cache and for how long (in ms) -->
-    <cache entries="16384" expire="10800000" /> <!-- 3h -->
+    <!-- How many entries to keep in cache and for how long -->
+    <cache entries="16384" expire="10800000" /> <!-- time in ms, 3h -->
 
     <!-- Statistics module keep track of filesystem usage -->
-    <stats atexit="yes" every="3600000" /> <!-- 1h -->
+    <stats atexit="yes" every="3600" /> <!-- time in sec, 1h -->
 
     <!-- Logging method (stdout, syslog or file) -->
     <!-- <log method="stdout" verbose="yes" /> -->
