@@ -2,12 +2,12 @@
 
    \brief ClamFS main file
 
-   $Id: clamfs.cxx,v 1.20 2008-11-23 16:04:24 burghardt Exp $
+   $Id: clamfs.cxx,v 1.21 2008-11-23 20:50:00 burghardt Exp $
 
 *//*
 
    ClamFS - An user-space anti-virus protected file system
-   Copyright (C) 2007 Krzysztof Burghardt.
+   Copyright (C) 2007,2008 Krzysztof Burghardt.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
