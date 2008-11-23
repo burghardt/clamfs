@@ -3,5 +3,5 @@
  =====
 
 * better configuration file handling (preferably using POCO)
-* ability to set all parameters from command line?
-* mount helper?
+* read-only mount option
+* mount helper
