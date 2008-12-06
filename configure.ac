@@ -81,6 +81,7 @@ fi
 AC_CONFIG_FILES([Makefile
  src/Makefile
  doc/Makefile
+ doc/Doxyfile
  doc/svg/Makefile
  ])
 AC_OUTPUT

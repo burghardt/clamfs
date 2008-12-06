@@ -2,7 +2,7 @@
 
    \brief Statistics (fs, av, cache, etc.) routines (header file)
 
-   $Id: stats.hxx,v 1.3 2008-11-23 16:04:24 burghardt Exp $
+   $Id: stats.hxx,v 1.4 2008-12-06 12:37:57 burghardt Exp $
 
 *//*
 
@@ -50,8 +50,7 @@ extern RLogChannel *Info;
 class Stats {
     public:
         /*!\brief Constructor for Stats
-           \param elements maximal size of cache
-           \param expire maximal TTL for entries
+           \param dumpEvery time in seconds between stats dump
         */
         Stats(time_t dumpEvery = 0);
         /*!\brief Destructor for Stats */
