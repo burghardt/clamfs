@@ -2,7 +2,7 @@
 
    \brief Configuration file handling routines (header file)
 
-   $Id: config.hxx,v 1.12 2008-11-23 20:50:00 burghardt Exp $
+   $Id: config.hxx,v 1.13 2008-12-06 14:29:54 burghardt Exp $
 
 *//*
 
@@ -81,7 +81,7 @@ class ConfigParserXML: public ifstream, public XMLStream {
         */
         ConfigParserXML(const char *filename);
         /*!\brief Destructor for ConfigParserXML */
-        ~ConfigParserXML();
+        virtual ~ConfigParserXML();
     protected:
         /*!\brief Opens configuration file
            \param filename configuration file name
@@ -100,11 +100,11 @@ class ConfigParserXML: public ifstream, public XMLStream {
            \param name name of element beginning precessed
            \param attr NULL terminated array of its atributes and their values
         */
-        void startElement(const unsigned char *name, const unsigned char **attr);
+        virtual void  startElement(const unsigned char *name, const unsigned char **attr);
         /*!\brief XMLStream virtual method called at element end
            \param name name of element which end was reached
          */
-        void endElement(const unsigned char *name);
+        virtual void endElement(const unsigned char *name);
         /*!\brief Empty XMLStream virtual method, we do not need it */
         void characters(const unsigned char *text, size_t len) { }
     private:
