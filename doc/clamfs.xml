@@ -15,11 +15,12 @@
     <!-- File system settings
          root       - real directory to attach as our root
          mountpoint - where to attach our root
-         public     - limit access to process owner only or make
+         readonly   - (yes or no) mount filesystem in read-only mode
+         public     - (yes or no) limit access to process owner only or make
                       file system publicly available for all users
-         nonempty   - allow mount to directory which contains
+         nonempty   - (yes or no) allow mount to directory which contains
                       files or sub-directories -->
-    <filesystem root="/tmp" mountpoint="/clamfs/tmp" public="yes" nonempty="yes" />
+    <filesystem root="/tmp" mountpoint="/clamfs/tmp" public="yes" />
 
     <!-- Maximal file size (in bytes).
          This option can speed up access to large files, as they will be

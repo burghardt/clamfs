@@ -2,7 +2,7 @@
 
    \brief ClamFS main file
 
-   $Id: clamfs.cxx,v 1.21 2008-11-23 20:50:00 burghardt Exp $
+   $Id: clamfs.cxx,v 1.22 2008-12-06 13:27:30 burghardt Exp $
 
 *//*
 
@@ -980,6 +980,10 @@ int main(int argc, char *argv[])
         fuse_argv[fuse_argc++] = strdup("-o");
         fuse_argv[fuse_argc++] = strdup("nonempty");
     }
+
+    if ((config["readonly"] != NULL) &&
+        (strncmp(config["readonly"], "yes", 3) == 0))
+        fuse_argv[fuse_argc++] = strdup("-r");
 
     if ((config["threads"] != NULL) &&
         (strncmp(config["threads"], "no", 2) == 0))
