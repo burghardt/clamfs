@@ -910,7 +910,7 @@ int main(int argc, char *argv[])
     RLogOpenStdio();
 
     rLog(Info, "ClamFS v"VERSION);
-    rLog(Info, "Copyright (c) 2007 Krzysztof Burghardt <krzysztof@burghardt.pl>");
+    rLog(Info, "Copyright (c) 2007,2008 Krzysztof Burghardt <krzysztof@burghardt.pl>");
     rLog(Info, "http://clamfs.sourceforge.net/");
 
     /*
