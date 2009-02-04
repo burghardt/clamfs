@@ -95,8 +95,7 @@ void CloseClamav() {
          1 if virus was found (or clamd error occurred)
  */
 int ClamavScanFile(const char *filename) {
-    /* FIXME: PATH_MAX is obsolet on some systems and does not exist on other. */
-    char reply[PATH_MAX + 1024];
+    string reply;
 
     DEBUG("attempt to scan file %s", filename);
 
@@ -117,15 +116,15 @@ int ClamavScanFile(const char *filename) {
      * Scan file using SCAN method
      */
     clamd << "SCAN " << filename << endl;
-    clamd.getline(reply, PATH_MAX + 1024, '\n');
+    getline(clamd, reply);
     CloseClamav();
 
     /*
      * Chceck for scan results
      */
-    if (strncmp(reply + strlen(reply) - 2, "OK", 2) == 0 ||
-        strncmp(reply + strlen(reply) - 10, "Empty file", 10) == 0) {
-        DEBUG("%s", reply);
+    if (strncmp(reply.c_str() + reply.size() - 2, "OK", 2) == 0 ||
+        strncmp(reply.c_str() + reply.size() - 10, "Empty file", 10) == 0) {
+        DEBUG("%s", reply.c_str());
         return 0;
     }
 
@@ -133,13 +132,13 @@ int ClamavScanFile(const char *filename) {
      * Log result through RLog (if virus is found)
      */
     rLog(Warn, "(%s:%d) (%s:%d) %s", getcallername(), fuse_get_context()->pid,
-        getusername(), fuse_get_context()->uid, reply);
+        getusername(), fuse_get_context()->uid, reply.c_str());
 
     /*
      * Send mail notification
      */
     SendMailNotification(config["server"], config["to"],
-             config["from"], config["subject"], reply);
+             config["from"], config["subject"], reply.c_str());
 
     return 1;
 }
