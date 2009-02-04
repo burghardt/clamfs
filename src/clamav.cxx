@@ -123,10 +123,13 @@ int ClamavScanFile(const char *filename) {
     /*
      * Chceck for scan results
      */
+    DEBUG("%s", reply.c_str());
     if (strncmp(reply.c_str() + reply.size() - 2, "OK", 2) == 0 ||
         strncmp(reply.c_str() + reply.size() - 10, "Empty file", 10) == 0) {
-        DEBUG("%s", reply.c_str());
         return 0;
+    } else if(strncmp(reply.c_str() + reply.size() - 20,
+                "Access denied. ERROR", 20) == 0) {
+        return -1;
     }
 
     /*
