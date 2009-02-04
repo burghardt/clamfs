@@ -1005,18 +1005,21 @@ int main(int argc, char *argv[])
     savefd = open(".", 0);
 
     /*
-     * Check if clamd is available for clamfs
+     * Check if clamd is available for clamfs only if check option is not "no"
      */
-    if ((ret = OpenClamav(config["socket"])) != 0) {
-        rLog(Warn, "cannot start without running clamd, make sure it works");
-        return ret;
-    }
+    if ((config["check"] == NULL) ||
+        (strncmp(config["check"], "no", 2) != 0)) {
+        if ((ret = OpenClamav(config["socket"])) != 0) {
+            rLog(Warn, "cannot start without running clamd, make sure it works");
+            return ret;
+        }
 
-    if ((ret = PingClamav()) != 0) {
-        rLog(Warn, "cannot start without running clamd, make sure it works");
-        return ret;
+        if ((ret = PingClamav()) != 0) {
+            rLog(Warn, "cannot start without running clamd, make sure it works");
+            return ret;
+        }
+        CloseClamav();
     }
-    CloseClamav();
 
     /*
      * Initialize cache

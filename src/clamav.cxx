@@ -7,7 +7,7 @@
 *//*
 
    ClamFS - An user-space anti-virus protected file system
-   Copyright (C) 2007,2008 Krzysztof Burghardt.
+   Copyright (C) 2007-2009 Krzysztof Burghardt.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ extern FastMutex scanMutex;
 #define CHECK_CLAMD(clamdSocket) do {\
     if (!clamdSocket) {\
         rLog(Warn, "error: cannot connect to clamd");\
+        CloseClamav();\
         return -1;\
     }\
 } while(0)
