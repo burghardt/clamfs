@@ -43,6 +43,8 @@ Stats::Stats(time_t dumpEvery) {
     openAllowed = 0;
     openDenied = 0;
 
+    scanFailed = 0;
+
     lastdump = time(NULL);
     every = dumpEvery;
 }
@@ -61,6 +63,7 @@ void Stats::dumpToLog() {
     rLog(Info, "Files bigger than maximal-size: %llu", tooBigFile);
     rLog(Info, "open() function called %llu times (allowed: %llu, denied: %llu)",
             openCalled, openAllowed, openDenied);
+    rLog(Info, "Scan failed %llu times", scanFailed);
     rLog(Info, "--- end of statistics ---");
 }
 

@@ -617,15 +617,20 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
                     Poco::SharedPtr<CachedResult> ptr_val;
                     ptr_val = cache->get(file_stat.st_ino);
                     ptr_val->scanTimestamp = file_stat.st_mtime;
-                    if (scan_result != 0) { /* virus found */
+                    if (scan_result == 1) { /* virus found */
                         ptr_val->isClean = false;
                         INC_STAT_COUNTER(openDenied);
                         return -EPERM;
-                    } else {
+                    } else if(scan_result == 0) {
                         ptr_val->isClean = true;
                         INC_STAT_COUNTER(openAllowed);
                         /* file is clean, open it */
                         return open_backend(path, fi);
+                    } else {
+                        INC_STAT_COUNTER(scanFailed);
+                        INC_STAT_COUNTER(openDenied);
+                        cache->remove(file_stat.st_ino);
+                        return -EPERM;
                     }
                 }
 
@@ -643,17 +648,22 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
                 /*
                  * Check for scan results
                  */
-                if (scan_result != 0) { /* virus found */
+                if (scan_result == 1) { /* virus found */
                     CachedResult result(false, file_stat.st_mtime);
                     cache->add(file_stat.st_ino, result);
                     INC_STAT_COUNTER(openDenied);
                     return -EPERM;
-                } else {
+                } else if(scan_result == 0) {
                     CachedResult result(true, file_stat.st_mtime);
                     cache->add(file_stat.st_ino, result);
                     INC_STAT_COUNTER(openAllowed);
                     /* file is clean, open it */
                     return open_backend(path, fi);
+                } else {
+                    INC_STAT_COUNTER(scanFailed);
+                    INC_STAT_COUNTER(openDenied);
+                    cache->remove(file_stat.st_ino);
+                    return -EPERM;
                 }
 
             }
@@ -671,7 +681,11 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
     /*
      * Check for scan results
      */
-    if (scan_result != 0) { /* return -EPERM error if virus was found */
+    if (scan_result == 1) { /* return -EPERM error if virus was found */
+        INC_STAT_COUNTER(openDenied);
+        return -EPERM;
+    } else if(scan_result != 0) {
+        INC_STAT_COUNTER(scanFailed);
         INC_STAT_COUNTER(openDenied);
         return -EPERM;
     }

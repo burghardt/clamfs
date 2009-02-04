@@ -98,6 +98,9 @@ class Stats {
         unsigned long long openAllowed;
         /*!\brief open() call denied by AV counter */
         unsigned long long openDenied;
+
+        /*!\brief a/v scan failed (clamd unavailable, permission problem, etc.) */
+        unsigned long long scanFailed;
 };
 
 /*!\brief extern to access stats pointer from clamfs.cxx */
