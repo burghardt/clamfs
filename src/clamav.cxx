@@ -121,22 +121,29 @@ int ClamavScanFile(const char *filename) {
     CloseClamav();
 
     /*
-     * Chceck for scan results
+     * Chceck for scan results, return if file is clean
      */
     DEBUG("%s", reply.c_str());
     if (strncmp(reply.c_str() + reply.size() - 2, "OK", 2) == 0 ||
         strncmp(reply.c_str() + reply.size() - 10, "Empty file", 10) == 0) {
         return 0;
-    } else if(strncmp(reply.c_str() + reply.size() - 20,
-                "Access denied. ERROR", 20) == 0) {
-        return -1;
     }
 
     /*
-     * Log result through RLog (if virus is found)
+     * Log result through RLog (if virus is found or scan failed)
      */
     rLog(Warn, "(%s:%d) (%s:%d) %s", getcallername(), fuse_get_context()->pid,
         getusername(), fuse_get_context()->uid, reply.c_str());
+
+    /*
+     * If scan failed return without sending e-mail alert
+     */
+    if(strncmp(reply.c_str() + reply.size() - 20,
+                "Access denied. ERROR", 20) == 0 ||
+              strncmp(reply.c_str() + reply.size() - 21,
+                "lstat() failed. ERROR", 21) == 0) {
+        return -1;
+    }
 
     /*
      * Send mail notification
