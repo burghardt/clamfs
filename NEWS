@@ -3,6 +3,19 @@
  =============
 
  *******************
+ 1.0.0 (07 Feb 2009)
+ *******************
+
+* New option <clamd ... check="no" /> allow to mount ClamFS file system when
+  clamd is not available. E.g. form /etc/fstab early on boot process.
+
+ *******************
+ 0.9.3 (06 Dec 2008)
+ *******************
+
+* Add read-only mount option (config: <filesystem readonly="yes" />).
+
+ *******************
  0.9.2 (22 Nov 2008)
  *******************
 
