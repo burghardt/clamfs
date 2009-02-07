@@ -10,7 +10,9 @@
 
 <clamfs>
     <!-- Clamd socket settings
-         socket - location of clamd socket
+         socket - location of clamd socket (may vary between operating systems)
+                  For Debian GNU/Linux it is /var/run/clamav/clamd.ctl, on
+                  FreeBSD use /var/run/clamav/clamd.sock.
          check  - (yes or no) check if clamd is available on startup (useful if
                   mounting clamfs file systems from /etc/fstab early on startup,
                   while clamav daemon is not yet started) -->
