@@ -1,3 +1,24 @@
+2009-02-04  Krzysztof Burghardt
+
+    * doc/clamfs.xml, src/clamav.cxx, src/clamfs.cxx: add new option
+    <clamd ... check="no" /> to allow to mount ClamFS file system when
+    clamd is not available
+    * src/clamfs.cxx, src/stats.cxx, src/stats.hxx: do not cache scan "result"
+    if scan failed because clamd is unavailable
+    * src/clamav.cxx: "Access denied" reply from clamd is assumed to be a scan
+    failure
+    * src/clamav.cxx: PATH_MAX removed, fixed length buffer changed to
+    std::string
+
+2008-12-28  Krzysztof Burghardt
+
+    * src/Makefile.am: fixed mistake with .(c|h)pp/.(c|h)xx file names
+
+2008-12-06  Krzysztof Burghardt
+
+    * src/clamfs.cxx: add read-only mount option
+    * src/config.hxx: {start|end}Element and destructor are virtual now
+
 2008-11-22  Krzysztof Burghardt
 
     * src/clamfs.cxx, src/scancache.{c|h}xx: add negative cache
