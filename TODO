@@ -3,4 +3,3 @@
  =====
 
 * better configuration file handling (preferably using POCO)
-* mount helper
