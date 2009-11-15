@@ -526,7 +526,7 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
      * Check extension ACL
      */
     if (extensions != NULL) {
-        char *ext = rindex(path, '.'); /* find last dot */
+        const char *ext = rindex(path, '.'); /* find last dot */
         if (ext != NULL) {
             ++ext; /* omit dot */
             extum_t::const_iterator extumConstIter;
