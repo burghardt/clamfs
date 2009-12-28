@@ -1,3 +1,5 @@
+(This file is discontinued, please use SCM repositories' history.)
+
 2009-02-04  Krzysztof Burghardt
 
     * doc/clamfs.xml, src/clamav.cxx, src/clamfs.cxx: add new option

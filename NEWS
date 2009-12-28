@@ -3,6 +3,14 @@
  =============
 
  *******************
+ 1.0.1 (28 Dec 2009)
+ *******************
+
+* Fixed FTBFS problem with calling rindex() with a const char *.
+* Fixed memory leaks found by valgrind.
+* Add new dependency: boost >= 1.33.
+
+ *******************
  1.0.0 (07 Feb 2009)
  *******************
 

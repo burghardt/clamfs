@@ -1,4 +1,4 @@
-AC_INIT([ClamFS], [1.0.0], [krzysztof@burghardt.pl], [clamfs])
+AC_INIT([ClamFS], [1.0.1], [krzysztof@burghardt.pl], [clamfs])
 AC_CONFIG_AUX_DIR(build)
 AC_CONFIG_SRCDIR(src/clamfs.cxx)
 AM_CONFIG_HEADER(config.h)
@@ -31,6 +31,11 @@ AC_FUNC_LSTAT
 AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
 AC_FUNC_UTIME_NULL
 AC_CHECK_FUNCS([fchdir fdatasync fork ftruncate lchown memset mkdir mkfifo rmdir setxattr strdup strerror utime])
+
+# Checks for boost
+AX_BOOST_BASE(1.33)
+CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
+LDFLAGS="$LDFLAGS $BOOST_LDFLAGS"
 
 # Checks for libfuse
 CPPFLAGS="$CPPFLAGS -D_FILE_OFFSET_BITS=64 -D_REENTRANT -DFUSE_USE_VERSION=25 -DRLOG_COMPONENT=clamfs"
