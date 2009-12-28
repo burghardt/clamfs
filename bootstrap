@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cat ax_boost_base.m4 > acinclude.m4
+autoreconf -f -i -s
