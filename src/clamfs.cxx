@@ -48,9 +48,12 @@
 #include <sys/xattr.h>
 #endif
 
+#include <boost/shared_array.hpp>
+
 #include "clamfs.hxx"
 #include "utils.hxx"
 
+using namespace boost;
 using namespace clamfs;
 
 /*!\namespace clamfs
@@ -81,9 +84,9 @@ extern "C" {
    \param path path need to be fixed
    \returns fixed path
 */
-static inline char* fixpath(const char* path)
+static inline const char* fixpath(const char* path)
 {
-    char* fixed=new char[strlen(path)+2];
+    char* fixed = new char[strlen(path)+2];
 
     fchdir(savefd);
     strcpy(fixed,".");
@@ -101,8 +104,9 @@ static int clamfs_getattr(const char *path, struct stat *stbuf)
 {
     int res;
 
-    path = fixpath(path);
-    res = lstat(path, stbuf);
+    const char* fpath = fixpath(path);
+    res = lstat(fpath, stbuf);
+    delete[] fpath;
     if (res == -1)
         return -errno;
 
@@ -138,8 +142,9 @@ static int clamfs_access(const char *path, int mask)
 {
     int res;
 
-    path = fixpath(path);
-    res = access(path, mask);
+    const char* fpath = fixpath(path);
+    res = access(fpath, mask);
+    delete[] fpath;
     if (res == -1)
         return -errno;
 
@@ -156,8 +161,9 @@ static int clamfs_readlink(const char *path, char *buf, size_t size)
 {
     int res;
 
-    path = fixpath(path);
-    res = readlink(path, buf, size - 1);
+    const char* fpath = fixpath(path);
+    res = readlink(fpath, buf, size - 1);
+    delete[] fpath;
     if (res == -1)
         return -errno;
 
@@ -174,8 +180,9 @@ static int clamfs_opendir(const char *path, struct fuse_file_info *fi)
 {
     DIR *dp;
 
-    path = fixpath(path);
-    dp = opendir(path);
+    const char* fpath = fixpath(path);
+    dp = opendir(fpath);
+    delete[] fpath;
     if (dp == NULL)
         return -errno;
 
@@ -243,15 +250,16 @@ static int clamfs_mknod(const char *path, mode_t mode, dev_t rdev)
 {
     int res;
 
-    path = fixpath(path);
+    const char* fpath = fixpath(path);
     if (S_ISFIFO(mode))
-        res = mkfifo(path, mode);
+        res = mkfifo(fpath, mode);
     else
-        res = mknod(path, mode, rdev);
+        res = mknod(fpath, mode, rdev);
     if (res == -1)
         return -errno;
     else
-    res = lchown(path, fuse_get_context()->uid, fuse_get_context()->gid);
+    res = lchown(fpath, fuse_get_context()->uid, fuse_get_context()->gid);
+    delete[] fpath;
 
     return 0;
 }
@@ -265,12 +273,13 @@ static int clamfs_mkdir(const char *path, mode_t mode)
 {
     int res;
 
-    path = fixpath(path);
-    res = mkdir(path, mode);
+    const char* fpath = fixpath(path);
+    res = mkdir(fpath, mode);
     if (res == -1)
         return -errno;
     else
-    res = lchown(path, fuse_get_context()->uid, fuse_get_context()->gid);
+    res = lchown(fpath, fuse_get_context()->uid, fuse_get_context()->gid);
+    delete[] fpath;
 
     return 0;
 }
@@ -283,8 +292,9 @@ static int clamfs_unlink(const char *path)
 {
     int res;
 
-    path = fixpath(path);
-    res = unlink(path);
+    const char* fpath = fixpath(path);
+    res = unlink(fpath);
+    delete[] fpath;
     if (res == -1)
         return -errno;
 
@@ -299,8 +309,9 @@ static int clamfs_rmdir(const char *path)
 {
     int res;
 
-    path = fixpath(path);
-    res = rmdir(path);
+    const char* fpath = fixpath(path);
+    res = rmdir(fpath);
+    delete[] fpath;
     if (res == -1)
         return -errno;
 
@@ -316,13 +327,15 @@ static int clamfs_symlink(const char *from, const char *to)
 {
     int res;
 
-    from = fixpath(from);
-    to = fixpath(to);
-    res = symlink(from, to);
+    const char* ffrom = fixpath(from);
+    const char* fto = fixpath(to);
+    res = symlink(ffrom, fto);
     if (res == -1)
         return -errno;
     else
-    res = lchown(from, fuse_get_context()->uid, fuse_get_context()->gid);
+    res = lchown(ffrom, fuse_get_context()->uid, fuse_get_context()->gid);
+    delete[] ffrom;
+    delete[] fto;
 
     return 0;
 }
@@ -336,9 +349,11 @@ static int clamfs_rename(const char *from, const char *to)
 {
     int res;
 
-    from = fixpath(from);
-    to = fixpath(to);
-    res = rename(from, to);
+    const char* ffrom = fixpath(from);
+    const char* fto = fixpath(to);
+    res = rename(ffrom, fto);
+    delete[] ffrom;
+    delete[] fto;
     if (res == -1)
         return -errno;
 
@@ -354,13 +369,15 @@ static int clamfs_link(const char *from, const char *to)
 {
     int res;
 
-    from = fixpath(from);
-    to = fixpath(to);
-    res = link(from, to);
+    const char* ffrom = fixpath(from);
+    const char* fto = fixpath(to);
+    res = link(ffrom, fto);
     if (res == -1)
         return -errno;
     else
-    res = lchown(from, fuse_get_context()->uid, fuse_get_context()->gid);
+    res = lchown(ffrom, fuse_get_context()->uid, fuse_get_context()->gid);
+    delete[] ffrom;
+    delete[] fto;
 
     return 0;
 }
@@ -374,8 +391,9 @@ static int clamfs_chmod(const char *path, mode_t mode)
 {
     int res;
 
-    path = fixpath(path);
-    res = chmod(path, mode);
+    const char* fpath = fixpath(path);
+    res = chmod(fpath, mode);
+    delete[] fpath;
     if (res == -1)
         return -errno;
 
@@ -392,8 +410,9 @@ static int clamfs_chown(const char *path, uid_t uid, gid_t gid)
 {
     int res;
 
-    path = fixpath(path);
-    res = lchown(path, uid, gid);
+    const char* fpath = fixpath(path);
+    res = lchown(fpath, uid, gid);
+    delete[] fpath;
     if (res == -1)
         return -errno;
 
@@ -409,8 +428,9 @@ static int clamfs_truncate(const char *path, off_t size)
 {
     int res;
 
-    path = fixpath(path);
-    res = truncate(path, size);
+    const char* fpath = fixpath(path);
+    res = truncate(fpath, size);
+    delete[] fpath;
     if (res == -1)
         return -errno;
 
@@ -446,8 +466,9 @@ static int clamfs_utime(const char *path, struct utimbuf *buf)
 {
     int res;
 
-    path = fixpath(path);
-    res = utime(path, buf);
+    const char* fpath = fixpath(path);
+    res = utime(fpath, buf);
+    delete[] fpath;
     if (res == -1)
         return -errno;
 
@@ -465,12 +486,16 @@ static int clamfs_create(const char *path, mode_t mode, struct fuse_file_info *f
     int res;
     int fd;
 
-    path = fixpath(path);
-    fd = open(path, fi->flags, mode);
+    const char* fpath = fixpath(path);
+    fd = open(fpath, fi->flags, mode);
     if (fd == -1)
+    {
+        delete[] fpath;
         return -errno;
+    }
     else
-    res = lchown(path, fuse_get_context()->uid, fuse_get_context()->gid);
+       res = lchown(fpath, fuse_get_context()->uid, fuse_get_context()->gid);
+    delete[] fpath;
 
     fi->fh = fd;
     return 0;
@@ -485,8 +510,9 @@ static inline int open_backend(const char *path, struct fuse_file_info *fi)
 {
     int fd;
 
-    path = fixpath(path);
-    fd = open(path, fi->flags);
+    const char* fpath = fixpath(path);
+    fd = open(fpath, fi->flags);
+    delete[] fpath;
     if (fd == -1)
         return -errno;
 
@@ -518,9 +544,9 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
     /*
      * Build file path in real filesystem tree
      */
-    char *real_path = new char[strlen(config["root"])+strlen(path)+1];
-    strcpy(real_path, config["root"]);
-    strcat(real_path, path);
+    shared_array<char> real_path(new char[strlen(config["root"])+strlen(path)+1]);
+    strcpy(real_path.get(), config["root"]);
+    strcat(real_path.get(), path);
 
     /*
      * Check extension ACL
@@ -534,19 +560,29 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
             if (extumConstIter != extensions->end()) {
                 switch (extumConstIter->second) {
                     case whitelisted:
-                        INC_STAT_COUNTER(whitelistHit);
-                        rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because extension whitelisted ", getcallername(),
-                        fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path);
-                        delete real_path;
-                        real_path = NULL;
-                        INC_STAT_COUNTER(openAllowed);
-                        return open_backend(path, fi);
+                        {
+                            INC_STAT_COUNTER(whitelistHit);
+                            char* username = getusername();
+                            char* callername = getusername();
+                            rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because extension whitelisted ",
+                                    callername, fuse_get_context()->pid, username, fuse_get_context()->uid, path);
+                            free(username);
+                            free(callername);
+                            INC_STAT_COUNTER(openAllowed);
+                            return open_backend(path, fi);
+                        }
                     case blacklisted:
-                        INC_STAT_COUNTER(blacklistHit);
-                        file_is_blacklisted = true;
-                        rLog(Warn, "(%s:%d) (%s:%d) %s: forced anti-virus scan because extension blacklisted ", getcallername(),
-                        fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path);
-                        break;
+                        {
+                            INC_STAT_COUNTER(blacklistHit);
+                            file_is_blacklisted = true;
+                            char* username = getusername();
+                            char* callername = getusername();
+                            rLog(Warn, "(%s:%d) (%s:%d) %s: forced anti-virus scan because extension blacklisted ",
+                                    callername, fuse_get_context()->pid, username, fuse_get_context()->uid, path);
+                            free(username);
+                            free(callername);
+                            break;
+                        }
                     default:
                         DEBUG("Extension found in unordered_map, but with unknown ACL type");
                 }
@@ -560,14 +596,16 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
      * Check file size (if option defined)
      */
     if ((config["maximal-size"] != NULL) && (file_is_blacklisted == false)) {
-        ret = lstat(real_path, &file_stat);
+        ret = lstat(real_path.get(), &file_stat);
         if (!ret) { /* got file stat without error */
             if (file_stat.st_size > atoi(config["maximal-size"])) { /* file too big */
                 INC_STAT_COUNTER(tooBigFile);
+                char* username = getusername();
+                char* callername = getusername();
                 rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because file is too big (file size: %ld bytes)",
-                getcallername(), fuse_get_context()->pid, getusername(), fuse_get_context()->uid, path, (long int)file_stat.st_size);
-                delete real_path;
-                real_path = NULL;
+                        callername, fuse_get_context()->pid, username, fuse_get_context()->uid, path, (long int)file_stat.st_size);
+                free(username);
+                free(callername);
                 INC_STAT_COUNTER(openAllowed);
                 return open_backend(path, fi);
             }
@@ -579,7 +617,7 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
      */
     if (cache != NULL) { /* only if cache initalized */
         if (ret)
-            ret = lstat(real_path, &file_stat);
+            ret = lstat(real_path.get(), &file_stat);
         if (!ret) { /* got file stat without error */
 
             if (cache->has(file_stat.st_ino)) {
@@ -607,9 +645,7 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
                     /*
                      * Scan file when file it was changed
                      */
-                    scan_result = ClamavScanFile(real_path);
-                    delete real_path;
-                    real_path = NULL;
+                    scan_result = ClamavScanFile(real_path.get());
 
                     /*
                      * Check for scan results and update cache
@@ -641,9 +677,7 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
                 /*
                  * Scan file when file is not in cache
                  */
-                scan_result = ClamavScanFile(real_path);
-                delete real_path;
-                real_path = NULL;
+                scan_result = ClamavScanFile(real_path.get());
 
                 /*
                  * Check for scan results
@@ -674,9 +708,7 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
     /*
      * Scan file when cache is not available
      */
-    scan_result = ClamavScanFile(real_path);
-    delete real_path;
-    real_path = NULL;
+    scan_result = ClamavScanFile(real_path.get());
 
     /*
      * Check for scan results
@@ -748,8 +780,9 @@ static int clamfs_statfs(const char *path, struct statvfs *stbuf)
 {
     int res;
 
-    path = fixpath(path);
-    res = statvfs(path, stbuf);
+    const char* fpath = fixpath(path);
+    res = statvfs(fpath, stbuf);
+    delete[] fpath;
     if (res == -1)
         return -errno;
 
@@ -808,8 +841,9 @@ static int clamfs_setxattr(const char *path, const char *name, const char *value
                         size_t size, int flags)
 {
     int res;
-    path = fixpath(path);
-    res = lsetxattr(path, name, value, size, flags);
+    const char* fpath = fixpath(path);
+    res = lsetxattr(fpath, name, value, size, flags);
+    delete[] fpath;
     if (res == -1)
         return -errno;
     return 0;
@@ -826,8 +860,9 @@ static int clamfs_getxattr(const char *path, const char *name, char *value,
                     size_t size)
 {
     int res;
-    path = fixpath(path);
-    res = lgetxattr(path, name, value, size);
+    const char* fpath = fixpath(path);
+    res = lgetxattr(fpath, name, value, size);
+    delete[] fpath;
     if (res == -1)
         return -errno;
     return res;
@@ -842,8 +877,9 @@ static int clamfs_getxattr(const char *path, const char *name, char *value,
 static int clamfs_listxattr(const char *path, char *list, size_t size)
 {
     int res;
-    path = fixpath(path);
-    res = llistxattr(path, list, size);
+    const char* fpath = fixpath(path);
+    res = llistxattr(fpath, list, size);
+    delete[] fpath;
     if (res == -1)
         return -errno;
     return res;
@@ -857,8 +893,9 @@ static int clamfs_listxattr(const char *path, char *list, size_t size)
 static int clamfs_removexattr(const char *path, const char *name)
 {
     int res;
-    path = fixpath(path);
-    res = lremovexattr(path, name);
+    const char* fpath = fixpath(path);
+    res = lremovexattr(fpath, name);
+    delete[] fpath;
     if (res == -1)
         return -errno;
     return 0;
@@ -974,10 +1011,10 @@ int main(int argc, char *argv[])
      * Build argv for libFUSE
      */
     fuse_argv = new char *[FUSE_MAX_ARGS];
-    memset(fuse_argv, 0, 32 * sizeof(char *)); /* set pointers to NULL */
+    memset(fuse_argv, 0, FUSE_MAX_ARGS * sizeof(char *)); /* set pointers to NULL */
     fuse_argc = 0;
-    fuse_argv[fuse_argc++] = argv[0]; /* copy program name */
-    fuse_argv[fuse_argc++] = config["mountpoint"]; /* set mountpoint */
+    fuse_argv[fuse_argc++] = strdup(argv[0]); /* copy program name */
+    fuse_argv[fuse_argc++] = strdup(config["mountpoint"]); /* set mountpoint */
 
     if ((config["public"] != NULL) && /* public */
         (strncmp(config["public"], "yes", 3) == 0)) {
@@ -1101,6 +1138,11 @@ int main(int argc, char *argv[])
      * Start FUSE
      */
     ret = fuse_main(fuse_argc, fuse_argv, &clamfs_oper);
+
+    for (unsigned int i = 0; i < FUSE_MAX_ARGS; ++i)
+        if (fuse_argv[i])
+            free(fuse_argv[i]);
+    delete[] fuse_argv;
 
     if (cache) {
         rLog(Info, "deleting cache");

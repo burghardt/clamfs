@@ -29,6 +29,7 @@
 
 #include "config.h"
 
+#include <stdlib.h>
 #include <fuse.h>
 #include <pwd.h>
 
@@ -61,9 +62,10 @@ struct ltstr {
 
 */
 static inline char* getcallername() {
-    char filename[100];
-    sprintf(filename, "/proc/%d/cmdline", fuse_get_context()->pid);
+    char* filename;
+    asprintf(&filename, "/proc/%d/cmdline", fuse_get_context()->pid);
     FILE * proc=fopen(filename, "rt");
+    free(filename);
     char cmdline[256] = "";
     fread(cmdline, sizeof(cmdline), 1, proc);
     fclose(proc);
@@ -73,9 +75,9 @@ static inline char* getcallername() {
 /*!\brief Returns the name of the user accessed the filesystem
    \returns pointer to buffer contains user name */
 static inline char* getusername() {
-    struct passwd s_pwd;
-    s_pwd = *getpwuid(fuse_get_context()->uid);
-    return strdup(s_pwd.pw_name);
+    struct passwd* s_pwd;
+    s_pwd = getpwuid(fuse_get_context()->uid);
+    return strdup(s_pwd->pw_name);
 }
 
 } /* namespace clamfs */

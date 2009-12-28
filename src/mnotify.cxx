@@ -38,7 +38,11 @@ namespace clamfs {
 */
 int SendMailNotification(const char* mx, const char* recipient,
                          const char* sender, const char* subject,
-                         const char* scanresult) {
+                         const char* scanresult)
+{
+    char* username;
+    char* callername;
+
     /*
      * Check if all parameters are defined
      */
@@ -48,6 +52,9 @@ int SendMailNotification(const char* mx, const char* recipient,
         (subject == NULL) ||
         (scanresult == NULL))
         return -2;
+
+    username = getusername();
+    callername = getcallername();
 
     /*
      * Try to send message
@@ -62,9 +69,9 @@ int SendMailNotification(const char* mx, const char* recipient,
 
         body << "Hello ClamFS User," << endl << endl;
         body << "This is an automatic notification about virus found." << endl << endl;
-        body << "Executable name: " << getcallername() << endl;
+        body << "Executable name: " << callername << endl;
         body << "            PID: " << fuse_get_context()->pid << endl << endl;
-        body << "       Username: " << getusername() << endl;
+        body << "       Username: " << username << endl;
         body << "            UID: " << fuse_get_context()->uid << endl << endl;
         body << "ClamAV reported malicious file:" << endl;
         body << scanresult << endl;
@@ -77,8 +84,15 @@ int SendMailNotification(const char* mx, const char* recipient,
         session.close();
     } catch (Poco::Exception& exc) {
         rLog(Info, "Got exception when sending mail notification: %s", exc.displayText().c_str());
+
+        free(username);
+        free(callername);
+
         return 1;
     }
+
+    free(username);
+    free(callername);
 
     return 0;
 }

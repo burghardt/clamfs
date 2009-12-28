@@ -132,8 +132,12 @@ int ClamavScanFile(const char *filename) {
     /*
      * Log result through RLog (if virus is found or scan failed)
      */
-    rLog(Warn, "(%s:%d) (%s:%d) %s", getcallername(), fuse_get_context()->pid,
-        getusername(), fuse_get_context()->uid, reply.c_str());
+    char* username = getusername();
+    char* callername = getcallername();
+    rLog(Warn, "(%s:%d) (%s:%d) %s", callername, fuse_get_context()->pid,
+        username, fuse_get_context()->uid, reply.c_str());
+    free(username);
+    free(callername);
 
     /*
      * If scan failed return without sending e-mail alert
