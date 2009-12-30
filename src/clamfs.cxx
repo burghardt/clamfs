@@ -1121,7 +1121,7 @@ int main(int argc, char *argv[])
                 RLogOpenLogFile(config["filename"]);
                 RLogCloseStdio();
             } else {
-                rLog(Warn, "logging method 'file' choosen, but no log 'filename' given");
+                rLog(Warn, "logging method 'file' chosen, but no log 'filename' given");
                 return EXIT_FAILURE;
             }
         }
