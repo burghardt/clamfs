@@ -32,7 +32,7 @@ Glibc calls kernel VFS to open file regardless of file system used.
 If file is on ClamFS file system open call from VFS is directed to user-space by FUSE.
 ClamFS calls libfuse to communicate with FUSE and through it with VFS.
 .SS Internals
-ClamFS is spitted into four parts:
+ClamFS is split into four parts:
 .HP
 * libfuse bindings -- used to communicate with FUSE (and with VFS through it),
 .HP
