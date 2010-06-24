@@ -35,6 +35,7 @@
     See the file COPYING.
 */
 
+#include "version.h"
 #include "config.h"
 
 #include <fuse.h>
@@ -960,7 +961,7 @@ int main(int argc, char *argv[])
     RLogInit(argc, argv);
     RLogOpenStdio();
 
-    rLog(Info, "ClamFS v"VERSION);
+    rLog(Info, "ClamFS v"VERSION" ("PACKAGE_VERSION_SVN_REV")");
     rLog(Info, "Copyright (c) 2007,2008 Krzysztof Burghardt <krzysztof@burghardt.pl>");
     rLog(Info, "http://clamfs.sourceforge.net/");
 
