@@ -3,6 +3,13 @@
  =============
 
  *******************
+ 1.0.2 (?? ??? ????)
+ *******************
+
+* Fixed FTBFS problem with calling constructor directly
+  (patch for building with gcc 4.5 by Kacper Kowalik).
+
+ *******************
  1.0.1 (28 Dec 2009)
  *******************
 
