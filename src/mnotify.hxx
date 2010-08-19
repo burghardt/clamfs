@@ -34,7 +34,6 @@
 #include <Poco/Net/MailMessage.h>
 #include <Poco/Net/MailRecipient.h>
 #include <Poco/Net/SMTPClientSession.h>
-#include <Poco/Net/StringPartSource.h>
 
 #ifdef DMALLOC
 #include <dmalloc.h>

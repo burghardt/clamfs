@@ -76,7 +76,7 @@ int SendMailNotification(const char* mx, const char* recipient,
         body << "ClamAV reported malicious file:" << crlf;
         body << scanresult << crlf;
 
-        mmsg.addContent(new StringPartSource(body.str()));
+        mmsg.setContent(body.str());
 
         SMTPClientSession session(mx);
         session.login();

@@ -52,7 +52,6 @@ AC_CHECK_HEADER(Poco/ExpireLRUCache.h,,AC_MSG_ERROR([Poco/ExpireLRUCache.h not f
 AC_CHECK_HEADER(Poco/Net/MailMessage.h,,AC_MSG_ERROR([Poco/Net/MailMessage.h]))
 AC_CHECK_HEADER(Poco/Net/MailRecipient.h,,AC_MSG_ERROR([Poco/Net/MailRecipient.h]))
 AC_CHECK_HEADER(Poco/Net/SMTPClientSession.h,,AC_MSG_ERROR([Poco/Net/SMTPClientSession.h]))
-AC_CHECK_HEADER(Poco/Net/StringPartSource.h,,AC_MSG_ERROR([Poco/Net/StringPartSource.h]))
 AC_CHECK_LIB(PocoFoundation,main,LIBS="$LIBS -lPocoFoundation",AC_MSG_ERROR([libPocoFoundation not found!]))
 AC_CHECK_LIB(PocoFoundation,main,LIBS="$LIBS -lPocoNet",AC_MSG_ERROR([libPocoNet not found!]))
 
