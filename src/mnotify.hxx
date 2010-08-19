@@ -59,6 +59,8 @@ extern RLogChannel *Debug;
 extern RLogChannel *Info;
 extern RLogChannel *Warn;
 
+static const char* crlf = "\r\n";
+
 int SendMailNotification(const char* mx, const char* recipient,
                          const char* sender, const char* subject,
                          const char* scanresult);

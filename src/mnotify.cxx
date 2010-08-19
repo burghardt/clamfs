@@ -67,14 +67,14 @@ int SendMailNotification(const char* mx, const char* recipient,
         mmsg.addRecipient(MailRecipient(MailRecipient::PRIMARY_RECIPIENT, recipient));
         mmsg.setSubject(subject);
 
-        body << "Hello ClamFS User," << endl << endl;
-        body << "This is an automatic notification about virus found." << endl << endl;
-        body << "Executable name: " << callername << endl;
-        body << "            PID: " << fuse_get_context()->pid << endl << endl;
-        body << "       Username: " << username << endl;
-        body << "            UID: " << fuse_get_context()->uid << endl << endl;
-        body << "ClamAV reported malicious file:" << endl;
-        body << scanresult << endl;
+        body << "Hello ClamFS User," << crlf << crlf;
+        body << "This is an automatic notification about virus found." << crlf << crlf;
+        body << "Executable name: " << callername << crlf;
+        body << "            PID: " << fuse_get_context()->pid << crlf << crlf;
+        body << "       Username: " << username << crlf;
+        body << "            UID: " << fuse_get_context()->uid << crlf << crlf;
+        body << "ClamAV reported malicious file:" << crlf;
+        body << scanresult << crlf;
 
         mmsg.addContent(new StringPartSource(body.str()));
 
