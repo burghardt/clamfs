@@ -328,14 +328,12 @@ static int clamfs_symlink(const char *from, const char *to)
 {
     int res;
 
-    const char* ffrom = fixpath(from);
     const char* fto = fixpath(to);
-    res = symlink(ffrom, fto);
+    res = symlink(from, fto);
     if (res == -1)
         return -errno;
     else
-    res = lchown(ffrom, fuse_get_context()->uid, fuse_get_context()->gid);
-    delete[] ffrom;
+    res = lchown(from, fuse_get_context()->uid, fuse_get_context()->gid);
     delete[] fto;
 
     return 0;
