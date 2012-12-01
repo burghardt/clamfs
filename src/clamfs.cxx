@@ -242,7 +242,7 @@ static int clamfs_releasedir(const char *path, struct fuse_file_info *fi)
 }
 
 /*!\brief FUSE mknod() callback
-   \param path file path 
+   \param path file path
    \param mode file permissions
    \param rdev major and minor numbers of device special file
    \returns 0 if mknod() returns without error on -errno otherwise
@@ -257,7 +257,10 @@ static int clamfs_mknod(const char *path, mode_t mode, dev_t rdev)
     else
         res = mknod(fpath, mode, rdev);
     if (res == -1)
+    {
+        delete[] fpath;
         return -errno;
+    }
     else
     res = lchown(fpath, fuse_get_context()->uid, fuse_get_context()->gid);
     delete[] fpath;
@@ -277,7 +280,10 @@ static int clamfs_mkdir(const char *path, mode_t mode)
     const char* fpath = fixpath(path);
     res = mkdir(fpath, mode);
     if (res == -1)
+    {
+        delete[] fpath;
         return -errno;
+    }
     else
     res = lchown(fpath, fuse_get_context()->uid, fuse_get_context()->gid);
     delete[] fpath;
@@ -330,11 +336,11 @@ static int clamfs_symlink(const char *from, const char *to)
 
     const char* fto = fixpath(to);
     res = symlink(from, fto);
+    delete[] fto;
     if (res == -1)
         return -errno;
     else
     res = lchown(from, fuse_get_context()->uid, fuse_get_context()->gid);
-    delete[] fto;
 
     return 0;
 }
@@ -371,12 +377,15 @@ static int clamfs_link(const char *from, const char *to)
     const char* ffrom = fixpath(from);
     const char* fto = fixpath(to);
     res = link(ffrom, fto);
-    if (res == -1)
-        return -errno;
-    else
-    res = lchown(ffrom, fuse_get_context()->uid, fuse_get_context()->gid);
-    delete[] ffrom;
     delete[] fto;
+    if (res == -1)
+    {
+        delete[] ffrom;
+        return -errno;
+    }
+    else
+        res = lchown(ffrom, fuse_get_context()->uid, fuse_get_context()->gid);
+    delete[] ffrom;
 
     return 0;
 }

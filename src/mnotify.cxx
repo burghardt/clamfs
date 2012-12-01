@@ -28,7 +28,9 @@
 
 namespace clamfs {
 
-/*!\brief Send notification e-mail message 
+static const char* crlf = "\r\n";
+
+/*!\brief Send notification e-mail message
    \param mx mail exchanger (server)
    \param recipient To: address
    \param sender From: address

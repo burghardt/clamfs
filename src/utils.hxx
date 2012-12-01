@@ -66,10 +66,14 @@ static inline char* getcallername() {
     asprintf(&filename, "/proc/%d/cmdline", fuse_get_context()->pid);
     FILE * proc=fopen(filename, "rt");
     free(filename);
-    char cmdline[256] = "";
-    fread(cmdline, sizeof(cmdline), 1, proc);
+    char cmdline[256];
+    memset(cmdline, 0, sizeof(cmdline));
+    size_t read = fread(cmdline, sizeof(cmdline) - 1, 1, proc);
     fclose(proc);
-    return strdup(cmdline);
+    if (1 == read)
+        return strdup(cmdline);
+    else
+        return strdup("< unknown >");
 }
 
 /*!\brief Returns the name of the user accessed the filesystem
