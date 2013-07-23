@@ -63,7 +63,8 @@ struct ltstr {
 */
 static inline char* getcallername() {
     char* filename;
-    asprintf(&filename, "/proc/%d/cmdline", fuse_get_context()->pid);
+    if (asprintf(&filename, "/proc/%d/cmdline", fuse_get_context()->pid) < 0)
+        return strdup("< unknown >");
     FILE * proc=fopen(filename, "rt");
     free(filename);
     char cmdline[256];
