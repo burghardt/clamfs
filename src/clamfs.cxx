@@ -651,11 +651,11 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
             ret = lstat(real_path.get(), &file_stat);
         if (!ret) { /* got file stat without error */
 
-            if (cache->has(file_stat.st_ino)) {
-                Poco::SharedPtr<CachedResult> ptr_val;
+            Poco::SharedPtr<CachedResult> ptr_val;
+
+            if (ptr_val = cache->get(file_stat.st_ino)) {
                 INC_STAT_COUNTER(earlyCacheHit);
                 DEBUG("early cache hit for inode %ld", (unsigned long)file_stat.st_ino);
-                ptr_val = cache->get(file_stat.st_ino);
 
                 if (ptr_val->scanTimestamp == file_stat.st_mtime) {
                     INC_STAT_COUNTER(lateCacheHit);
@@ -681,8 +681,6 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
                     /*
                      * Check for scan results and update cache
                      */
-                    Poco::SharedPtr<CachedResult> ptr_val;
-                    ptr_val = cache->get(file_stat.st_ino);
                     ptr_val->scanTimestamp = file_stat.st_mtime;
                     if (scan_result == 1) { /* virus found */
                         ptr_val->isClean = false;
