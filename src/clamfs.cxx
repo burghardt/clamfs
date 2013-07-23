@@ -94,7 +94,7 @@ static inline const char* fixpath(const char* path)
     if (res < 0)
     {
         char* username = getusername();
-        char* callername = getusername();
+        char* callername = getcallername();
         rLog(Warn, "(%s:%d) (%s:%d) %s: fchdir() failed: %s",
                 callername, fuse_get_context()->pid, username, fuse_get_context()->uid,
                 path, strerror(errno));
@@ -520,7 +520,7 @@ static int clamfs_create(const char *path, mode_t mode, struct fuse_file_info *f
     if (res < 0)
     {
         char* username = getusername();
-        char* callername = getusername();
+        char* callername = getcallername();
         rLog(Warn, "(%s:%d) (%s:%d) %s: lchown() failed: %s",
                 callername, fuse_get_context()->pid, username, fuse_get_context()->uid,
                 path, strerror(errno));
@@ -594,7 +594,7 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
                         {
                             INC_STAT_COUNTER(whitelistHit);
                             char* username = getusername();
-                            char* callername = getusername();
+                            char* callername = getcallername();
                             rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because extension whitelisted ",
                                     callername, fuse_get_context()->pid, username, fuse_get_context()->uid, path);
                             free(username);
@@ -607,7 +607,7 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
                             INC_STAT_COUNTER(blacklistHit);
                             file_is_blacklisted = true;
                             char* username = getusername();
-                            char* callername = getusername();
+                            char* callername = getcallername();
                             rLog(Warn, "(%s:%d) (%s:%d) %s: forced anti-virus scan because extension blacklisted ",
                                     callername, fuse_get_context()->pid, username, fuse_get_context()->uid, path);
                             free(username);
@@ -632,7 +632,7 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
             if (file_stat.st_size > atoi(config["maximal-size"])) { /* file too big */
                 INC_STAT_COUNTER(tooBigFile);
                 char* username = getusername();
-                char* callername = getusername();
+                char* callername = getcallername();
                 rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because file is too big (file size: %ld bytes)",
                         callername, fuse_get_context()->pid, username, fuse_get_context()->uid, path, (long int)file_stat.st_size);
                 free(username);
