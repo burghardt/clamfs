@@ -505,6 +505,16 @@ static int clamfs_create(const char *path, mode_t mode, struct fuse_file_info *f
        res = lchown(fpath, fuse_get_context()->uid, fuse_get_context()->gid);
     delete[] fpath;
 
+    if (res < 0)
+    {
+        char* username = getusername();
+        char* callername = getusername();
+        rLog(Warn, "(%s:%d) (%s:%d) %s: lchown() failed (error code = %d)",
+                callername, fuse_get_context()->pid, username, fuse_get_context()->uid, path, res);
+        free(username);
+        free(callername);
+    }
+
     fi->fh = fd;
     return 0;
 }
