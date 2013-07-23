@@ -2,11 +2,17 @@ ClamFS is a FUSE-based user-space file system for Linux with on-access
 anti-virus file scanning through clamd daemon (a file scanning service
 developed by ClamAV Project).
 
-To build ClamFS on GNU/Linux you need:
+To build ClamFS on any GNU/Linux you need:
  * FUSE
  * GNU libCommonCpp (and libxml2 as it's dependency)
  * RLog
- * POCO[1]
+ * POCO [1]
+
+To build ClamFS on Debian/Ubuntu install these packages:
+ * libfuse-dev
+ * libcommoncpp2-dev
+ * librlog-dev
+ * libpoco-dev
 
 To build ClamFS on FreeBSD you need those ports:
  * sysutils/fusefs-libs
