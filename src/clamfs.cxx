@@ -89,7 +89,19 @@ static inline const char* fixpath(const char* path)
 {
     char* fixed = new char[strlen(path)+2];
 
-    fchdir(savefd);
+    int res = fchdir(savefd);
+
+    if (res < 0)
+    {
+        char* username = getusername();
+        char* callername = getusername();
+        rLog(Warn, "(%s:%d) (%s:%d) %s: lchown() failed: %s",
+                callername, fuse_get_context()->pid, username, fuse_get_context()->uid,
+                path, strerror(errno));
+        free(username);
+        free(callername);
+    }
+
     strcpy(fixed,".");
     strcat(fixed,path);
 
