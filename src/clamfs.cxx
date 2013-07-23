@@ -95,7 +95,7 @@ static inline const char* fixpath(const char* path)
     {
         char* username = getusername();
         char* callername = getusername();
-        rLog(Warn, "(%s:%d) (%s:%d) %s: lchown() failed: %s",
+        rLog(Warn, "(%s:%d) (%s:%d) %s: fchdir() failed: %s",
                 callername, fuse_get_context()->pid, username, fuse_get_context()->uid,
                 path, strerror(errno));
         free(username);
