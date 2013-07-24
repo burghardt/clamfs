@@ -63,21 +63,24 @@ struct ltstr {
 */
 static inline char* getcallername() {
     char* filename;
-    if (asprintf(&filename, "/proc/%d/cmdline", fuse_get_context()->pid) < 0)
-        return strdup("< unknown >");
-    FILE * proc=fopen(filename, "rt");
-    free(filename);
-    char cmdline[256];
-    memset(cmdline, 0, sizeof(cmdline));
-    size_t read = fread(cmdline, sizeof(cmdline) - 1, 1, proc);
-    fclose(proc);
-    if (1 == read)
-        return strdup(cmdline);
-    else
-        if (feof(proc))
-            return strdup(cmdline);
+    char* res;
+    if (asprintf(&filename, "/proc/%d/cmdline", fuse_get_context()->pid) > 0) {
+        FILE* proc=fopen(filename, "rt");
+        free(filename);
+        char cmdline[256];
+        memset(cmdline, 0, sizeof(cmdline));
+        size_t read = fread(cmdline, sizeof(cmdline) - 1, 1, proc);
+        if (1 == read)
+            res = strdup(cmdline);
         else
-            return strdup("< unknown >");
+            if (feof(proc))
+                res = strdup(cmdline);
+            else
+                res = strdup("< unknown >");
+        fclose(proc);
+    } else
+        res = strdup("< unknown >");
+    return res;
 }
 
 /*!\brief Returns the name of the user accessed the filesystem
