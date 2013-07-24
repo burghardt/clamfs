@@ -74,7 +74,10 @@ static inline char* getcallername() {
     if (1 == read)
         return strdup(cmdline);
     else
-        return strdup("< unknown >");
+        if (feof(proc))
+            return strdup(cmdline);
+        else
+            return strdup("< unknown >");
 }
 
 /*!\brief Returns the name of the user accessed the filesystem
