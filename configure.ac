@@ -39,11 +39,12 @@ CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
 LDFLAGS="$LDFLAGS $BOOST_LDFLAGS"
 
 # Checks for libfuse
-CPPFLAGS="$CPPFLAGS -D_FILE_OFFSET_BITS=64 -D_REENTRANT -DFUSE_USE_VERSION=25 -DRLOG_COMPONENT=clamfs"
+CPPFLAGS="$CPPFLAGS -pthread -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=26"
 AC_CHECK_HEADER(fuse.h,,AC_MSG_ERROR([fuse.h not found!]))
 AC_CHECK_LIB(fuse,fuse_main,LIBS="$LIBS -lfuse",AC_MSG_ERROR([libfuse not found!]))
 
 # Check for librlog
+CPPFLAGS="$CPPFLAGS -DRLOG_COMPONENT=clamfs"
 AC_CHECK_HEADER(rlog/rlog.h,,AC_MSG_ERROR([rlog/rlog.h not found!]))
 AC_CHECK_LIB(rlog,main,LIBS="$LIBS -lrlog",AC_MSG_ERROR([librlog not found!]))
 

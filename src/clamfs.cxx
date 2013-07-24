@@ -1184,7 +1184,7 @@ int main(int argc, char *argv[])
     /*
      * Start FUSE
      */
-    ret = fuse_main(fuse_argc, fuse_argv, &clamfs_oper);
+    ret = fuse_main(fuse_argc, fuse_argv, &clamfs_oper, NULL);
 
     for (unsigned int i = 0; i < FUSE_MAX_ARGS; ++i)
         if (fuse_argv[i])
