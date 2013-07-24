@@ -135,7 +135,7 @@ int ClamavScanFile(const char *filename) {
     char* username = getusername();
     char* callername = getcallername();
     rLog(Warn, "(%s:%d) (%s:%d) %s", callername, fuse_get_context()->pid,
-        username, fuse_get_context()->uid, reply.c_str());
+        username, fuse_get_context()->uid, reply.empty() ? "< empty clamd reply >" : reply.c_str());
     free(username);
     free(callername);
 
