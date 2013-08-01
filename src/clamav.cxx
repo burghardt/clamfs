@@ -70,7 +70,7 @@ int PingClamav() {
     string reply;
 
     CHECK_CLAMD(clamd);
-    clamd << "PING" << endl;
+    clamd << "nPING" << endl;
     clamd >> reply;
 
     if (reply != "PONG") {
@@ -93,7 +93,7 @@ void CloseClamav() {
    \param filename name of file to scan
    \returns -1 one error when opening clamd connection,
              0 if no virus found and
-         1 if virus was found (or clamd error occurred)
+             1 if virus was found (or clamd error occurred)
  */
 int ClamavScanFile(const char *filename) {
     string reply;
@@ -116,7 +116,7 @@ int ClamavScanFile(const char *filename) {
     /*
      * Scan file using SCAN method
      */
-    clamd << "SCAN " << filename << endl;
+    clamd << "nSCAN " << filename << endl;
     getline(clamd, reply);
     CloseClamav();
 
