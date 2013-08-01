@@ -124,8 +124,10 @@ int ClamavScanFile(const char *filename) {
      * Chceck for scan results, return if file is clean
      */
     DEBUG("%s", reply.c_str());
-    if (strncmp(reply.c_str() + reply.size() - 2, "OK", 2) == 0 ||
-        strncmp(reply.c_str() + reply.size() - 10, "Empty file", 10) == 0) {
+    if (strncmp(reply.c_str() + reply.size() - 2,  "OK", 2) == 0 ||
+        strncmp(reply.c_str() + reply.size() - 10, "Empty file", 10) == 0 ||
+        strncmp(reply.c_str() + reply.size() - 8,  "Excluded", 8) == 0 ||
+        strncmp(reply.c_str() + reply.size() - 29, "Excluded (another filesystem)", 29) == 0 ) {
         return 0;
     }
 
