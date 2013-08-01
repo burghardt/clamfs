@@ -144,10 +144,8 @@ int ClamavScanFile(const char *filename) {
     /*
      * If scan failed return without sending e-mail alert
      */
-    if(strncmp(reply.c_str() + reply.size() - 20,
-                "Access denied. ERROR", 20) == 0 ||
-              strncmp(reply.c_str() + reply.size() - 21,
-                "lstat() failed. ERROR", 21) == 0) {
+    if(strncmp(reply.c_str() + reply.size() - 20, "Access denied. ERROR", 20) == 0 ||
+       strncmp(reply.c_str() + reply.size() - 21, "lstat() failed. ERROR", 21) == 0) {
         return -1;
     }
 
