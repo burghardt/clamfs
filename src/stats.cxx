@@ -52,19 +52,39 @@ Stats::Stats(time_t dumpEvery) {
 Stats::~Stats() {
 }
 
-void Stats::dumpToLog() {
-    rLog(Info, "--- begin of statistics ---");
-    rLog(Info, "Early cache hit: %llu", earlyCacheHit);
+void Stats::dumpFilesystemStatsToLog() {
+    rLog(Info, "--- begin of filesystem statistics ---");
+    rLog(Info, "Early cache hit:  %llu", earlyCacheHit);
     rLog(Info, "Early cache miss: %llu", earlyCacheMiss);
-    rLog(Info, "Late cache hit: %llu", lateCacheHit);
-    rLog(Info, "Late cache miss: %llu", lateCacheMiss);
-    rLog(Info, "Whitelist hit: %llu", whitelistHit);
-    rLog(Info, "Blacklist hit: %llu", blacklistHit);
+    rLog(Info, "Late cache hit:   %llu", lateCacheHit);
+    rLog(Info, "Late cache miss:  %llu", lateCacheMiss);
+    rLog(Info, "Whitelist hit:    %llu", whitelistHit);
+    rLog(Info, "Blacklist hit:    %llu", blacklistHit);
     rLog(Info, "Files bigger than maximal-size: %llu", tooBigFile);
     rLog(Info, "open() function called %llu times (allowed: %llu, denied: %llu)",
             openCalled, openAllowed, openDenied);
     rLog(Info, "Scan failed %llu times", scanFailed);
-    rLog(Info, "--- end of statistics ---");
+    rLog(Info, "--- end of filesystem statistics ---");
+}
+
+void Stats::dumpMemoryStatsToLog() {
+    rLog(Info, "--- begin of memory statistics ---");
+#ifdef HAVE_MALLINFO
+    struct mallinfo mi = mallinfo();
+    rLog(Info, "Non-mmapped space allocated (arena):         %d", mi.arena);
+    rLog(Info, "Number of free chunks (ordblks):             %d", mi.ordblks);
+    rLog(Info, "Number of free fastbin blocks (smblks):      %d", mi.smblks);
+    rLog(Info, "Number of mmapped regions (hblks):           %d", mi.hblks);
+    rLog(Info, "Space allocated in mmapped regions (hblkhd): %d", mi.hblkhd);
+    rLog(Info, "Maximum total allocated space (usmblks):     %d", mi.usmblks);
+    rLog(Info, "Space in freed fastbin blocks (fsmblks):     %d", mi.fsmblks);
+    rLog(Info, "Total allocated space (uordblks):            %d", mi.uordblks);
+    rLog(Info, "Total free space (fordblks):                 %d", mi.fordblks);
+    rLog(Info, "Top-most, releasable space (keepcost):       %d", mi.keepcost);
+#else
+    rLog(Warn, "mallinfo() not available");
+#endif
+    rLog(Info, "--- end of memory statistics ---");
 }
 
 void Stats::periodicDumpToLog() {
@@ -73,7 +93,9 @@ void Stats::periodicDumpToLog() {
 
     time_t current = time(NULL);
     if ((current - lastdump) > every) {
-        dumpToLog();
+        dumpFilesystemStatsToLog();
+        if (memoryStats)
+            dumpMemoryStatsToLog();
         lastdump = current;
     }
 }

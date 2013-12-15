@@ -1156,6 +1156,11 @@ int main(int argc, char *argv[])
         rLog(Info, "Statistics module disabled");
     }
 
+    if ((config["memory"] != NULL) &&
+        (strncmp(config["memory"], "yes", 3) == 0)) {
+        stats->enableMemoryStats();
+    }
+
     /*
      * Open configured logging target
      */
@@ -1200,7 +1205,9 @@ int main(int argc, char *argv[])
     if (stats) {
         if ((config["atexit"] != NULL) &&
             (strncmp(config["atexit"], "yes", 3) == 0)) {
-            stats->dumpToLog();
+            stats->dumpFilesystemStatsToLog();
+            if (stats->memoryStats)
+                stats->dumpMemoryStatsToLog();
         }
 
         rLog(Info, "deleting stats");

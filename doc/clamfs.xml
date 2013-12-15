@@ -97,8 +97,8 @@
     <!-- How many entries to keep in cache and for how long -->
     <cache entries="16384" expire="10800000" /> <!-- time in ms, 3h -->
 
-    <!-- Statistics module keep track of filesystem usage -->
-    <stats atexit="yes" every="3600" /> <!-- time in sec, 1h -->
+    <!-- Statistics module keep track of filesystem & memory usage -->
+    <stats memory="yes" atexit="yes" every="3600" /> <!-- time in sec, 1h -->
 
     <!-- Logging method (stdout, syslog or file) -->
     <!-- <log method="stdout" verbose="yes" /> -->

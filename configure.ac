@@ -15,7 +15,7 @@ AC_LANG_CPLUSPLUS
 # Checks for header files
 AC_HEADER_DIRENT
 AC_HEADER_STDC
-AC_CHECK_HEADERS([fcntl.h string.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h string.h unistd.h malloc.h])
 
 # Checks for typedefs, structures, and compiler characteristics
 AC_HEADER_STDBOOL
@@ -31,7 +31,7 @@ AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_LSTAT
 AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
 AC_FUNC_UTIME_NULL
-AC_CHECK_FUNCS([fchdir fdatasync fork ftruncate lchown memset mkdir mkfifo rmdir setxattr strdup strerror utime])
+AC_CHECK_FUNCS([fchdir fdatasync fork ftruncate lchown memset mkdir mkfifo rmdir setxattr strdup strerror utime mallinfo])
 
 # Checks for boost
 AX_BOOST_BASE(1.33)

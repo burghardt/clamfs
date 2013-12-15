@@ -29,6 +29,8 @@
 
 #include "config.h"
 
+#include <malloc.h>
+
 #ifdef DMALLOC
 #include <dmalloc.h>
 #endif
@@ -56,8 +58,14 @@ class Stats {
         /*!\brief Destructor for Stats */
         ~Stats();
 
-        /*!\brief Dump statistics to log */
-        void dumpToLog();
+        /*!\brief Enable memory statistics */
+        void enableMemoryStats() { memoryStats = true; }
+
+        /*!\brief Dump filesystem statistics to log */
+        void dumpFilesystemStatsToLog();
+
+        /*!\brief Dump memory statistics to log */
+        void dumpMemoryStatsToLog();
 
          /*!\brief Periodically dump statistics to log */
         void periodicDumpToLog();
@@ -101,6 +109,9 @@ class Stats {
 
         /*!\brief a/v scan failed (clamd unavailable, permission problem, etc.) */
         unsigned long long scanFailed;
+
+        /*!\brief indicates that memory statistics should be included */
+        bool memoryStats;
 };
 
 /*!\brief extern to access stats pointer from clamfs.cxx */
