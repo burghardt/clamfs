@@ -106,7 +106,7 @@ class ConfigParserXML: public ifstream, public XMLStream {
          */
         virtual void endElement(const unsigned char *name);
         /*!\brief Empty XMLStream virtual method, we do not need it */
-        void characters(const unsigned char *text, size_t len) { }
+        void characters(const unsigned char *text, size_t len) { (void)text; (void)len; }
     private:
         /*!brief Forbid usage of copy constructor */
         ConfigParserXML(const ConfigParserXML& aCache);

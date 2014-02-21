@@ -102,6 +102,8 @@ const unsigned char *value;
 void ConfigParserXML::endElement(const unsigned char *name) {
 #ifndef NDEBUG
     cout << "</" << name << ">" << endl;
+#else
+    (void)name;
 #endif
 }
 
