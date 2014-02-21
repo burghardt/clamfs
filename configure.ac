@@ -33,6 +33,9 @@ AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
 AC_FUNC_UTIME_NULL
 AC_CHECK_FUNCS([fchdir fdatasync fork ftruncate lchown memset mkdir mkfifo rmdir setxattr strdup strerror utime mallinfo])
 
+# Set initial CPPFLAGS
+CPPFLAGS="$CPPFLAGS -Wall -Werror -Wextra"
+
 # Checks for boost
 AX_BOOST_BASE(1.33)
 CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
@@ -67,20 +70,35 @@ else
     AC_MSG_ERROR([libccgnu2 not found!])
 fi
 
-dnl Use option --enable-gcc-debug to enable GCC debug code. 
+dnl Use option --enable-gcc-debug to enable GCC debug code.
 AC_ARG_ENABLE(gcc-debug,
 AC_HELP_STRING([--enable-gcc-debug],
         [enable GCC DEBUG code]),
         [enable_gcc_debug=yes],
         [enable_gcc_debug=no])
 if test "$enable_gcc_debug" = "yes" && (test "$GXX" = "yes"); then
- CPPFLAGS="$CPPFLAGS -Wall -O0 -ggdb"
+ CPPFLAGS="$CPPFLAGS -O0 -ggdb"
  AC_MSG_RESULT([Enabling GCC debug...])
 else
- CPPFLAGS="$CPPFLAGS -Wall -O2 -DNDEBUG"
+ CPPFLAGS="$CPPFLAGS -O2 -DNDEBUG"
 fi
 
-dnl Use option --enable-dmalloc-debug to enable dmalloc debug code. 
+dnl Use option --enable-clang-flags to enable CLANG flags.
+AC_ARG_ENABLE(clang-flags,
+AC_HELP_STRING([--enable-clang-flags],
+        [enable enable CLANG flags]),
+        [enable_clang_flags=yes],
+        [enable_clang_flags=no])
+if test "$enable_clang_flags" = "yes" && (test "$GXX" = "yes"); then
+ CPPFLAGS="$CPPFLAGS -Wfour-char-constants -Wpointer-arith -Wwrite-strings -Wcast-align"
+ CPPFLAGS="$CPPFLAGS -Wconversion -Wfloat-equal -Wformat=2 -Wimplicit-atomic-properties"
+ CPPFLAGS="$CPPFLAGS -Wmissing-declarations -Wmissing-prototypes -Woverlength-strings"
+ CPPFLAGS="$CPPFLAGS -Wshadow -Wstrict-selector-match -Wundeclared-selector"
+#CPPFLAGS="$CPPFLAGS -Wunreachable-code"
+ AC_MSG_RESULT([Enabling CLANG flags...])
+fi
+
+dnl Use option --enable-dmalloc-debug to enable dmalloc debug code.
 AC_ARG_ENABLE(dmalloc-debug,
 AC_HELP_STRING([--enable-dmalloc-debug],
         [enable dmalloc debug code]),
