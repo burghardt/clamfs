@@ -64,13 +64,13 @@ int ConfigParserXML::read(unsigned char *buffer, size_t len) {
  * dump parsed configuration file to cout
  */
 void ConfigParserXML::startElement(const unsigned char *name, const unsigned char **attr) {
-const unsigned char *option;
-const unsigned char *value;
 #ifndef NDEBUG
     cout << "<" << name;
 #endif
     if(attr) {
         while(*attr) {
+            const unsigned char *option;
+            const unsigned char *value;
             option = *(attr++);
             value = *(attr++);
             if (strncmp((const char *)name, "exclude", 7) == 0) {
