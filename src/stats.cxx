@@ -45,6 +45,8 @@ Stats::Stats(time_t dumpEvery) {
 
     scanFailed = 0;
 
+    memoryStats = false;
+
     lastdump = time(NULL);
     every = dumpEvery;
 }
