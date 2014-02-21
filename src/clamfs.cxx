@@ -139,7 +139,7 @@ static int clamfs_fgetattr(const char *path, struct stat *stbuf,
 
     (void) path;
 
-    res = fstat(fi->fh, stbuf);
+    res = fstat((int)fi->fh, stbuf);
     if (res == -1)
         return -errno;
 
@@ -172,7 +172,7 @@ static int clamfs_access(const char *path, int mask)
 */
 static int clamfs_readlink(const char *path, char *buf, size_t size)
 {
-    int res;
+    ssize_t res;
 
     const char* fpath = fixpath(path);
     res = readlink(fpath, buf, size - 1);
@@ -232,7 +232,7 @@ static int clamfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
         struct stat st;
         memset(&st, 0, sizeof(st));
         st.st_ino = de->d_ino;
-        st.st_mode = de->d_type << 12;
+        st.st_mode = (unsigned int)de->d_type << 12;
         if (filler(buf, de->d_name, &st, telldir(dp)))
             break;
     }
@@ -470,7 +470,7 @@ static int clamfs_ftruncate(const char *path, off_t size,
 
     (void) path;
 
-    res = ftruncate(fi->fh, size);
+    res = ftruncate((int)fi->fh, size);
     if (res == -1)
         return -errno;
 
@@ -528,7 +528,7 @@ static int clamfs_create(const char *path, mode_t mode, struct fuse_file_info *f
         free(callername);
     }
 
-    fi->fh = fd;
+    fi->fh = (unsigned long) fd;
     return 0;
 }
 
@@ -547,7 +547,7 @@ static inline int open_backend(const char *path, struct fuse_file_info *fi)
     if (fd == -1)
         return -errno;
 
-    fi->fh = fd;
+    fi->fh = (unsigned long) fd;
     return 0;
 }
 
@@ -653,7 +653,7 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
 
             Poco::SharedPtr<CachedResult> ptr_val;
 
-            if (ptr_val = cache->get(file_stat.st_ino)) {
+            if ((ptr_val = cache->get(file_stat.st_ino))) {
                 INC_STAT_COUNTER(earlyCacheHit);
                 DEBUG("early cache hit for inode %ld", (unsigned long)file_stat.st_ino);
 
@@ -769,14 +769,14 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
 static int clamfs_read(const char *path, char *buf, size_t size, off_t offset,
                     struct fuse_file_info *fi)
 {
-    int res;
+    ssize_t res;
 
     (void) path;
-    res = pread(fi->fh, buf, size, offset);
+    res = pread((int)fi->fh, buf, size, offset);
     if (res == -1)
         res = -errno;
 
-    return res;
+    return (int)res;
 }
 
 /*!\brief FUSE write() callback
@@ -790,14 +790,14 @@ static int clamfs_read(const char *path, char *buf, size_t size, off_t offset,
 static int clamfs_write(const char *path, const char *buf, size_t size,
                      off_t offset, struct fuse_file_info *fi)
 {
-    int res;
+    ssize_t res;
 
     (void) path;
-    res = pwrite(fi->fh, buf, size, offset);
+    res = pwrite((int)fi->fh, buf, size, offset);
     if (res == -1)
         res = -errno;
 
-    return res;
+    return (int)res;
 }
 
 /*!\brief FUSE statfs() callback
@@ -826,7 +826,7 @@ static int clamfs_statfs(const char *path, struct statvfs *stbuf)
 static int clamfs_release(const char *path, struct fuse_file_info *fi)
 {
     (void) path;
-    close(fi->fh);
+    close((int)fi->fh);
 
     return 0;
 }
@@ -847,10 +847,10 @@ static int clamfs_fsync(const char *path, int isdatasync,
     (void) isdatasync;
 #else
     if (isdatasync)
-        res = fdatasync(fi->fh);
+        res = fdatasync((int)fi->fh);
     else
 #endif
-        res = fsync(fi->fh);
+        res = fsync((int)fi->fh);
     if (res == -1)
         return -errno;
 
@@ -888,13 +888,13 @@ static int clamfs_setxattr(const char *path, const char *name, const char *value
 static int clamfs_getxattr(const char *path, const char *name, char *value,
                     size_t size)
 {
-    int res;
+    ssize_t res;
     const char* fpath = fixpath(path);
     res = lgetxattr(fpath, name, value, size);
     delete[] fpath;
     if (res == -1)
         return -errno;
-    return res;
+    return (int)res;
 }
 
 /*!\brief FUSE listxattr() callback
@@ -905,13 +905,13 @@ static int clamfs_getxattr(const char *path, const char *name, char *value,
 */
 static int clamfs_listxattr(const char *path, char *list, size_t size)
 {
-    int res;
+    ssize_t res;
     const char* fpath = fixpath(path);
     res = llistxattr(fpath, list, size);
     delete[] fpath;
     if (res == -1)
         return -errno;
-    return res;
+    return (int)res;
 }
 
 /*!\brief FUSE removexattr() callback
@@ -936,6 +936,7 @@ static int clamfs_removexattr(const char *path, const char *name)
    \param argv arguments array
    \returns 0 on success, error code otherwise
 */
+int main(int argc, char *argv[]);
 int main(int argc, char *argv[])
 {
     int ret;
