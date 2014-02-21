@@ -55,9 +55,8 @@ void ConfigParserXML::Close(void) {
 }
 
 int ConfigParserXML::read(unsigned char *buffer, size_t len) {
-    ifstream::read((char *)buffer, len);
-    len = gcount();
-    return len;
+    ifstream::read((char *)buffer, (streamsize)len);
+    return (int)gcount();
 }
 
 /*
