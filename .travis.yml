@@ -1,4 +1,4 @@
-language: c
+language: cpp
 
 os: linux
 dist: trusty
@@ -10,7 +10,7 @@ compiler:
 
 before_install:
     - sudo apt-get update -qq
-    - sudo apt-get install -y libfuse-dev libcommoncpp2-dev librlog-dev libpoco-dev
+    - sudo apt-get install -y libfuse-dev libcommoncpp2-dev librlog-dev libpoco-dev libboost-dev
 
 script:
     - sh autogen.sh

@@ -7,18 +7,21 @@ To build ClamFS on any GNU/Linux you need:
  * GNU libCommonCpp (and libxml2 as it's dependency)
  * RLog
  * POCO [1]
+ * Boost
 
 To build ClamFS on Debian/Ubuntu install these packages:
  * libfuse-dev
  * libcommoncpp2-dev
  * librlog-dev
  * libpoco-dev
+ * libboost-dev
 
 To build ClamFS on FreeBSD you need those ports:
  * sysutils/fusefs-libs
  * devel/rlog
  * devel/poco-ssl (or devel/poco)
  * devel/commoncpp
+ * devel/boost-libs
 
 As a run-time dependency you need:
  * ClamAV (clamd) [FreeBSD port: security/clamav]
