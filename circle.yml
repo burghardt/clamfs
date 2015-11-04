@@ -1,0 +1,10 @@
+dependencies:
+    pre:
+        - sudo apt-get update -qq
+        - sudo apt-get install -y libfuse-dev libcommoncpp2-dev librlog-dev libpoco-dev libboost-dev
+
+test:
+    override:
+        - sh autogen.sh
+        - sh configure
+        - make
