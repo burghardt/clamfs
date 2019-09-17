@@ -1,0 +1,11 @@
+name: push workflow
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@master
+      - name: build-debian
+        uses: ./.github/actions/build-debian

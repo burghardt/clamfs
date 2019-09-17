@@ -990,8 +990,8 @@ int main(int argc, char *argv[])
     RLogInit(argc, argv);
     RLogOpenStdio();
 
-    rLog(Info, "ClamFS v"VERSION" ("PACKAGE_VERSION_SVN_REV")");
-    rLog(Info, "Copyright (c) 2007,2008 Krzysztof Burghardt <krzysztof@burghardt.pl>");
+    rLog(Info, "ClamFS v" VERSION " (" PACKAGE_VERSION_SVN_REV ")");
+    rLog(Info, "Copyright (c) 2007-2019 Krzysztof Burghardt <krzysztof@burghardt.pl>");
     rLog(Info, "http://clamfs.sourceforge.net/");
 
     /*
