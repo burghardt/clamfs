@@ -1,6 +1,6 @@
 #!/bin/sh -lxe
 
-sh bootstrtap
+sh bootstrap
 sh configure
 make clean
 make -j
