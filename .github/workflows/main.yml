@@ -1,8 +1,14 @@
-name: push workflow
-on: push
+name: clamfs workflow
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron:  '0 0 * * *'
 
 jobs:
   build:
+    name: build
     runs-on: ubuntu-latest
     steps:
       - name: checkout
