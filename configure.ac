@@ -49,15 +49,22 @@ AC_CHECK_LIB(fuse,fuse_main,LIBS="$LIBS -lfuse",AC_MSG_ERROR([libfuse not found!
 # Check for librlog
 CPPFLAGS="$CPPFLAGS -DRLOG_COMPONENT=clamfs"
 AC_CHECK_HEADER(rlog/rlog.h,,AC_MSG_ERROR([rlog/rlog.h not found!]))
-AC_CHECK_LIB(rlog,main,LIBS="$LIBS -lrlog",AC_MSG_ERROR([librlog not found!]))
+AC_CHECK_LIB(rlog,RLogVersion,LIBS="$LIBS -lrlog",AC_MSG_ERROR([librlog not found!]))
 
 # Check for libpoco
+AC_CHECK_HEADER(Poco/Exception.h,,AC_MSG_ERROR([Poco/Exception.h]))
 AC_CHECK_HEADER(Poco/ExpireLRUCache.h,,AC_MSG_ERROR([Poco/ExpireLRUCache.h not found!]))
 AC_CHECK_HEADER(Poco/Net/MailMessage.h,,AC_MSG_ERROR([Poco/Net/MailMessage.h]))
 AC_CHECK_HEADER(Poco/Net/MailRecipient.h,,AC_MSG_ERROR([Poco/Net/MailRecipient.h]))
 AC_CHECK_HEADER(Poco/Net/SMTPClientSession.h,,AC_MSG_ERROR([Poco/Net/SMTPClientSession.h]))
-AC_CHECK_LIB(PocoFoundation,main,LIBS="$LIBS -lPocoFoundation",AC_MSG_ERROR([libPocoFoundation not found!]))
-AC_CHECK_LIB(PocoFoundation,main,LIBS="$LIBS -lPocoNet",AC_MSG_ERROR([libPocoNet not found!]))
+AC_CHECK_HEADER(Poco/SAX/SAXParser.h,,AC_MSG_ERROR([Poco/SAX/SAXParser.h]))
+AC_CHECK_HEADER(Poco/SAX/ContentHandler.h,,AC_MSG_ERROR([Poco/SAX/ContentHandler.h]))
+AC_CHECK_HEADER(Poco/SAX/LexicalHandler.h,,AC_MSG_ERROR([Poco/SAX/LexicalHandler.h]))
+AC_CHECK_HEADER(Poco/SAX/Attributes.h,,AC_MSG_ERROR([Poco/SAX/Attributes.h]))
+AC_CHECK_HEADER(Poco/SAX/Locator.h,,AC_MSG_ERROR([Poco/SAX/Locator.h]))
+AC_CHECK_LIB(PocoFoundation,_start,LIBS="$LIBS -lPocoFoundation",AC_MSG_ERROR([libPocoFoundation not found!]))
+AC_CHECK_LIB(PocoNet,_start,LIBS="$LIBS -lPocoNet",AC_MSG_ERROR([libPocoNet not found!]))
+AC_CHECK_LIB(PocoXML,_start,LIBS="$LIBS -lPocoXML",AC_MSG_ERROR([libPocoXML not found!]))
 
 # Check for libccgnu2 (via ccgnu2-config)
 AC_MSG_CHECKING(for libccgnu2 via ccgnu2-config)
@@ -106,7 +113,7 @@ AC_HELP_STRING([--enable-dmalloc-debug],
         [enable_dmalloc_debug=no])
 if test "$enable_dmalloc_debug" = "yes" && (test "$GXX" = "yes"); then
  AC_CHECK_HEADER(dmalloc.h,CPPFLAGS="$CPPFLAGS -DDMALLOC",AC_MSG_ERROR([dmalloc.h not found!]))
- AC_CHECK_LIB(dmallocthcxx,main,LIBS="$LIBS -ldmallocthcxx",AC_MSG_ERROR([libdmallocthcxx not found!]))
+ AC_CHECK_LIB(dmallocthcxx,dmalloc_shutdown,LIBS="$LIBS -ldmallocthcxx",AC_MSG_ERROR([libdmallocthcxx not found!]))
  AC_MSG_RESULT([Enabling dmalloc debug...])
 fi
 

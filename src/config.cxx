@@ -26,68 +26,58 @@
 
 #include "config.hxx"
 
+#include <iostream>
+
 namespace clamfs {
 
 extern config_t config;
 extern extum_t* extensions;
 
 ConfigParserXML::ConfigParserXML(const char *filename) {
-    Open(filename);
+    ConfigHandler handler;
+    SAXParser parser;
+
 #ifndef NDEBUG
     cout << "--- begin of xml dump ---" << endl;
 #endif
-    parse();
+    parser.setFeature(XMLReader::FEATURE_NAMESPACES, true);
+    parser.setFeature(XMLReader::FEATURE_NAMESPACE_PREFIXES, true);
+    parser.setContentHandler(&handler);
+    parser.parse(filename);
 #ifndef NDEBUG
     cout << "--- end of xml dump ---" << endl;
 #endif
-}
-
-ConfigParserXML::~ConfigParserXML() {
-    Close();
-}
-
-void ConfigParserXML::Open(const char *filename) {
-    ifstream::open(filename);
-}
-
-void ConfigParserXML::Close(void) {
-    ifstream::close();
-}
-
-int ConfigParserXML::read(unsigned char *buffer, size_t len) {
-    ifstream::read((char *)buffer, (streamsize)len);
-    return (int)gcount();
 }
 
 /*
  * Store configuration in clamfs::config and (if debug enabled)
  * dump parsed configuration file to cout
  */
-void ConfigParserXML::startElement(const unsigned char *name, const unsigned char **attr) {
+void ConfigHandler::startElement(const XMLString& uri, const XMLString& localName, const XMLString& qname, const Attributes& attributes) {
+    (void)uri;
+    (void)localName;
 #ifndef NDEBUG
-    cout << "<" << name;
+    cout << "<" << qname;
 #endif
-    if(attr) {
-        while(*attr) {
-            const unsigned char *option;
-            const unsigned char *value;
-            option = *(attr++);
-            value = *(attr++);
-            if (strncmp((const char *)name, "exclude", 7) == 0) {
-                if (extensions == NULL)
-                    extensions = new extum_t;
-                (*extensions)[(const char *)value] = whitelisted;
-            } else if (strncmp((const char *)name, "include", 7) == 0) {
-                if (extensions == NULL)
-                    extensions = new extum_t;
-                (*extensions)[(const char *)value] = blacklisted;
-            } else
-                config[strdup((const char *)option)] = strdup((const char *)value);
+    for(int i = 0; i < attributes.getLength(); ++i) {
+        const char *option;
+        const char *value;
+        option = attributes.getLocalName(i).c_str();
+        value = attributes.getValue(i).c_str();
+        if (qname.compare("exclude") == 0) {
+            if (extensions == NULL)
+                extensions = new extum_t;
+            (*extensions)[(const char *)value] = whitelisted;
+        } else if (qname.compare("include") == 0) {
+            if (extensions == NULL)
+                extensions = new extum_t;
+            (*extensions)[(const char *)value] = blacklisted;
+        } else
+            config[strdup((const char *)option)] = strdup((const char *)value);
 #ifndef NDEBUG
-            cout << " " << option;
-            cout << "=" << value;
+        cout << " " << option;
+        cout << "=" << value;
 #endif
-        }
     }
 #ifndef NDEBUG
     cout << ">" << endl;
@@ -98,11 +88,13 @@ void ConfigParserXML::startElement(const unsigned char *name, const unsigned cha
  * As long as our configuration file have no nested elements
  * we do not need to catch any element's end.
  */
-void ConfigParserXML::endElement(const unsigned char *name) {
+void ConfigHandler::endElement(const XMLString & uri, const XMLString & localName, const XMLString & qname) {
+    (void)uri;
+    (void)localName;
 #ifndef NDEBUG
-    cout << "</" << name << ">" << endl;
+    cout << "</" << qname << ">" << endl;
 #else
-    (void)name;
+    (void)qname;
 #endif
 }
 
