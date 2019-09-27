@@ -28,6 +28,8 @@
 
 #include "rlog.hxx"
 
+#include <unistd.h>
+
 namespace clamfs {
 
 extern config_t config;

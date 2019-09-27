@@ -29,8 +29,6 @@
 
 #include "config.h"
 
-#include <cc++/file.h>
-
 #include <rlog/rlog.h>
 #include <rlog/Error.h>
 #include <rlog/RLogChannel.h>
