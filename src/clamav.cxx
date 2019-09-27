@@ -46,7 +46,7 @@ extern FastMutex scanMutex;
 */
 #define CHECK_CLAMD(clamdStream) do {\
     if (!clamdStream) {\
-        rLog(Warn, "error: cannot connect to clamd");\
+        rLog(Warn, "error: clamd connection lost and unable to reconnect");\
         CloseClamav();\
         return -1;\
     }\
@@ -60,11 +60,15 @@ StreamSocket clamdSocket;
    \returns 0 on success and -1 on failure
 */
 int OpenClamav(const char *unixSocket) {
-    DEBUG("attempt to open control connection to clamd via %s", unixSocket); 
-
     SocketAddress sa(unixSocket);
-    clamdSocket.connect(sa);
 
+    DEBUG("attempt to open control connection to clamd via %s", unixSocket);
+    try {
+       clamdSocket.connect(sa);
+    } catch (Exception &e) {
+       rLog(Warn, "error: unable to open initial connection to clamd");
+       return -1;
+    }
     SocketStream clamd(clamdSocket);
     CHECK_CLAMD(clamd);
 
