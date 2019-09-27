@@ -66,17 +66,6 @@ AC_CHECK_LIB(PocoFoundation,_start,LIBS="$LIBS -lPocoFoundation",AC_MSG_ERROR([l
 AC_CHECK_LIB(PocoNet,_start,LIBS="$LIBS -lPocoNet",AC_MSG_ERROR([libPocoNet not found!]))
 AC_CHECK_LIB(PocoXML,_start,LIBS="$LIBS -lPocoXML",AC_MSG_ERROR([libPocoXML not found!]))
 
-# Check for libccgnu2 (via ccgnu2-config)
-AC_MSG_CHECKING(for libccgnu2 via ccgnu2-config)
-if test -x "`which ccgnu2-config 2>/dev/null`"; then
-    CPPFLAGS="$CPPFLAGS `ccgnu2-config --flags`"
-    CPPFLAGS="$CPPFLAGS `ccgnu2-config --includes`"
-    LIBS="$LIBS `ccgnu2-config --stdlibs`"
-    AC_MSG_RESULT(yes)
-else
-    AC_MSG_ERROR([libccgnu2 not found!])
-fi
-
 dnl Use option --enable-gcc-debug to enable GCC debug code.
 AC_ARG_ENABLE(gcc-debug,
 AC_HELP_STRING([--enable-gcc-debug],
