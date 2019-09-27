@@ -31,7 +31,12 @@
 
 #include <map>
 #include <tr1/unordered_map>
-#include <cc++/xml.h>
+#include <Poco/SAX/SAXParser.h>
+#include <Poco/SAX/ContentHandler.h>
+#include <Poco/SAX/LexicalHandler.h>
+#include <Poco/SAX/Attributes.h>
+#include <Poco/SAX/Locator.h>
+#include <Poco/Exception.h>
 
 #ifdef DMALLOC
 #include <dmalloc.h>
@@ -51,10 +56,10 @@ using namespace std;
 */
 using namespace tr1;
 
-/*!\namespace ost
-   \brief GNU CommonC++ namespace
+/*!\namespace Poco::XML
+   \brief Poco library XML parser namespace
 */
-using namespace ost;
+using namespace Poco::XML;
 
 /*!\enum acl_item
    \brief Enumeration of Access List Items
@@ -71,47 +76,53 @@ typedef unordered_map <string, acl_item> extum_t;
 */
 typedef map <const char *, char *, ltstr> config_t;
 
+/*!\class ConfigHandler
+   \brief Config handler handles events from ContentHandler and fills in clamfs::config
+*/
+class ConfigHandler: public ContentHandler { //, public LexicalHandler {
+   public:
+      /*!\brief Constructor for ConfigHandler */
+      ConfigHandler() { };
+      /*!\brief Destructor for ConfigHandler */
+      virtual ~ConfigHandler() { };
+   protected:
+       /**@{*/
+       /*!\brief Funcions inherited from Poco::XML::ContentHandler */
+        virtual void setDocumentLocator(const Poco::XML::Locator *loc) { (void)loc; }
+        virtual void startDocument() { }
+        virtual void endDocument() { }
+        virtual void startElement(const XMLString& uri, const XMLString& localName, const XMLString& qname, const Attributes& attributes);
+        virtual void endElement(const XMLString & uri, const XMLString & localName, const XMLString & qname);
+        virtual void characters(const XMLChar ch[], int start, int length) { (void)ch, (void)start, (void)length; }
+        virtual void ignorableWhitespace(const XMLChar ch[], int start, int length) { (void)ch, (void)start, (void)length; }
+        virtual void processingInstruction(const XMLString& target, const XMLString& data) { (void)target; (void)data; }
+        virtual void skippedEntity(const XMLString& name) { (void)name; }
+        virtual void startPrefixMapping(const Poco::XML::XMLString& prefix, const Poco::XML::XMLString& uri) { (void)prefix; (void)uri; }
+        virtual void endPrefixMapping(const Poco::XML::XMLString& prefix) { (void)prefix; }
+        /**@}*/
+    private:
+        /*!brief Forbid usage of copy constructor */
+        ConfigHandler(const ConfigHandler& aConfigHandler);
+        /*!brief Forbid usage of assignment operator */
+        ConfigHandler& operator = (const ConfigHandler& aConfigHandler);
+};
+
 /*!\class ConfigParserXML
    \brief Config pareser parses configuration file and stores configuration in clamfs::config
 */
-class ConfigParserXML: public ifstream, public XMLStream {
+class ConfigParserXML {
     public:
         /*!\brief Constructor for ConfigParserXML
            \param filename configuration file name
         */
         ConfigParserXML(const char *filename);
         /*!\brief Destructor for ConfigParserXML */
-        virtual ~ConfigParserXML();
-    protected:
-        /*!\brief Opens configuration file
-           \param filename configuration file name
-        */
-        void Open(const char *filename);
-        /*!\brief Closes configuration file*/
-        void Close(void);
-    private:
-        /*!\brief XMLStream virtual method called to read data
-           \param buffer buffer to read from
-           \param len how many characters to read
-           \returns how many characters was read
-         */
-        int read(unsigned char *buffer, size_t len);
-        /*!\brief XMLStream virtual method called at element start
-           \param name name of element beginning precessed
-           \param attr NULL terminated array of its atributes and their values
-        */
-        virtual void  startElement(const unsigned char *name, const unsigned char **attr);
-        /*!\brief XMLStream virtual method called at element end
-           \param name name of element which end was reached
-         */
-        virtual void endElement(const unsigned char *name);
-        /*!\brief Empty XMLStream virtual method, we do not need it */
-        void characters(const unsigned char *text, size_t len) { (void)text; (void)len; }
+        virtual ~ConfigParserXML() { };
     private:
         /*!brief Forbid usage of copy constructor */
-        ConfigParserXML(const ConfigParserXML& aCache);
+        ConfigParserXML(const ConfigParserXML& aConfigParserXML);
         /*!brief Forbid usage of assignment operator */
-        ConfigParserXML& operator = (const ConfigParserXML& aCache);
+        ConfigParserXML& operator = (const ConfigParserXML& aConfigParserXML);
 };
 
 } /* namespace clamfs */

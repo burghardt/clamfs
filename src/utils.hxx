@@ -29,6 +29,7 @@
 
 #include "config.h"
 
+#include <cstring>
 #include <stdlib.h>
 #include <fuse.h>
 #include <pwd.h>
