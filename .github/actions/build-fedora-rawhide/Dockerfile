@@ -5,6 +5,7 @@ RUN dnf install -y \
     gcc \
     gcc-c++ \
     kernel-devel \
+    make \
     automake \
     fuse-devel \
     rlog-devel \
