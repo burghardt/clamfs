@@ -46,8 +46,8 @@
 namespace clamfs {
 
 using namespace std;
-using namespace ost;
 using namespace Poco;
+using namespace Poco::Net;
 
 extern RLogChannel *Debug;
 extern RLogChannel *Info;

@@ -26,6 +26,11 @@
 
 #include "clamav.hxx"
 
+#include "Poco/Net/SocketAddress.h"
+#include "Poco/Net/StreamSocket.h"
+#include "Poco/Net/SocketStream.h"
+#include "Poco/StreamCopier.h"
+
 namespace clamfs {
 
 extern config_t config;
@@ -39,8 +44,8 @@ extern FastMutex scanMutex;
    connected to clamd socket. This code check socket condition
    and if socket is not open returns -1.
 */
-#define CHECK_CLAMD(clamdSocket) do {\
-    if (!clamdSocket) {\
+#define CHECK_CLAMD(clamdStream) do {\
+    if (!clamdStream) {\
         rLog(Warn, "error: cannot connect to clamd");\
         CloseClamav();\
         return -1;\
@@ -48,7 +53,7 @@ extern FastMutex scanMutex;
 } while(0)
 
 /*!\brief Unix socket used to communicate with clamd */
-unixstream clamd;
+StreamSocket clamdSocket;
 
 /*!\brief Opens connection to clamd through unix socket
    \param unixSocket name of unix socket
@@ -57,7 +62,10 @@ unixstream clamd;
 int OpenClamav(const char *unixSocket) {
     DEBUG("attempt to open control connection to clamd via %s", unixSocket); 
 
-    clamd.open(unixSocket);
+    SocketAddress sa(unixSocket);
+    clamdSocket.connect(sa);
+
+    SocketStream clamd(clamdSocket);
     CHECK_CLAMD(clamd);
 
     DEBUG("connected to clamd");
@@ -69,6 +77,7 @@ int OpenClamav(const char *unixSocket) {
 int PingClamav() {
     string reply;
 
+    SocketStream clamd(clamdSocket);
     CHECK_CLAMD(clamd);
     clamd << "nPING" << endl;
     clamd >> reply;
@@ -86,7 +95,7 @@ int PingClamav() {
 */
 void CloseClamav() {
     DEBUG("closing clamd connection");
-    clamd.close();
+    clamdSocket.close();
 }
 
 /*!\brief Request anti-virus scanning on file
@@ -110,6 +119,7 @@ int ClamavScanFile(const char *filename) {
      */
     DEBUG("started scanning file %s", filename);
     OpenClamav(config["socket"]);
+    SocketStream clamd(clamdSocket);
     if (!clamd)
         return -1;
 
