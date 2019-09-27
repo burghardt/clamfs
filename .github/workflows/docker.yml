@@ -13,21 +13,21 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@master
-#     - name: ubuntu-devel
-#       uses: ./.github/actions/build-ubuntu-devel
+      - name: ubuntu-devel
+        uses: ./.github/actions/build-ubuntu-devel
       - name: ubuntu-latest
         uses: ./.github/actions/build-ubuntu-latest
       - name: ubuntu-rolling
         uses: ./.github/actions/build-ubuntu-rolling
-#     - name: debian-unstable
-#       uses: ./.github/actions/build-debian-unstable
-#     - name: debian-testing
-#       uses: ./.github/actions/build-debian-testing
+      - name: debian-unstable
+        uses: ./.github/actions/build-debian-unstable
+      - name: debian-testing
+        uses: ./.github/actions/build-debian-testing
       - name: debian-stable
         uses: ./.github/actions/build-debian-stable
       - name: debian-oldstable
         uses: ./.github/actions/build-debian-oldstable
-#     - name: fedora-rawhide
-#       uses: ./.github/actions/build-fedora-rawhide
-#     - name: fedora-latest
-#       uses: ./.github/actions/build-fedora-latest
+      - name: fedora-rawhide
+        uses: ./.github/actions/build-fedora-rawhide
+      - name: fedora-latest
+        uses: ./.github/actions/build-fedora-latest
