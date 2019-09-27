@@ -18,18 +18,23 @@ jobs:
           sudo apt-get update
           sudo apt-get -y --no-install-recommends install \
                build-essential \
+               clang lld \
                automake \
                libfuse-dev \
-               libcommoncpp2-dev \
                librlog-dev \
                libpoco-dev \
                libboost-dev
       - name: bootstrap
         run: sh bootstrap
       - name: configure
-        run: sh configure
+        run: |
+          export CC=clang
+          export CXX=clang++
+          sh configure --enable-clang-flags
+      - name: clean
+        run: make clean
       - name: make
-        run: make
+        run: make -j
       - name: prepare
         run: |
           set -x

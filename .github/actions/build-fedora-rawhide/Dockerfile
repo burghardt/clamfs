@@ -7,7 +7,6 @@ RUN dnf install -y \
     kernel-devel \
     automake \
     fuse-devel \
-    commoncpp2-devel \
     rlog-devel \
     poco-devel \
     boost-devel

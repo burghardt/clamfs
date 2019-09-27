@@ -5,7 +5,6 @@ RUN apt-get -y --no-install-recommends install \
     build-essential \
     automake \
     libfuse-dev \
-    libcommoncpp2-dev \
     librlog-dev \
     libpoco-dev \
     libboost-dev

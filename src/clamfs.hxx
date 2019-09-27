@@ -59,8 +59,6 @@ extern RLogChannel *Debug;
 extern RLogChannel *Info;
 extern RLogChannel *Warn;
 
-extern unixstream clamd;
-
 } /* namespace clamfs */
 
 #endif /* CLAMFS_CLAMFS_HXX */
