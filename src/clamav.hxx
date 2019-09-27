@@ -29,9 +29,6 @@
 
 #include "config.h"
 
-#include <cc++/file.h>
-#include <cc++/unix.h>
-
 #include <Poco/Mutex.h>
 #include <Poco/ScopedLock.h>
 
