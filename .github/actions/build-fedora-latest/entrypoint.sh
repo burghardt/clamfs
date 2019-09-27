@@ -1,6 +1,6 @@
 #!/bin/sh -lxe
 
 sh bootstrap
-sh configure
+sh configure --disable-dependency-tracking
 make clean
 make -j
