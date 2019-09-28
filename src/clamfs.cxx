@@ -38,6 +38,7 @@
 #include "version.h"
 #include "config.h"
 
+#include <iostream>
 #include <fuse.h>
 #include <stdio.h>
 #include <string.h>
@@ -54,6 +55,7 @@
 #include "clamfs.hxx"
 #include "utils.hxx"
 
+using namespace std;
 using namespace boost;
 using namespace clamfs;
 
