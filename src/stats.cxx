@@ -2,12 +2,10 @@
 
    \brief Statistics (fs, av, cache, etc.) routines
 
-   $Id: stats.cxx,v 1.4 2008-11-23 16:04:24 burghardt Exp $
-
 *//*
 
    ClamFS - An user-space anti-virus protected file system
-   Copyright (C) 2008 Krzysztof Burghardt.
+   Copyright (C) 2008-2019 Krzysztof Burghardt
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by

@@ -2,12 +2,10 @@
 
    \brief Clamd bindings
 
-   $Id: clamav.cxx,v 1.12 2008-11-23 20:50:00 burghardt Exp $
-
 *//*
 
    ClamFS - An user-space anti-virus protected file system
-   Copyright (C) 2007-2009 Krzysztof Burghardt.
+   Copyright (C) 2007-2019 Krzysztof Burghardt
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by

@@ -9,9 +9,9 @@ BUILT_SOURCES = version.h
 acinclude.m4: ax_boost_base.m4
 	cat ax_boost_base.m4 > acinclude.m4
 
-if DOT_SVN
-version.h: .svn/entries
-else
 version.h:
+if DOT_GIT
+	echo "#define PACKAGE_VERSION_GIT_DESCRIBE \"`git describe --always --dirty --broken`\"" > version.h
+else
+	echo '#define PACKAGE_VERSION_GIT_DESCRIBE "unknown"' > version.h
 endif
-	echo \#define PACKAGE_VERSION_SVN_REV \"SVN-r`svnversion`\" > version.h
