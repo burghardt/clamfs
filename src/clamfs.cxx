@@ -2,12 +2,10 @@
 
    \brief ClamFS main file
 
-   $Id: clamfs.cxx,v 1.22 2008-12-06 13:27:30 burghardt Exp $
-
 *//*
 
    ClamFS - An user-space anti-virus protected file system
-   Copyright (C) 2007,2008 Krzysztof Burghardt.
+   Copyright (C) 2007-2019 Krzysztof Burghardt
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -992,9 +990,9 @@ int main(int argc, char *argv[])
     RLogInit(argc, argv);
     RLogOpenStdio();
 
-    rLog(Info, "ClamFS v" VERSION " (" PACKAGE_VERSION_SVN_REV ")");
+    rLog(Info, "ClamFS v" VERSION " (git-" PACKAGE_VERSION_GIT_DESCRIBE ")");
     rLog(Info, "Copyright (c) 2007-2019 Krzysztof Burghardt <krzysztof@burghardt.pl>");
-    rLog(Info, "http://clamfs.sourceforge.net/");
+    rLog(Info, "https://github.com/burghardt/clamfs");
 
     /*
      * Check if we have one argument (other arguments are assumed RLog related)

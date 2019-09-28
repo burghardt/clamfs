@@ -2,12 +2,10 @@
 
    \brief Configuration file handling routines (header file)
 
-   $Id: config.hxx,v 1.13 2008-12-06 14:29:54 burghardt Exp $
-
 *//*
 
    ClamFS - An user-space anti-virus protected file system
-   Copyright (C) 2007,2008 Krzysztof Burghardt.
+   Copyright (C) 2007-2019 Krzysztof Burghardt
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by

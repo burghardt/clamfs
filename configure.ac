@@ -1,9 +1,9 @@
-AC_INIT([ClamFS], [1.0.2-snapshoot], [krzysztof@burghardt.pl], [clamfs])
+AC_INIT([ClamFS], [1.1.0-snapshoot], [krzysztof@burghardt.pl], [clamfs])
 AC_CONFIG_AUX_DIR(build)
 AC_CONFIG_SRCDIR(src/clamfs.cxx)
 AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE
-AM_CONDITIONAL([DOT_SVN], [test -f .svn/entries])
+AM_CONDITIONAL([DOT_GIT], [test -d .git])
 
 # Checks for programs
 AC_PROG_CXX
