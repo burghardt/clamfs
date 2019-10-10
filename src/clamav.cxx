@@ -60,11 +60,11 @@ StreamSocket clamdSocket;
 int OpenClamav(const char *unixSocket) {
     SocketAddress sa(unixSocket);
 
-    DEBUG("attempt to open control connection to clamd via %s", unixSocket);
+    DEBUG("attempt to open connection to clamd via %s", unixSocket);
     try {
        clamdSocket.connect(sa);
     } catch (Exception &e) {
-       rLog(Warn, "error: unable to open initial connection to clamd");
+       rLog(Warn, "error: unable to open connection to clamd");
        return -1;
     }
     SocketStream clamd(clamdSocket);
@@ -135,7 +135,7 @@ int ClamavScanFile(const char *filename) {
     /*
      * Chceck for scan results, return if file is clean
      */
-    DEBUG("%s", reply.c_str());
+    DEBUG("clamd reply is: '%s'", reply.c_str());
     if (strncmp(reply.c_str() + reply.size() - 2,  "OK", 2) == 0 ||
         strncmp(reply.c_str() + reply.size() - 10, "Empty file", 10) == 0 ||
         strncmp(reply.c_str() + reply.size() - 8,  "Excluded", 8) == 0 ||
