@@ -28,6 +28,7 @@
 #include "config.h"
 
 #include <map>
+#include <cstring>
 #include <tr1/unordered_map>
 #include <Poco/SAX/SAXParser.h>
 #include <Poco/SAX/ContentHandler.h>
@@ -37,6 +38,7 @@
 #include <Poco/Exception.h>
 
 #ifdef DMALLOC
+#include <malloc.h>
 #include <dmalloc.h>
 #endif
 

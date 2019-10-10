@@ -27,6 +27,8 @@
 
 #include "config.h"
 
+#include <cstring>
+#include <stdlib.h>
 #include <malloc.h>
 
 #ifdef DMALLOC

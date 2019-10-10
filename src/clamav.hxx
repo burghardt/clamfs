@@ -27,10 +27,12 @@
 
 #include "config.h"
 
+#include <cstring>
 #include <Poco/Mutex.h>
 #include <Poco/ScopedLock.h>
 
 #ifdef DMALLOC
+#include <malloc.h>
 #include <dmalloc.h>
 #endif
 
