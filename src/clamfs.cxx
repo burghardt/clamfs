@@ -997,7 +997,10 @@ int main(int argc, char *argv[])
     /*
      * Check if we have one argument (other arguments are assumed RLog related)
      */
-    if (argc < 2) {
+    if ((argc < 2) ||
+        ((argc > 1) &&
+         ((strncmp(argv[1], "-h", strlen("-h")) == 0) ||
+          (strncmp(argv[1], "--help", strlen("--help")) == 0)))) {
         rLog(Warn, "ClamFS need to be invoked with one parameter - location of configuration file");
         rLog(Warn, "Example: %s /etc/clamfs/home.xml", argv[0]);
         return EXIT_FAILURE;

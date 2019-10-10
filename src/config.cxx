@@ -41,7 +41,11 @@ ConfigParserXML::ConfigParserXML(const char *filename) {
     parser.setFeature(XMLReader::FEATURE_NAMESPACES, true);
     parser.setFeature(XMLReader::FEATURE_NAMESPACE_PREFIXES, true);
     parser.setContentHandler(&handler);
-    parser.parse(filename);
+    try {
+       parser.parse(filename);
+    } catch (Poco::Exception &e) {
+       rLog(Warn, e.displayText().c_str());
+    }
 #ifndef NDEBUG
     cout << "--- end of xml dump ---" << endl;
 #endif

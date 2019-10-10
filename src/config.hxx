@@ -42,6 +42,7 @@
 #include <dmalloc.h>
 #endif
 
+#include "rlog.hxx"
 #include "utils.hxx"
 
 namespace clamfs {
@@ -60,6 +61,13 @@ using namespace tr1;
    \brief Poco library XML parser namespace
 */
 using namespace Poco::XML;
+
+/*!\namespace rlog
+   \brief rLog library namespace
+*/
+using namespace rlog;
+
+extern RLogChannel *Warn;
 
 /*!\enum acl_item
    \brief Enumeration of Access List Items
