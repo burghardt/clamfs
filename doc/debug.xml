@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Only three options are mandatory:
+      <clamd socket="" />
+      <filesystem root="" />
+      <filesystem mountpoint="" />
+
+     All other can be removed, but this will disable related subsystem.
+     For example removing <cache ... /> will disable caching completly. -->
+
+<clamfs>
+    <!-- Clamd socket settings
+         socket - location of clamd socket (may vary between operating systems)
+                  For Debian GNU/Linux it is /var/run/clamav/clamd.ctl, on
+                  FreeBSD use /var/run/clamav/clamd.sock.
+         check  - (yes or no) check if clamd is available on startup (useful if
+                  mounting clamfs file systems from /etc/fstab early on startup,
+                  while clamav daemon is not yet started) -->
+    <clamd socket="/var/run/clamav/clamd.ctl" check="no" />
+
+    <!-- File system settings
+         root       - real directory to attach as our root
+         mountpoint - where to attach our root
+         readonly   - (yes or no) mount filesystem in read-only mode
+         public     - (yes or no) limit access to process owner only or make
+                      file system publicly available for all users
+         nonempty   - (yes or no) allow mount to directory which contains
+                      files or sub-directories -->
+    <filesystem root="/tmp" mountpoint="/clamfs/tmp" public="yes" />
+
+    <!-- Statistics module keep track of filesystem & memory usage -->
+    <stats memory="yes" atexit="yes" every="60" /> <!-- time in sec -->
+
+    <!-- Logging method (stdout, syslog or file) -->
+    <log method="stdout" verbose="yes" />
+
+    <!-- Debug settings -->
+    <debug threads="no" fork="no" />
+</clamfs>
