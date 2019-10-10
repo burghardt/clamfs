@@ -27,6 +27,7 @@
 
 #include "config.h"
 
+#include <cstring>
 #include <rlog/rlog.h>
 #include <rlog/Error.h>
 #include <rlog/RLogChannel.h>
@@ -34,6 +35,7 @@
 #include <rlog/StdioNode.h>
 
 #ifdef DMALLOC
+#include <malloc.h>
 #include <dmalloc.h>
 #endif
 

@@ -22,13 +22,15 @@ jobs:
                libfuse-dev \
                librlog-dev \
                libpoco-dev \
-               libboost-dev
+               libboost-dev \
+               libdmalloc-dev
       - name: bootstrap
         run: sh bootstrap
       - name: configure
         run: |
           sh configure \
                --enable-gcc-debug \
+               --enable-dmalloc-debug \
                --enable-gprof
       - name: clean
         run: make clean

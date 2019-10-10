@@ -30,6 +30,7 @@
 #include <Poco/ExpireLRUCache.h>
 
 #ifdef DMALLOC
+#include <malloc.h>
 #include <dmalloc.h>
 #endif
 
