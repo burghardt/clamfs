@@ -29,7 +29,7 @@
 
 #include <map>
 #include <cstring>
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <Poco/SAX/SAXParser.h>
 #include <Poco/SAX/ContentHandler.h>
 #include <Poco/SAX/LexicalHandler.h>
@@ -51,11 +51,6 @@ namespace clamfs {
    \brief STanDard namespace
 */
 using namespace std;
-
-/*!\namespace tr1
-   \brief ISO/IEC TR 19768 namespace
-*/
-using namespace tr1;
 
 /*!\namespace Poco::XML
    \brief Poco library XML parser namespace
