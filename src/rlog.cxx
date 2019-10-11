@@ -94,7 +94,7 @@ void RLogOpenLogFile(const char *filename) {
     mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
 
     fileLog = open(filename, O_WRONLY | O_CREAT | O_APPEND, mode);
-    if (fileLog > 0) { /* file open succesful */
+    if (fileLog > 0) { /* file open successful */
 #ifndef NDEBUG
         fileLogNode = new StdioNode(fileLog, StdioNode::OutputContext |
         StdioNode::OutputThreadId);
