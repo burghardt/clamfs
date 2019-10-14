@@ -29,7 +29,6 @@
 
 #include <cstring>
 #include <stdlib.h>
-#include <malloc.h>
 
 #ifdef DMALLOC
 #include <dmalloc.h>

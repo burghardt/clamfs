@@ -38,7 +38,7 @@
 #include <Poco/Exception.h>
 
 #ifdef DMALLOC
-#include <malloc.h>
+#include <stdlib.h>
 #include <dmalloc.h>
 #endif
 

@@ -27,10 +27,11 @@
 
 #include "config.h"
 
+#include <sys/stat.h>
 #include <Poco/ExpireLRUCache.h>
 
 #ifdef DMALLOC
-#include <malloc.h>
+#include <stdlib.h>
 #include <dmalloc.h>
 #endif
 

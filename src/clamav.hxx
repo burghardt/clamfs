@@ -32,7 +32,7 @@
 #include <Poco/ScopedLock.h>
 
 #ifdef DMALLOC
-#include <malloc.h>
+#include <stdlib.h>
 #include <dmalloc.h>
 #endif
 
