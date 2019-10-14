@@ -15,7 +15,7 @@ AC_LANG_CPLUSPLUS
 # Checks for header files
 AC_HEADER_DIRENT
 AC_HEADER_STDC
-AC_CHECK_HEADERS([fcntl.h string.h unistd.h malloc.h])
+AC_CHECK_HEADERS([fcntl.h string.h unistd.h stdlib.h malloc.h])
 
 # Checks for typedefs, structures, and compiler characteristics
 AC_HEADER_STDBOOL

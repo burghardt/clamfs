@@ -35,8 +35,11 @@
 #include <rlog/StdioNode.h>
 
 #ifdef DMALLOC
-#include <malloc.h>
-#include <dmalloc.h>
+   #include <stdlib.h>
+   #ifdef HAVE_MALLOC_H
+      #include <malloc.h>
+   #endif
+   #include <dmalloc.h>
 #endif
 
 #include "config.hxx"

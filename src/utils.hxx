@@ -33,8 +33,10 @@
 #include <pwd.h>
 
 #ifdef DMALLOC
-#include <malloc.h>
-#include <dmalloc.h>
+   #ifdef HAVE_MALLOC_H
+      #include <malloc.h>
+   #endif
+   #include <dmalloc.h>
 #endif
 
 namespace clamfs {

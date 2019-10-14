@@ -29,10 +29,12 @@
 
 #include <cstring>
 #include <stdlib.h>
-#include <malloc.h>
+#ifdef HAVE_MALLOC_H
+   #include <malloc.h>
+#endif
 
 #ifdef DMALLOC
-#include <dmalloc.h>
+   #include <dmalloc.h>
 #endif
 
 #include "rlog.hxx"

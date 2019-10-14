@@ -27,11 +27,15 @@
 
 #include "config.h"
 
+#include <sys/stat.h>
 #include <Poco/ExpireLRUCache.h>
 
 #ifdef DMALLOC
-#include <malloc.h>
-#include <dmalloc.h>
+   #include <stdlib.h>
+   #ifdef HAVE_MALLOC_H
+      #include <malloc.h>
+   #endif
+   #include <dmalloc.h>
 #endif
 
 namespace clamfs {
