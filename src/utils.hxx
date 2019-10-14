@@ -64,23 +64,25 @@ struct ltstr {
 
 */
 static inline char* getcallername() {
-    char* filename;
-    char* res;
+    char* filename = NULL;
+    char* res = NULL;
     if (asprintf(&filename, "/proc/%d/cmdline", fuse_get_context()->pid) > 0) {
         FILE* proc=fopen(filename, "rt");
-        free(filename);
-        char cmdline[256];
-        memset(cmdline, 0, sizeof(cmdline));
-        size_t read = fread(cmdline, sizeof(cmdline) - 1, 1, proc);
-        if (1 == read)
-            res = strdup(cmdline);
-        else
-            if (feof(proc))
+        if (proc != NULL) {
+            free(filename);
+            char cmdline[256];
+            memset(cmdline, 0, sizeof(cmdline));
+            size_t read = fread(cmdline, sizeof(cmdline) - 1, 1, proc);
+            if (1 == read) {
                 res = strdup(cmdline);
-            else
-                res = strdup("< unknown >");
-        fclose(proc);
-    } else
+            } else {
+                if (feof(proc))
+                    res = strdup(cmdline);
+            }
+            fclose(proc);
+       }
+    }
+    if (res == NULL)
         res = strdup("< unknown >");
     return res;
 }
