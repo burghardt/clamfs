@@ -252,6 +252,24 @@ in config file with `readonly` option set to `yes`:
 <filesystem root="/share" mountpoint="/clamfs/share" readonly="yes" />
 ```
 
+### Program name reported as unknown when virus found
+
+```
+16:33:24 (clamav.cxx:152) (< unknown >:19690) (root:0) /tmp/eicar.com: Eicar-Test-Signature FOUND
+```
+
+To see program name instead of `< unknown >` in log messages on FreeBSD one
+need to mount `/proc` filesystem. Add following line to `/etc/fstab`.
+```
+proc /proc procfs rw 0 0
+```
+And mount `/proc` with `mount /proc`.
+
+Program name should be reported correctly with mounted `/proc`.
+```
+16:37:31 (clamav.cxx:152) (hexdump:19740) (root:0) /tmp/eicar.com: Eicar-Test-Signature FOUND
+```
+
 ### Using ClamFS with WINE
 
 Please refer to my blog post [Wine with on-access ClamAV scanning](https://blog.burghardt.pl/2007/11/wine-with-on-access-clamav-scanning/)
