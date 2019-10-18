@@ -1,7 +1,7 @@
 FROM fedora:latest
 
-RUN dnf update -y
-RUN dnf install -y \
+RUN dnf update -y && \
+    dnf install -y \
     gcc \
     gcc-c++ \
     kernel-devel \
