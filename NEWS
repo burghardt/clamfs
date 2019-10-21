@@ -3,9 +3,18 @@
  =============
 
  *******************
- 1.0.2 (?? ??? ????)
+ 1.1.0 (21 Oct 2019)
  *******************
 
+* Config parser switch to SAX in Poco and drops libccgnu2 XML parser.
+* Remove dependency on GNU libCommonCpp2 for ClamAV daemon interface.
+* Update default configuration to more sane values (file size limit is 64 MiB
+  and cache size limit is set to 65536 entries).
+* Fixed crash when started with nonexistent config file.
+* Fixed crash on FreBSD with empty (not mounted) /proc file system.
+* Merged FreeBSD build fixes from ports tree.
+* Fixed FTBFS clamfs.cxx:993 invalid suffix on literal (ftbfs with GCC-9).
+* Fixed FTBFS with --enable-dmalloc-debug configuration flag.
 * Fixed FTBFS problem with calling constructor directly
   (patch for building with gcc 4.5 by Kacper Kowalik).
 
