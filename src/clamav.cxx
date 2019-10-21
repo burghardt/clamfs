@@ -36,7 +36,7 @@ extern FastMutex scanMutex;
 
 /*!\def CHECK_CLAMD
    \brief Check if we are connected to clamd
-   \param clamdSocket unixstream variable representing socket
+   \param clamdStream SocketStream variable representing IO stream to check
 
    This macro is intended to easier to check if ClamFS is
    connected to clamd socket. This code check socket condition
