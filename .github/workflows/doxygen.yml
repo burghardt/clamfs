@@ -20,6 +20,7 @@ jobs:
                build-essential \
                automake \
                doxygen \
+               graphviz \
                libfuse-dev \
                librlog-dev \
                libpoco-dev \
