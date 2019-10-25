@@ -41,10 +41,21 @@ AX_BOOST_BASE(1.33)
 CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
 LDFLAGS="$LDFLAGS $BOOST_LDFLAGS"
 
-# Checks for libfuse
-CPPFLAGS="$CPPFLAGS -pthread -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=26"
-AC_CHECK_HEADER(fuse.h,,AC_MSG_ERROR([fuse.h not found!]))
-AC_CHECK_LIB(fuse,fuse_main,LIBS="$LIBS -lfuse",AC_MSG_ERROR([libfuse not found!]))
+# Check for libfuse3
+PKG_CHECK_MODULES([FUSE3], [fuse3 >= 3],
+    [CPPFLAGS="$CPPFLAGS $FUSE3_CFLAGS -pthread -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=31"
+     LIBS="$LIBS $FUSE3_LIBS"
+    ],
+    [
+        # Checks for libfuse
+        CPPFLAGS="$CPPFLAGS -pthread -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=26"
+        AC_CHECK_HEADER(fuse.h,,AC_MSG_ERROR([fuse.h not found!]))
+        AC_CHECK_LIB(fuse,fuse_main,LIBS="$LIBS -lfuse",AC_MSG_ERROR([libfuse not found!]))
+    ])
+
+# Check for libulockmgr
+AC_CHECK_HEADER(ulockmgr.h,AC_DEFINE([HAVE_LIBULOCKMGR],[1],[Use (ulockmgr.]))
+AC_CHECK_LIB(ulockmgr,ulockmgr_op,LIBS="$LIBS -lulockmgr")
 
 # Check for librlog
 CPPFLAGS="$CPPFLAGS -DRLOG_COMPONENT=clamfs"
