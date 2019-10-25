@@ -7,6 +7,7 @@ RUN dnf update -y && \
     kernel-devel \
     make \
     automake \
+    pkg-config \
     fuse3-devel \
     rlog-devel \
     poco-devel \
