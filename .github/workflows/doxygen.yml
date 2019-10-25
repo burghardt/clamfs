@@ -18,13 +18,21 @@ jobs:
           sudo apt-get update
           sudo apt-get -y --no-install-recommends install \
                build-essential \
+               meson ninja-build \
                automake \
-               doxygen \
-               graphviz \
-               libfuse-dev \
+               pkg-config \
                librlog-dev \
                libpoco-dev \
-               libboost-dev
+               libboost-dev \
+               libdmalloc-dev
+      - name: fuse3
+        run: |
+          mkdir /tmp/fuse3 ; cd /tmp/fuse3
+          git clone --depth 1 https://github.com/libfuse/libfuse.git .
+          mkdir build ; cd build
+          meson ..
+          ninja
+          sudo ninja install
       - name: bootstrap
         run: sh bootstrap
       - name: configure
