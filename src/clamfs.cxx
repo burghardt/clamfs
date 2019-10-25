@@ -212,15 +212,24 @@ struct clamfs_dirp {
 */
 static int clamfs_opendir(const char *path, struct fuse_file_info *fi)
 {
-    DIR *dp;
+    int res;
+
+    struct clamfs_dirp *d = (clamfs_dirp*)malloc(sizeof(struct clamfs_dirp));
+    if (d == NULL)
+        return -ENOMEM;
 
     const char* fpath = fixpath(path);
-    dp = opendir(fpath);
+    d->dp = opendir(fpath);
     delete[] fpath;
-    if (dp == NULL)
-        return -errno;
+    if (d->dp == NULL) {
+        res = -errno;
+        free(d);
+        return res;
+    }
+    d->offset = 0;
+    d->entry = NULL;
 
-    fi->fh = (unsigned long) dp;
+    fi->fh = (unsigned long) d;
     return 0;
 }
 
