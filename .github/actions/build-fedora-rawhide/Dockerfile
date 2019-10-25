@@ -7,7 +7,7 @@ RUN dnf update -y && \
     kernel-devel \
     make \
     automake \
-    fuse-devel \
+    fuse3-devel \
     rlog-devel \
     poco-devel \
     boost-devel

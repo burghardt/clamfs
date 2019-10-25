@@ -20,7 +20,7 @@ jobs:
                build-essential \
                clang lld \
                automake \
-               libfuse-dev \
+               libfuse3-dev \
                librlog-dev \
                libpoco-dev \
                libboost-dev
