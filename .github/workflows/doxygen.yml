@@ -19,6 +19,7 @@ jobs:
           sudo apt-get -y --no-install-recommends install \
                build-essential \
                meson ninja-build \
+               doxygen graphviz \
                automake \
                pkg-config \
                librlog-dev \
