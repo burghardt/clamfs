@@ -1261,33 +1261,18 @@ int main(int argc, char *argv[])
         fuse_argv[fuse_argc++] = strdup("-o");
         if ((config["nonempty"] != NULL) && /* public and nonempty */
             (strncmp(config["nonempty"], "yes", 3) == 0)) {
-#ifdef HAVE_SETXATTR_WITH_ACL_PATCH
-            fuse_argv[fuse_argc++] =
-                strdup("allow_other,default_permissions,acl,nonempty");
-#else
             fuse_argv[fuse_argc++] =
                 strdup("allow_other,default_permissions,nonempty");
-#endif
         } else { /* public without nonempty */
-#ifdef HAVE_SETXATTR_WITH_ACL_PATCH
-            fuse_argv[fuse_argc++] = strdup("allow_other,default_permissions,acl");
-#else
             fuse_argv[fuse_argc++] = strdup("allow_other,default_permissions");
-#endif
         }
     } else if ((config["nonempty"] != NULL) && /* private and nonempty */
         (strncmp(config["nonempty"], "yes", 3) == 0)) {
         fuse_argv[fuse_argc++] = strdup("-o");
-#ifdef HAVE_SETXATTR_WITH_ACL_PATCH
-        fuse_argv[fuse_argc++] = strdup("nonempty,default_permissions,acl");
-#else
         fuse_argv[fuse_argc++] = strdup("nonempty");
-#endif
-#ifdef HAVE_SETXATTR_WITH_ACL_PATCH
     } else {
         fuse_argv[fuse_argc++] = strdup("-o");
-        fuse_argv[fuse_argc++] = strdup("default_permissions,acl");
-#endif
+        fuse_argv[fuse_argc++] = strdup("default_permissions");
     }
 
     if ((config["readonly"] != NULL) &&
