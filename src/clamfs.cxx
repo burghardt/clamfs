@@ -114,6 +114,27 @@ static inline const char* fixpath(const char* path)
     return fixed;
 }
 
+static void *clamfs_init(struct fuse_conn_info *conn,
+                         struct fuse_config *cfg)
+{
+    (void) conn;
+    cfg->use_ino = 1;
+    cfg->nullpath_ok = 1;
+
+    /* Pick up changes from lower filesystem right away. This is
+       also necessary for better hardlink support. When the kernel
+       calls the unlink() handler, it does not know the inode of
+       the to-be-removed entry and can therefore not invalidate
+       the cache of the associated inode - resulting in an
+       incorrect st_nlink value being reported for any remaining
+       hardlinks to this inode. */
+    cfg->entry_timeout = 0;
+    cfg->attr_timeout = 0;
+    cfg->negative_timeout = 0;
+
+    return NULL;
+}
+
 /*!\brief FUSE getattr() callback
    \param path file path
    \param stbuf buffer to pass to lstat()
@@ -1121,6 +1142,7 @@ int main(int argc, char *argv[])
      */
     memset(&clamfs_oper, 0, sizeof(fuse_operations));
 
+    clamfs_oper.init        = clamfs_init;
     clamfs_oper.getattr     = clamfs_getattr;
     clamfs_oper.access      = clamfs_access;
     clamfs_oper.readlink    = clamfs_readlink;
