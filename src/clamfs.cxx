@@ -48,7 +48,11 @@
 #ifdef HAVE_SETXATTR
 #include <sys/xattr.h>
 #endif
-
+#ifdef HAVE_LIBULOCKMGR
+extern "C"{
+#include <ulockmgr.h>
+}
+#endif
 #include <boost/shared_array.hpp>
 
 #include "clamfs.hxx"
@@ -1055,6 +1059,49 @@ static int clamfs_removexattr(const char *path, const char *name)
 }
 #endif /* HAVE_SETXATTR */
 
+#ifdef HAVE_LIBULOCKMGR
+static int clamfs_lock(const char *path, struct fuse_file_info *fi, int cmd,
+                    struct flock *lock)
+{
+    (void) path;
+
+    return ulockmgr_op(fi->fh, cmd, lock, &fi->lock_owner,
+               sizeof(fi->lock_owner));
+}
+#endif
+
+static int clamfs_flock(const char *path, struct fuse_file_info *fi, int op)
+{
+    int res;
+    (void) path;
+
+    res = flock(fi->fh, op);
+    if (res == -1)
+        return -errno;
+
+    return 0;
+}
+
+#ifdef HAVE_COPY_FILE_RANGE
+static ssize_t clamfs_copy_file_range(const char *path_in,
+                                      struct fuse_file_info *fi_in,
+                                      off_t off_in, const char *path_out,
+                                      struct fuse_file_info *fi_out,
+                                      off_t off_out, size_t len, int flags)
+{
+    ssize_t res;
+    (void) path_in;
+    (void) path_out;
+
+    res = copy_file_range(fi_in->fh, &off_in, fi_out->fh, &off_out, len,
+                  flags);
+    if (res == -1)
+        return -errno;
+
+    return res;
+}
+#endif
+
 /*!\brief ClamFS main()
    \param argc arguments counter
    \param argv arguments array
@@ -1110,6 +1157,13 @@ int main(int argc, char *argv[])
     clamfs_oper.getxattr    = clamfs_getxattr;
     clamfs_oper.listxattr   = clamfs_listxattr;
     clamfs_oper.removexattr = clamfs_removexattr;
+#endif
+#ifdef HAVE_LIBULOCKMGR
+    clamfs_oper.lock        = clamfs_lock;
+#endif
+    clamfs_oper.flock       = clamfs_flock;
+#ifdef HAVE_COPY_FILE_RANGE
+    clamfs_oper.copy_file_range = clamfs_copy_file_range;
 #endif
 
     umask(0);
