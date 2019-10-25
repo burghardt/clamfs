@@ -27,7 +27,8 @@
     File fusexmp_fh.c comes with FUSE source code. Original copyright is below.
 
     FUSE: Filesystem in Userspace
-    Copyright (C) 2001-2006  Miklos Szeredi <miklos@szeredi.hu>
+    Copyright (C) 2001-2007  Miklos Szeredi <miklos@szeredi.hu>
+    Copyright (C) 2011       Sebastian Pipping <sebastian@pipping.org>
 
     This program can be distributed under the terms of the GNU GPL.
     See the file COPYING.
