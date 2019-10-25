@@ -968,6 +968,19 @@ static int clamfs_fsync(const char *path, int isdatasync,
     return 0;
 }
 
+#ifdef HAVE_POSIX_FALLOCATE
+static int clamfs_fallocate(const char *path, int mode, off_t offset,
+                         off_t length, struct fuse_file_info *fi)
+{
+    (void) path;
+
+    if (mode)
+        return -EOPNOTSUPP;
+
+    return -posix_fallocate(fi->fh, offset, length);
+}
+#endif
+
 #ifdef HAVE_SETXATTR
 /*!\brief FUSE setxattr() callback
    \param path file path
@@ -1089,6 +1102,9 @@ int main(int argc, char *argv[])
     clamfs_oper.flush       = clamfs_flush;
     clamfs_oper.release     = clamfs_release;
     clamfs_oper.fsync       = clamfs_fsync;
+#ifdef HAVE_POSIX_FALLOCATE
+    clamfs_oper.fallocate   = clamfs_fallocate;
+#endif
 #ifdef HAVE_SETXATTR
     clamfs_oper.setxattr    = clamfs_setxattr;
     clamfs_oper.getxattr    = clamfs_getxattr;
