@@ -44,6 +44,7 @@
 #include <fcntl.h>
 #include <dirent.h>
 #include <errno.h>
+#include <sys/file.h>
 #ifdef HAVE_SETXATTR
 #include <sys/xattr.h>
 #endif
@@ -113,33 +114,21 @@ static inline const char* fixpath(const char* path)
    \param stbuf buffer to pass to lstat()
    \returns 0 if lstat() returns without error on -errno otherwise
 */
-static int clamfs_getattr(const char *path, struct stat *stbuf)
+static int clamfs_getattr(const char *path, struct stat *stbuf,
+                          struct fuse_file_info *fi)
 {
     int res;
 
-    const char* fpath = fixpath(path);
-    res = lstat(fpath, stbuf);
-    delete[] fpath;
-    if (res == -1)
-        return -errno;
-
-    return 0;
-}
-
-/*!\brief FUSE fgetattr() callback
-   \param path file path
-   \param stbuf buffer to pass to lstat()
-   \param fi information about open files
-   \returns 0 if lstat() returns without error on -errno otherwise
-*/
-static int clamfs_fgetattr(const char *path, struct stat *stbuf,
-                        struct fuse_file_info *fi)
-{
-    int res;
-
-    (void) path;
-
-    res = fstat((int)fi->fh, stbuf);
+    if (fi != NULL)
+    {
+        res = fstat(fi->fh, stbuf);
+    }
+    else
+    {
+       const char* fpath = fixpath(path);
+       res = lstat(fpath, stbuf);
+       delete[] fpath;
+    }
     if (res == -1)
         return -errno;
 
@@ -184,6 +173,12 @@ static int clamfs_readlink(const char *path, char *buf, size_t size)
     return 0;
 }
 
+struct clamfs_dirp {
+    DIR *dp;
+    struct dirent *entry;
+    off_t offset;
+};
+
 /*!\brief FUSE opendir() callback
    \param path directory path
    \param fi information about open files
@@ -207,34 +202,78 @@ static int clamfs_opendir(const char *path, struct fuse_file_info *fi)
    \param fi information about open files
    \returns pointer to file handle
 */
-static inline DIR *get_dirp(struct fuse_file_info *fi)
+static inline clamfs_dirp *get_dirp(struct fuse_file_info *fi)
 {
-    return (DIR *) (uintptr_t) fi->fh;
+    return (clamfs_dirp *) (uintptr_t) fi->fh;
 }
 
 /*!\brief FUSE readdir() callback
    \param path directory path
    \param buf data buffer
    \param filler directory content filter
-   \param offset directory poninter offset
+   \param offset directory pointer offset
    \param fi information about open files
    \returns always 0
 */
 static int clamfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
-                       off_t offset, struct fuse_file_info *fi)
+                          off_t offset, struct fuse_file_info *fi,
+                          enum fuse_readdir_flags flags)
 {
-    DIR *dp = get_dirp(fi);
-    struct dirent *de;
+    struct clamfs_dirp *d = get_dirp(fi);
 
     (void) path;
-    seekdir(dp, offset);
-    while ((de = readdir(dp)) != NULL) {
+    if (offset != d->offset) {
+#ifndef __FreeBSD__
+        seekdir(d->dp, offset);
+#else
+        /* Subtract the one that we add when calling
+           telldir() below */
+        seekdir(d->dp, offset-1);
+#endif
+        d->entry = NULL;
+        d->offset = offset;
+    }
+    while (1) {
         struct stat st;
-        memset(&st, 0, sizeof(st));
-        st.st_ino = de->d_ino;
-        st.st_mode = (unsigned int)de->d_type << 12;
-        if (filler(buf, de->d_name, &st, telldir(dp)))
+        off_t nextoff;
+        int fill_flags = 0;
+
+        if (!d->entry) {
+            d->entry = readdir(d->dp);
+            if (!d->entry)
+                break;
+        }
+#ifdef HAVE_FSTATAT_THAT_WORKS
+        if (flags & FUSE_READDIR_PLUS) {
+            int res;
+
+            res = fstatat(dirfd(d->dp), d->entry->d_name, &st,
+                      AT_SYMLINK_NOFOLLOW);
+            if (res != -1)
+                fill_flags |= FUSE_FILL_DIR_PLUS;
+        }
+#else
+        (void) flags;
+#endif
+        if (!(fill_flags & FUSE_FILL_DIR_PLUS)) {
+            memset(&st, 0, sizeof(st));
+            st.st_ino = d->entry->d_ino;
+            st.st_mode = d->entry->d_type << 12;
+        }
+        nextoff = telldir(d->dp);
+#ifdef __FreeBSD__
+        /* Under FreeBSD, telldir() may return 0 the first time
+           it is called. But for libfuse, an offset of zero
+           means that offsets are not supported, so we shift
+           everything by one. */
+        nextoff++;
+#endif
+        if (filler(buf, d->entry->d_name, &st, nextoff,
+                   (fuse_fill_dir_flags)fill_flags))
             break;
+
+        d->entry = NULL;
+        d->offset = nextoff;
     }
 
     return 0;
@@ -247,9 +286,10 @@ static int clamfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 */
 static int clamfs_releasedir(const char *path, struct fuse_file_info *fi)
 {
-    DIR *dp = get_dirp(fi);
+    struct clamfs_dirp *d = get_dirp(fi);
     (void) path;
-    closedir(dp);
+    closedir(d->dp);
+    free(d);
     return 0;
 }
 
@@ -362,9 +402,13 @@ static int clamfs_symlink(const char *from, const char *to)
    \param to new file name
    \returns 0 if rename() returns without error on -errno otherwise
 */
-static int clamfs_rename(const char *from, const char *to)
+static int clamfs_rename(const char *from, const char *to, unsigned int flags)
 {
     int res;
+
+    /* When we have renameat2() in libc, then we can implement flags */
+    if (flags)
+        return -EINVAL;
 
     const char* ffrom = fixpath(from);
     const char* fto = fixpath(to);
@@ -407,13 +451,21 @@ static int clamfs_link(const char *from, const char *to)
    \param mode file permissions
    \returns 0 if chmod() returns without error on -errno otherwise
 */
-static int clamfs_chmod(const char *path, mode_t mode)
+static int clamfs_chmod(const char *path, mode_t mode,
+                        struct fuse_file_info *fi)
 {
     int res;
 
-    const char* fpath = fixpath(path);
-    res = chmod(fpath, mode);
-    delete[] fpath;
+    if (fi)
+    {
+        res = fchmod(fi->fh, mode);
+    }
+    else
+    {
+        const char* fpath = fixpath(path);
+        res = chmod(fpath, mode);
+        delete[] fpath;
+    }
     if (res == -1)
         return -errno;
 
@@ -426,13 +478,21 @@ static int clamfs_chmod(const char *path, mode_t mode)
    \param gid group id
    \returns 0 if chown() returns without error on -errno otherwise
 */
-static int clamfs_chown(const char *path, uid_t uid, gid_t gid)
+static int clamfs_chown(const char *path, uid_t uid, gid_t gid,
+                        struct fuse_file_info *fi)
 {
     int res;
 
-    const char* fpath = fixpath(path);
-    res = lchown(fpath, uid, gid);
-    delete[] fpath;
+    if (fi)
+    {
+        res = fchown(fi->fh, uid, gid);
+    }
+    else
+    {
+        const char* fpath = fixpath(path);
+        res = lchown(fpath, uid, gid);
+        delete[] fpath;
+    }
     if (res == -1)
         return -errno;
 
@@ -444,56 +504,54 @@ static int clamfs_chown(const char *path, uid_t uid, gid_t gid)
    \param size requested size
    \returns 0 if truncate() returns without error on -errno otherwise
 */
-static int clamfs_truncate(const char *path, off_t size)
+static int clamfs_truncate(const char *path, off_t size,
+                           struct fuse_file_info *fi)
 {
     int res;
 
-    const char* fpath = fixpath(path);
-    res = truncate(fpath, size);
-    delete[] fpath;
+    if (fi)
+    {
+        res = ftruncate(fi->fh, size);
+    }
+    else
+    {
+        const char* fpath = fixpath(path);
+        res = truncate(fpath, size);
+        delete[] fpath;
+    }
     if (res == -1)
         return -errno;
 
     return 0;
 }
 
-/*!\brief FUSE ftruncate() callback
+#ifdef HAVE_UTIMENSAT
+/*!\brief FUSE utimens() callback
    \param path file path
-   \param size requested size
-   \param fi information about open files
-   \returns 0 if ftruncate() returns without error on -errno otherwise
+   \returns 0 if utimens() returns without error on -errno otherwise
 */
-static int clamfs_ftruncate(const char *path, off_t size,
-                         struct fuse_file_info *fi)
+static int clamfs_utimens(const char *path, const struct timespec ts[2],
+                        struct fuse_file_info *fi)
 {
     int res;
 
-    (void) path;
-
-    res = ftruncate((int)fi->fh, size);
+    /* don't use utime/utimes since they follow symlinks */
+    if (fi)
+    {
+        res = futimens(fi->fh, ts);
+    }
+    else
+    {
+        const char* fpath = fixpath(path);
+        res = utimensat(0, path, ts, AT_SYMLINK_NOFOLLOW);
+        delete[] fpath;
+    }
     if (res == -1)
         return -errno;
 
     return 0;
 }
-
-/*!\brief FUSE utime() callback
-   \param path file path
-   \param buf data buffer
-   \returns 0 if utime() returns without error on -errno otherwise
-*/
-static int clamfs_utime(const char *path, struct utimbuf *buf)
-{
-    int res;
-
-    const char* fpath = fixpath(path);
-    res = utime(fpath, buf);
-    delete[] fpath;
-    if (res == -1)
-        return -errno;
-
-    return 0;
-}
+#endif
 
 /*!\brief FUSE create() callback
    \param path file path
@@ -779,6 +837,28 @@ static int clamfs_read(const char *path, char *buf, size_t size, off_t offset,
     return (int)res;
 }
 
+static int clamfs_read_buf(const char *path, struct fuse_bufvec **bufp,
+                        size_t size, off_t offset, struct fuse_file_info *fi)
+{
+    struct fuse_bufvec *src;
+
+    (void) path;
+
+    src = (fuse_bufvec*)malloc(sizeof(struct fuse_bufvec));
+    if (src == NULL)
+        return -ENOMEM;
+
+    *src = FUSE_BUFVEC_INIT(size);
+
+    src->buf[0].flags = (fuse_buf_flags)(FUSE_BUF_IS_FD | FUSE_BUF_FD_SEEK);
+    src->buf[0].fd = fi->fh;
+    src->buf[0].pos = offset;
+
+    *bufp = src;
+
+    return 0;
+}
+
 /*!\brief FUSE write() callback
    \param path file path
    \param buf data buffer
@@ -800,6 +880,20 @@ static int clamfs_write(const char *path, const char *buf, size_t size,
     return (int)res;
 }
 
+static int clamfs_write_buf(const char *path, struct fuse_bufvec *buf,
+                         off_t offset, struct fuse_file_info *fi)
+{
+    struct fuse_bufvec dst = FUSE_BUFVEC_INIT(fuse_buf_size(buf));
+
+    (void) path;
+
+    dst.buf[0].flags = (fuse_buf_flags)(FUSE_BUF_IS_FD | FUSE_BUF_FD_SEEK);
+    dst.buf[0].fd = fi->fh;
+    dst.buf[0].pos = offset;
+
+    return fuse_buf_copy(&dst, buf, FUSE_BUF_SPLICE_NONBLOCK);
+}
+
 /*!\brief FUSE statfs() callback
    \param path file path
    \param stbuf data buffer
@@ -812,6 +906,23 @@ static int clamfs_statfs(const char *path, struct statvfs *stbuf)
     const char* fpath = fixpath(path);
     res = statvfs(fpath, stbuf);
     delete[] fpath;
+    if (res == -1)
+        return -errno;
+
+    return 0;
+}
+
+static int clamfs_flush(const char *path, struct fuse_file_info *fi)
+{
+    int res;
+
+    (void) path;
+    /* This is called from every close on an open file, so call the
+       close on the underlying filesystem.  But since flush may be
+       called multiple times for an open file, this must not really
+       close the file.  This is important if used on a network
+       filesystem like NFS which flush the data/metadata on close() */
+    res = close(dup(fi->fh));
     if (res == -1)
         return -errno;
 
@@ -950,7 +1061,6 @@ int main(int argc, char *argv[])
     memset(&clamfs_oper, 0, sizeof(fuse_operations));
 
     clamfs_oper.getattr     = clamfs_getattr;
-    clamfs_oper.fgetattr    = clamfs_fgetattr;
     clamfs_oper.access      = clamfs_access;
     clamfs_oper.readlink    = clamfs_readlink;
     clamfs_oper.opendir     = clamfs_opendir;
@@ -966,13 +1076,17 @@ int main(int argc, char *argv[])
     clamfs_oper.chmod       = clamfs_chmod;
     clamfs_oper.chown       = clamfs_chown;
     clamfs_oper.truncate    = clamfs_truncate;
-    clamfs_oper.ftruncate   = clamfs_ftruncate;
-    clamfs_oper.utime       = clamfs_utime;
+#ifdef HAVE_UTIMENSAT
+    clamfs_oper.utimens     = clamfs_utimens;
+#endif
     clamfs_oper.create      = clamfs_create;
     clamfs_oper.open        = clamfs_open;
     clamfs_oper.read        = clamfs_read;
+    clamfs_oper.read_buf    = clamfs_read_buf;
     clamfs_oper.write       = clamfs_write;
+    clamfs_oper.write_buf   = clamfs_write_buf;
     clamfs_oper.statfs      = clamfs_statfs;
+    clamfs_oper.flush       = clamfs_flush;
     clamfs_oper.release     = clamfs_release;
     clamfs_oper.fsync       = clamfs_fsync;
 #ifdef HAVE_SETXATTR
