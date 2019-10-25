@@ -45,12 +45,6 @@ LDFLAGS="$LDFLAGS $BOOST_LDFLAGS"
 PKG_CHECK_MODULES([FUSE3], [fuse3 >= 3],
     [CPPFLAGS="$CPPFLAGS $FUSE3_CFLAGS -pthread -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=31"
      LIBS="$LIBS $FUSE3_LIBS"
-    ],
-    [
-        # Checks for libfuse
-        CPPFLAGS="$CPPFLAGS -pthread -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=26"
-        AC_CHECK_HEADER(fuse.h,,AC_MSG_ERROR([fuse.h not found!]))
-        AC_CHECK_LIB(fuse,fuse_main,LIBS="$LIBS -lfuse",AC_MSG_ERROR([libfuse not found!]))
     ])
 
 # Check for libulockmgr
