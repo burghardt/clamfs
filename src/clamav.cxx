@@ -24,6 +24,9 @@
 
 #include "clamav.hxx"
 
+/* must be first because it may define _XOPEN_SOURCE */
+#include "fdpassing.h"
+
 #include "Poco/Net/SocketAddress.h"
 #include "Poco/Net/StreamSocket.h"
 #include "Poco/Net/SocketStream.h"
@@ -51,7 +54,13 @@ extern FastMutex scanMutex;
 } while(0)
 
 /*!\brief Unix socket used to communicate with clamd */
-StreamSocket clamdSocket;
+class clamdStreamSocket: public StreamSocket {
+    public:
+        int sendFd(struct msghdr* msg) {
+            return sendmsg(sockfd(), msg, 0);
+        }
+};
+clamdStreamSocket clamdSocket;
 
 /*!\brief Opens connection to clamd through unix socket
    \param unixSocket name of unix socket
@@ -100,6 +109,33 @@ void CloseClamav() {
     clamdSocket.close();
 }
 
+/*!\brief Send file descriptor over clamd connection
+   \param fd file descriptor to pass to clamd
+ */
+void SendFileDescriptorForFile(const int fd) {
+    struct iovec iov[1];
+    struct msghdr msg;
+    struct cmsghdr *cmsg;
+    unsigned char fdbuf[CMSG_SPACE(sizeof(int))];
+    char dummy[]   = "";
+
+    iov[0].iov_base = dummy;
+    iov[0].iov_len  = 1;
+
+    memset(&msg, 0, sizeof(msg));
+    msg.msg_control    = fdbuf;
+    msg.msg_iov        = iov;
+    msg.msg_iovlen     = 1;
+    msg.msg_controllen = CMSG_LEN(sizeof(int));
+    cmsg               = CMSG_FIRSTHDR(&msg);
+    cmsg->cmsg_len     = CMSG_LEN(sizeof(int));
+    cmsg->cmsg_level   = SOL_SOCKET;
+    cmsg->cmsg_type    = SCM_RIGHTS;
+    *(int *)CMSG_DATA(cmsg) = fd;
+
+    clamdSocket.sendFd(&msg);
+}
+
 /*!\brief Request anti-virus scanning on file
    \param filename name of file to scan
    \returns -1 one error when opening clamd connection,
@@ -125,10 +161,32 @@ int ClamavScanFile(const char *filename) {
     if (!clamd)
         return -1;
 
+    if ((config["fdpass"] != NULL) &&
+        strncmp(config["fdpass"], "yes", 3) == 0) {
+        /*
+         * Scan file using FILDES method
+         */
+        int fd = open(filename, O_RDONLY);
+        if (fd >= 0) {
+            clamd << "nFILDES"<< endl << flush;
+            SendFileDescriptorForFile(fd);
+            close(fd);
+        } else {
+            /* As a last resort we send SCAN method in case clamd has access */
+            rLog(Warn, "Unable to pass fd, failing back to file name for '%s'",
+                 filename);
+            clamd << "nSCAN " << filename << endl;
+        }
+    } else {
+        /*
+         * Scan file using SCAN method
+         */
+        clamd << "nSCAN " << filename << endl;
+    }
+
     /*
-     * Scan file using SCAN method
+     * Receive results and close stream
      */
-    clamd << "nSCAN " << filename << endl;
     getline(clamd, reply);
     CloseClamav();
 
