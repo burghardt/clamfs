@@ -147,7 +147,7 @@ static int clamfs_getattr(const char *path, struct stat *stbuf,
 
     if (fi != NULL)
     {
-        res = fstat(fi->fh, stbuf);
+        res = fstat((int)fi->fh, stbuf);
     }
     else
     {
@@ -293,7 +293,7 @@ static int clamfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
         if (!(fill_flags & FUSE_FILL_DIR_PLUS)) {
             memset(&st, 0, sizeof(st));
             st.st_ino = d->entry->d_ino;
-            st.st_mode = d->entry->d_type << 12;
+            st.st_mode = (unsigned int)d->entry->d_type << 12;
         }
         nextoff = telldir(d->dp);
 #ifdef __FreeBSD__
@@ -493,7 +493,7 @@ static int clamfs_chmod(const char *path, mode_t mode,
 
     if (fi)
     {
-        res = fchmod(fi->fh, mode);
+        res = fchmod((int)fi->fh, mode);
     }
     else
     {
@@ -520,7 +520,7 @@ static int clamfs_chown(const char *path, uid_t uid, gid_t gid,
 
     if (fi)
     {
-        res = fchown(fi->fh, uid, gid);
+        res = fchown((int)fi->fh, uid, gid);
     }
     else
     {
@@ -546,7 +546,7 @@ static int clamfs_truncate(const char *path, off_t size,
 
     if (fi)
     {
-        res = ftruncate(fi->fh, size);
+        res = ftruncate((int)fi->fh, size);
     }
     else
     {
@@ -573,7 +573,7 @@ static int clamfs_utimens(const char *path, const struct timespec ts[2],
     /* don't use utime/utimes since they follow symlinks */
     if (fi)
     {
-        res = futimens(fi->fh, ts);
+        res = futimens((int)fi->fh, ts);
     }
     else
     {
@@ -886,7 +886,7 @@ static int clamfs_read_buf(const char *path, struct fuse_bufvec **bufp,
     *src = FUSE_BUFVEC_INIT(size);
 
     src->buf[0].flags = (fuse_buf_flags)(FUSE_BUF_IS_FD | FUSE_BUF_FD_SEEK);
-    src->buf[0].fd = fi->fh;
+    src->buf[0].fd = (int)fi->fh;
     src->buf[0].pos = offset;
 
     *bufp = src;
@@ -923,10 +923,10 @@ static int clamfs_write_buf(const char *path, struct fuse_bufvec *buf,
     (void) path;
 
     dst.buf[0].flags = (fuse_buf_flags)(FUSE_BUF_IS_FD | FUSE_BUF_FD_SEEK);
-    dst.buf[0].fd = fi->fh;
+    dst.buf[0].fd = (int)fi->fh;
     dst.buf[0].pos = offset;
 
-    return fuse_buf_copy(&dst, buf, FUSE_BUF_SPLICE_NONBLOCK);
+    return (int)fuse_buf_copy(&dst, buf, FUSE_BUF_SPLICE_NONBLOCK);
 }
 
 /*!\brief FUSE statfs() callback
@@ -957,7 +957,7 @@ static int clamfs_flush(const char *path, struct fuse_file_info *fi)
        called multiple times for an open file, this must not really
        close the file.  This is important if used on a network
        filesystem like NFS which flush the data/metadata on close() */
-    res = close(dup(fi->fh));
+    res = close(dup((int)fi->fh));
     if (res == -1)
         return -errno;
 
@@ -1012,7 +1012,7 @@ static int clamfs_fallocate(const char *path, int mode, off_t offset,
     if (mode)
         return -EOPNOTSUPP;
 
-    return -posix_fallocate(fi->fh, offset, length);
+    return -posix_fallocate((int)fi->fh, offset, length);
 }
 #endif
 
@@ -1096,7 +1096,7 @@ static int clamfs_lock(const char *path, struct fuse_file_info *fi, int cmd,
 {
     (void) path;
 
-    return ulockmgr_op(fi->fh, cmd, lock, &fi->lock_owner,
+    return ulockmgr_op((int)fi->fh, cmd, lock, &fi->lock_owner,
                sizeof(fi->lock_owner));
 }
 #endif
@@ -1106,7 +1106,7 @@ static int clamfs_flock(const char *path, struct fuse_file_info *fi, int op)
     int res;
     (void) path;
 
-    res = flock(fi->fh, op);
+    res = flock((int)fi->fh, op);
     if (res == -1)
         return -errno;
 
@@ -1124,8 +1124,8 @@ static ssize_t clamfs_copy_file_range(const char *path_in,
     (void) path_in;
     (void) path_out;
 
-    res = copy_file_range(fi_in->fh, &off_in, fi_out->fh, &off_out, len,
-                  flags);
+    res = copy_file_range((int)fi_in->fh, &off_in, (int)fi_out->fh,
+                          &off_out, len, (unsigned int)flags);
     if (res == -1)
         return -errno;
 
