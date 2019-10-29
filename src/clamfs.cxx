@@ -578,7 +578,7 @@ static int clamfs_utimens(const char *path, const struct timespec ts[2],
     else
     {
         const char* fpath = fixpath(path);
-        res = utimensat(0, path, ts, AT_SYMLINK_NOFOLLOW);
+        res = utimensat(0, fpath, ts, AT_SYMLINK_NOFOLLOW);
         delete[] fpath;
     }
     if (res == -1)
