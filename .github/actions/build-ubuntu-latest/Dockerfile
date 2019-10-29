@@ -4,7 +4,7 @@ RUN apt-get update && \
     apt-get -y --no-install-recommends install \
         build-essential \
         automake \
-        git ca-certificates meson ninja-build \
+        git ca-certificates meson ninja-build udev \
         pkg-config \
         libfuse-dev \
         librlog-dev \
