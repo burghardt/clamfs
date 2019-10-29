@@ -20,7 +20,7 @@ RUN mkdir /tmp/fuse3 && \
     cd build && \
     meson .. && \
     ninja && \
-    sudo ninja install && \
+    ninja install && \
     cd /tmp && \
     rm -fr fuse3
 
