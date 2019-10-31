@@ -44,11 +44,10 @@ LDFLAGS="$LDFLAGS $BOOST_LDFLAGS"
 # Check for libfuse3
 PKG_CHECK_MODULES([FUSE3], [fuse3 >= 3],
     [CPPFLAGS="$CPPFLAGS $FUSE3_CFLAGS -pthread -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=31"
-     LIBS="$LIBS $FUSE3_LIBS"
-    ])
+     LIBS="$LIBS $FUSE3_LIBS"])
 
 # Check for libulockmgr
-AC_CHECK_HEADER(ulockmgr.h,AC_DEFINE([HAVE_LIBULOCKMGR],[1],[Use (ulockmgr.]))
+AC_CHECK_HEADER(ulockmgr.h,AC_DEFINE([HAVE_LIBULOCKMGR],[1],[Define to 1 if you have the `ulockmgr` library.]))
 AC_CHECK_LIB(ulockmgr,ulockmgr_op,LIBS="$LIBS -lulockmgr")
 
 # Check for librlog
