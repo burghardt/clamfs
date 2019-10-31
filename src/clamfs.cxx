@@ -138,6 +138,7 @@ static void *clamfs_init(struct fuse_conn_info *conn,
 /*!\brief FUSE getattr() callback
    \param path file path
    \param stbuf buffer to pass to lstat()
+   \param fi information about open files
    \returns 0 if lstat() returns without error on -errno otherwise
 */
 static int clamfs_getattr(const char *path, struct stat *stbuf,
@@ -248,6 +249,7 @@ static inline clamfs_dirp *get_dirp(struct fuse_file_info *fi)
    \param filler directory content filter
    \param offset directory pointer offset
    \param fi information about open files
+   \param flags flags fuse want to pass to readdir
    \returns always 0
 */
 static int clamfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
@@ -435,6 +437,7 @@ static int clamfs_symlink(const char *from, const char *to)
 /*!\brief FUSE rename() callback
    \param from old file name
    \param to new file name
+   \param flags unused; for future use with renameat2()
    \returns 0 if rename() returns without error on -errno otherwise
 */
 static int clamfs_rename(const char *from, const char *to, unsigned int flags)
@@ -484,6 +487,7 @@ static int clamfs_link(const char *from, const char *to)
 /*!\brief FUSE chmod() callback
    \param path file path
    \param mode file permissions
+   \param fi information about open files
    \returns 0 if chmod() returns without error on -errno otherwise
 */
 static int clamfs_chmod(const char *path, mode_t mode,
@@ -511,6 +515,7 @@ static int clamfs_chmod(const char *path, mode_t mode,
    \param path file path
    \param uid user id
    \param gid group id
+   \param fi information about open files
    \returns 0 if chown() returns without error on -errno otherwise
 */
 static int clamfs_chown(const char *path, uid_t uid, gid_t gid,
@@ -537,6 +542,7 @@ static int clamfs_chown(const char *path, uid_t uid, gid_t gid,
 /*!\brief FUSE truncate() callback
    \param path file path
    \param size requested size
+   \param fi information about open files
    \returns 0 if truncate() returns without error on -errno otherwise
 */
 static int clamfs_truncate(const char *path, off_t size,
