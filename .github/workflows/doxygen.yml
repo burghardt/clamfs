@@ -41,6 +41,4 @@ jobs:
       - name: clean
         run: make clean
       - name: doxygen
-        run: |
-          cd doc
-          doxygen
+        run: make doxygen
