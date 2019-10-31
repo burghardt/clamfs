@@ -56,7 +56,7 @@ extern FastMutex scanMutex;
 /*!\brief Unix socket used to communicate with clamd */
 class clamdStreamSocket: public StreamSocket {
     public:
-        int sendFd(struct msghdr* msg) {
+        ssize_t sendFd(struct msghdr* msg) {
             return sendmsg(sockfd(), msg, 0);
         }
 };
@@ -112,7 +112,7 @@ void CloseClamav() {
 /*!\brief Send file descriptor over clamd connection
    \param fd file descriptor to pass to clamd
  */
-void SendFileDescriptorForFile(const int fd) {
+static void SendFileDescriptorForFile(const int fd) {
     struct iovec iov[1];
     struct msghdr msg;
     struct cmsghdr *cmsg;
@@ -131,7 +131,7 @@ void SendFileDescriptorForFile(const int fd) {
     cmsg->cmsg_len     = CMSG_LEN(sizeof(int));
     cmsg->cmsg_level   = SOL_SOCKET;
     cmsg->cmsg_type    = SCM_RIGHTS;
-    *(int *)CMSG_DATA(cmsg) = fd;
+    memcpy(CMSG_DATA(cmsg), &fd, sizeof(fd));
 
     clamdSocket.sendFd(&msg);
 }
