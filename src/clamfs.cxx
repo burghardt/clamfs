@@ -278,7 +278,7 @@ static int clamfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
             if (!d->entry)
                 break;
         }
-#ifdef HAVE_FSTATAT_THAT_WORKS
+#ifdef HAVE_FSTATAT
         if (flags & FUSE_READDIR_PLUS) {
             int res;
 
