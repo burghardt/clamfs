@@ -74,6 +74,12 @@ jobs:
           cd /clamfs/tmp
           echo 'Hello World!' > string.txt
           cat string.txt
+      - name: copy
+        run: |
+          set -x
+          cd /clamfs/tmp
+          cp -v string.txt string-copy.txt
+          cat string-copy.txt
       - name: eicar
         run: |
           set -x
