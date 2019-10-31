@@ -491,7 +491,7 @@ static int clamfs_chmod(const char *path, mode_t mode,
 {
     int res;
 
-    if (fi)
+    if (fi != NULL)
     {
         res = fchmod((int)fi->fh, mode);
     }
@@ -518,7 +518,7 @@ static int clamfs_chown(const char *path, uid_t uid, gid_t gid,
 {
     int res;
 
-    if (fi)
+    if (fi != NULL)
     {
         res = fchown((int)fi->fh, uid, gid);
     }
@@ -544,7 +544,7 @@ static int clamfs_truncate(const char *path, off_t size,
 {
     int res;
 
-    if (fi)
+    if (fi != NULL)
     {
         res = ftruncate((int)fi->fh, size);
     }
@@ -571,14 +571,14 @@ static int clamfs_utimens(const char *path, const struct timespec ts[2],
     int res;
 
     /* don't use utime/utimes since they follow symlinks */
-    if (fi)
+    if (fi != NULL)
     {
         res = futimens((int)fi->fh, ts);
     }
     else
     {
         const char* fpath = fixpath(path);
-        res = utimensat(0, fpath, ts, AT_SYMLINK_NOFOLLOW);
+        res = utimensat(savefd, fpath, ts, AT_SYMLINK_NOFOLLOW);
         delete[] fpath;
     }
     if (res == -1)
