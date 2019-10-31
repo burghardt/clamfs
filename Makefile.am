@@ -15,3 +15,6 @@ if DOT_GIT
 else
 	echo '#define PACKAGE_VERSION_GIT_DESCRIBE "unknown"' > version.h
 endif
+
+doxygen:
+	make -C doc doxygen

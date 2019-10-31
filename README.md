@@ -12,7 +12,7 @@ with on-access anti-virus file scanning through [clamd daemon](https://manpages.
 
  * User-space file system (no kernel patches, recompilation, etc.)
  * Configuration stored in XML files
- * FUSE (and libfuse) used as file system back-end
+ * FUSE (and libfuse3) used as file system back-end
  * Scan files using ClamAV
  * ScanCache (LRU with time-based and out-of-memory expiration) speeds up file access
  * Sends mail to administrator when detect virus
@@ -63,10 +63,13 @@ cd /usr/ports/security/clamfs ; make install clean
 #### Prerequisites
 
 To build ClamFS on any GNU/Linux or *BSD you need:
- * [FUSE](https://github.com/libfuse/libfuse)
+ * [FUSE](https://github.com/libfuse/libfuse) >= 3
  * [RLog](https://www.arg0.net/rlog)
- * [POCO](https://pocoproject.org/)
+ * [POCO](https://pocoproject.org/) >= 1.2.9
  * [Boost](https://www.boost.org/)
+ * [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/),
+   [Automake](https://www.gnu.org/software/automake/),
+   [Make](https://www.gnu.org/software/make/)...
 
 To run ClamFS `clamd` service from [ClamAV project](https://www.clamav.net/)
 is required.
@@ -84,10 +87,11 @@ library. This dependency was dropped in version 1.1.0 (with commit 3bdb8ec).
 ##### Debian, Ubuntu, etc.
 
 To build ClamFS on Debian GNU/Linux and Ubuntu install these packages:
- * libfuse-dev
+ * libfuse3-dev
  * librlog-dev
  * libpoco-dev
  * libboost-dev
+ * pkg-config
 
 As a run-time dependency install:
  * clamav-daemon
@@ -96,21 +100,22 @@ As a run-time dependency install:
 Run following command to install al dependencies.
 ```
 sudo apt-get -y --no-install-recommends install \
-      build-essential automake libfuse-dev \
-      librlog-dev libpoco-dev libboost-dev \
+      build-essential automake pkg-config \
+      libfuse-dev librlog-dev libpoco-dev libboost-dev \
       clamav-daemon clamav-freshclam
 ```
 
 ##### FreeBSD, DragonFly BSD
 
 To build ClamFS on FreeBSD and DragonFly BSD you need those ports:
- * sysutils/fusefs-libs
- * devel/rlog
- * devel/poco-ssl (or devel/poco)
- * devel/boost-libs
+ * [sysutils/fusefs-libs3](https://www.freshports.org/sysutils/fusefs-libs3/)
+ * [devel/rlog](https://www.freshports.org/devel/rlog/)
+ * [devel/poco](https://www.freshports.org/devel/poco/)
+ * [devel/boost-libs](https://www.freshports.org/devel/boost-libs/)
+ * [devel/pkgconf](https://www.freshports.org/devel/pkgconf/)
 
 As a run-time dependency you need:
- * security/clamav
+ * [security/clamav](https://www.freshports.org/security/clamav/)
 
 Note: older FreeBSD version required port named `sysutils/fusefs-kmod`.
 This is no longer the case as `fuse` module is part of kernel.
