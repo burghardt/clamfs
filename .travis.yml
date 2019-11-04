@@ -1,7 +1,7 @@
 language: cpp
 
 os: linux
-dist: disco
+dist: bionic
 sudo: required
 
 arch:
@@ -14,8 +14,15 @@ compiler:
 
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -y libfuse3-dev libpoco-dev libboost-dev librlog-dev
+  - sudo apt-get install -y libfuse-dev libpoco-dev libboost-dev librlog-dev
   - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+  - sudo apt-get -y --no-install-recommends install meson ninja-build
+  - mkdir /tmp/fuse3 ; cd /tmp/fuse3
+  - git clone --depth 1 https://github.com/libfuse/libfuse.git .
+  - mkdir build ; cd build
+  - meson ..
+  - ninja
+  - sudo ninja install
 
 script:
   - sh autogen.sh
