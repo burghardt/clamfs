@@ -9,29 +9,27 @@ arch:
   - arm64
 
 compiler:
-    - clang
-    - gcc
+  - clang
+  - gcc
 
 before_install:
-    - sudo apt-get update -qq
-    - sudo apt-get install -y libfuse3-dev libpoco-dev libboost-dev librlog-dev
+  - sudo apt-get update -qq
+  - sudo apt-get install -y libfuse3-dev libpoco-dev libboost-dev librlog-dev
+  - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
 
 script:
-    - sh autogen.sh
-    - sh configure
-    - make -j
+  - sh autogen.sh
+  - sh configure
+  - make -j
 
 after_success:
-    - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash)
 
 env:
   global:
    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
    #   via the "travis encrypt" command using the project repo's public key
    - secure: "pNHMGMECUcg/zk3f59ZHMk7XpwNCb7bIuLsVlGcd5hLiVhwlGCO+qiGJVhOf10CPpzKiFT+HeDu7fp3picRUyDuo37hnHprUcWqtLPlw1x1ITTKch+QUeFcG9ZPA47TFbZYZkKU2HclD2+i/6t/zCOznbemB7oWDXZzmKlOJnocjjglK28599a/ZZ1ZoUN6QFjQSskKn85BXls3NNwhMgwlnW2NmkGQIdClTv9iS/Cbx6Px0JqeBGGZfmWCgMWOVJFeOnC2CU8Ohl49Bzq9J0QWskJeoxuDd/rePyBA5CqNYEHvgDvxKOEXLPxkVzv1mpxifHpptiqw/WA0nz+nOd/n+QwtHulVQSIBkzLM/gh5qBKOSIaOaJF/wKiltX2p6iBeXUNqM4Ra+mm3kIJ8F9D6YqP6d/lhcvt1NwsVZx74pwSU0Cl0QT2pxsg8+DP4YIEl0uRUvlc/VbvmyDu0fPVGCf3Mo6yVnbHNsGIsQv76r30Eas6anTFb1bbs2o0rIjGo+yHrTXa/5Uj+NcaHmuqEpVft5aSgoQVVWOwZP4H3NwKl6cL/e7GBYF+w84AtXYptsWxT4qwcWsqyVwbsgWMv5ARXBtLUcZBTQcKVWbb3xpyLXZlhZ3VxyWSBNWSA/Y2g02tJjxD08zFhWtxvdegr77aoQctImJ19dnGHlhUI="
-
-before_install:
-  - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
 
 addons:
   coverity_scan:
