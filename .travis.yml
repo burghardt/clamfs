@@ -1,30 +1,43 @@
 language: cpp
 
 os: linux
-dist: trusty
+dist: bionic
 sudo: required
 
+arch:
+  - amd64
+  - arm64
+
 compiler:
-    - clang
-    - gcc
+  - clang
+  - gcc
 
 before_install:
-    - sudo apt-get update -qq
-    - sudo apt-get install -y libfuse-dev librlog-dev libpoco-dev libboost-dev
+  - sudo apt-get update -qq
+  - sudo apt-get install -y libfuse-dev libpoco-dev libboost-dev librlog-dev
+  - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+  - sudo apt-get -y --no-install-recommends install meson ninja-build
+  - mkdir /tmp/fuse3 ; pushd /tmp/fuse3
+  - git clone --depth 1 https://github.com/libfuse/libfuse.git .
+  - mkdir build ; pushd build
+  - meson ..
+  - ninja
+  - sudo ninja install
+  - popd ; popd
 
 script:
-    - sh autogen.sh
-    - sh configure
-    - make
+  - sh autogen.sh
+  - sh configure
+  - make -j
 
 after_success:
-    - bash <(curl -s https://codecov.io/bash)
+  - bash <(curl -s https://codecov.io/bash)
 
 env:
   global:
    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
    #   via the "travis encrypt" command using the project repo's public key
-   - secure: "dE9gRVq7edfDolq82cStD2N4dT3oS0l45lW+bcn0IcF3mJGX1ZgBfwIozeGE42A6xmMWGF4RIgUnp9jvTBCLrZFk+KnfyjD5p3HJG9Yy6isjN5+Cmq05ulsv3sgEUKkZQA+7vD4A+6h1ZKwb8cA23xS5TwmncU8MDg3zwAwCbaqqb4s0+F1YVT1tVA5rrrfEJL6K+Vlypm5BcdUfe9RY3yKnV5EVJblOHZ9Zxb+b85/0X7VQXsGqed+Wis5fBkaArOXabh46J6F0C4qNlTTbmMr+svgffjeWKCRRUESJ2mqPcuN/v81X79xba+BTrZe/n/FKPPoYEhJeKHHx+CqK8GfrZixzt8306AheMKTOVDl9cyV8sJe3Ey31r03GP+OcLcs7OlFMnB3XugBYs988ClNDruQKUvRQHEbHR30pG1ED5lo1EwOh/IrF8hbpzKAfa6q2BVR3MONfAfmudOq3dhi4PllRG6VMxiAxcRwWHtaOOvTPCx4q3J/KldYYqyZrWJUApnjtSlEfGXI2pW/p9IFKEbCs5+dLzoqdJYV+LCIub1sVTemGbh3dbr7mf/gTF/2dJOwxiPSVvKZneTJK16QKWyvLm4e4ZdSvK+CFwCrMQRubD9xSDlOjNuyVQkpto+Tyb9IadWvfMa0eYfW6S97duDL2rxlGbRqORmkGm3U="
+   - secure: "pNHMGMECUcg/zk3f59ZHMk7XpwNCb7bIuLsVlGcd5hLiVhwlGCO+qiGJVhOf10CPpzKiFT+HeDu7fp3picRUyDuo37hnHprUcWqtLPlw1x1ITTKch+QUeFcG9ZPA47TFbZYZkKU2HclD2+i/6t/zCOznbemB7oWDXZzmKlOJnocjjglK28599a/ZZ1ZoUN6QFjQSskKn85BXls3NNwhMgwlnW2NmkGQIdClTv9iS/Cbx6Px0JqeBGGZfmWCgMWOVJFeOnC2CU8Ohl49Bzq9J0QWskJeoxuDd/rePyBA5CqNYEHvgDvxKOEXLPxkVzv1mpxifHpptiqw/WA0nz+nOd/n+QwtHulVQSIBkzLM/gh5qBKOSIaOaJF/wKiltX2p6iBeXUNqM4Ra+mm3kIJ8F9D6YqP6d/lhcvt1NwsVZx74pwSU0Cl0QT2pxsg8+DP4YIEl0uRUvlc/VbvmyDu0fPVGCf3Mo6yVnbHNsGIsQv76r30Eas6anTFb1bbs2o0rIjGo+yHrTXa/5Uj+NcaHmuqEpVft5aSgoQVVWOwZP4H3NwKl6cL/e7GBYF+w84AtXYptsWxT4qwcWsqyVwbsgWMv5ARXBtLUcZBTQcKVWbb3xpyLXZlhZ3VxyWSBNWSA/Y2g02tJjxD08zFhWtxvdegr77aoQctImJ19dnGHlhUI="
 
 addons:
   coverity_scan:
@@ -33,5 +46,5 @@ addons:
       description: "Build submitted via Travis CI"
     notification_email: krzysztof@burghardt.pl
     build_command_prepend: "sh autogen.sh ; sh configure ; make clean"
-    build_command:   "make -j 4"
+    build_command:   "make -j"
     branch_pattern: master
