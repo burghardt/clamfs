@@ -13,10 +13,14 @@
          socket - location of clamd socket (may vary between operating systems)
                   For Debian GNU/Linux it is /var/run/clamav/clamd.ctl, on
                   FreeBSD use /var/run/clamav/clamd.sock.
+         mode   - there three different mode available to pass file to clamd
+            mode="fname" - pass file name (with SCAN command)
+            mode="fdpass" - pass file descriptor (with FILDES command)
+            mode="stream" - pass file stream (with INSTREAM command)
          check  - (yes or no) check if clamd is available on startup (useful if
                   mounting clamfs file systems from /etc/fstab early on startup,
                   while clamav daemon is not yet started) -->
-    <clamd socket="/var/run/clamav/clamd.ctl" check="no" />
+    <clamd socket="/var/run/clamav/clamd.ctl" mode="stream" check="no" />
 
     <!-- File system settings
          root       - real directory to attach as our root

@@ -95,3 +95,27 @@ jobs:
           cp -av /usr/share/clamav-testfiles/* .
           ls | grep -i rar | xargs rm -fv
           test -z "$(file * | grep -v 'no read permission')"
+      - name: fname
+        run: |
+          set -x
+          sudo fusermount3 -u /clamfs/tmp
+          sed -i 's/mode=".*" check="no"/mode="fname"/g' ./doc/debug.xml
+          sudo ./src/clamfs ./doc/clamfs.xml
+          cd /clamfs/tmp
+          cat string.txt
+          hexdump -C eicar.com && exit 1
+          sudo grep 'Eicar-Test-Signature' /var/log/syslog
+      - name: stream
+        run: |
+          set -x
+          sudo fusermount3 -u /clamfs/tmp
+          sed -i 's/mode=".*" check="no"/mode="stream"/g' ./doc/debug.xml
+          sudo ./src/clamfs ./doc/clamfs.xml
+          cd /clamfs/tmp
+          cat string.txt
+          hexdump -C eicar.com && exit 1
+          sudo grep 'Eicar-Test-Signature' /var/log/syslog
+      - name: umount
+        run: |
+          set -x
+          sudo umount /clamfs/tmp
