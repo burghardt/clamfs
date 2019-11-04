@@ -31,6 +31,8 @@
 #include "Poco/Net/StreamSocket.h"
 #include "Poco/Net/SocketStream.h"
 #include "Poco/StreamCopier.h"
+#include "Poco/FileStream.h"
+#include "Poco/File.h"
 
 namespace clamfs {
 
@@ -53,14 +55,19 @@ extern FastMutex scanMutex;
     }\
 } while(0)
 
-/*!\brief Unix socket used to communicate with clamd */
-class clamdStreamSocket: public StreamSocket {
+#ifdef HAVE_FD_PASSING
+class ClamFStreamSocket: public StreamSocket {
     public:
         ssize_t sendFd(struct msghdr* msg) {
             return sendmsg(sockfd(), msg, 0);
         }
 };
-clamdStreamSocket clamdSocket;
+/*!\brief Custom stream socket used to communicate with clamd */
+ClamFStreamSocket clamdSocket;
+#else
+/*!\brief POCO stream socket used to communicate with clamd */
+StreamSocket clamdSocket;
+#endif
 
 /*!\brief Opens connection to clamd through unix socket
    \param unixSocket name of unix socket
@@ -72,9 +79,13 @@ int OpenClamav(const char *unixSocket) {
     DEBUG("attempt to open connection to clamd via %s", unixSocket);
     try {
        clamdSocket.connect(sa);
-    } catch (Exception &e) {
-       rLog(Warn, "error: unable to open connection to clamd");
-       return -1;
+    } catch (Exception &exc) {
+       /* Ignore 'Socket is already connected' exception */
+       if (exc.code() != EISCONN) {
+         rLog(Warn, "error: unable to open connection to clamd: %s: %d",
+               exc.displayText().c_str(), exc.code());
+         return -1;
+       }
     }
     SocketStream clamd(clamdSocket);
     CHECK_CLAMD(clamd);
@@ -109,6 +120,7 @@ void CloseClamav() {
     clamdSocket.close();
 }
 
+#ifdef HAVE_FD_PASSING
 /*!\brief Send file descriptor over clamd connection
    \param fd file descriptor to pass to clamd
  */
@@ -135,6 +147,7 @@ static void SendFileDescriptorForFile(const int fd) {
 
     clamdSocket.sendFd(&msg);
 }
+#endif
 
 /*!\brief Request anti-virus scanning on file
    \param filename name of file to scan
@@ -161,10 +174,11 @@ int ClamavScanFile(const char *filename) {
     if (!clamd)
         return -1;
 
-    if ((config["fdpass"] != NULL) &&
-        strncmp(config["fdpass"], "yes", 3) == 0) {
+    if ((config["mode"] != NULL) &&
+        strncmp(config["mode"], "fdpass", 6) == 0) {
+#ifdef HAVE_FD_PASSING
         /*
-         * Scan file using FILDES method
+         * Scan file using FILDES command
          */
         int fd = open(filename, O_RDONLY);
         if (fd >= 0) {
@@ -172,14 +186,37 @@ int ClamavScanFile(const char *filename) {
             SendFileDescriptorForFile(fd);
             close(fd);
         } else {
-            /* As a last resort we send SCAN method in case clamd has access */
-            rLog(Warn, "Unable to pass fd, failing back to file name for '%s'",
-                 filename);
-            clamd << "nSCAN " << filename << endl;
+            rLog(Warn, "Unable to pass fd for file '%s'", filename);
+            return -1;
+        }
+#else
+        rLog(Warn, "Scan command FILDES not available due to lack of fd passing.");
+        return -1;
+#endif
+    } else if ((config["mode"] != NULL) &&
+               strncmp(config["mode"], "stream", 6) == 0) {
+        /*
+         * Scan file using INSTREAM command
+         */
+        Poco::FileInputStream istr(filename, std::ios::binary);
+        if (istr.good()) {
+            std::string chunkSizeStr;
+            Poco::File f(filename);
+            size_t chunkSize = htonl(f.getSize());
+
+            chunkSizeStr.assign((const char*)&chunkSize, 4);
+            clamd << "nINSTREAM" << endl;
+            clamd << chunkSizeStr;
+            StreamCopier::copyStream(istr, clamd);
+            chunkSizeStr.assign("\0\0\0\0", 4);
+            clamd << chunkSizeStr << flush;
+        } else {
+            rLog(Warn, "Unable to pass stream for file '%s'", filename);
+            return -1;
         }
     } else {
         /*
-         * Scan file using SCAN method
+         * Scan file using SCAN command
          */
         clamd << "nSCAN " << filename << endl;
     }
@@ -191,9 +228,9 @@ int ClamavScanFile(const char *filename) {
     CloseClamav();
 
     /*
-     * Chceck for scan results, return if file is clean
+     * Check for scan results, return if file is clean
      */
-    DEBUG("clamd reply is: '%s'", reply.c_str());
+    DEBUG("clamd reply for file '%s' is: '%s'", filename, reply.c_str());
     if (strncmp(reply.c_str() + reply.size() - 2,  "OK", 2) == 0 ||
         strncmp(reply.c_str() + reply.size() - 10, "Empty file", 10) == 0 ||
         strncmp(reply.c_str() + reply.size() - 8,  "Excluded", 8) == 0 ||
@@ -206,17 +243,33 @@ int ClamavScanFile(const char *filename) {
      */
     char* username = getusername();
     char* callername = getcallername();
-    rLog(Warn, "(%s:%d) (%s:%d) %s", callername, fuse_get_context()->pid,
-        username, fuse_get_context()->uid, reply.empty() ? "< empty clamd reply >" : reply.c_str());
+    rLog(Warn, "(%s:%d) (%s:%d) '%s': %s", callername, fuse_get_context()->pid,
+        username, fuse_get_context()->uid, filename,
+        reply.empty() ? "< empty clamd reply >" : reply.c_str());
     free(username);
     free(callername);
 
     /*
+     * If reply was empty or no reply was received
+     * return without any interpretation of reply
+     */
+    if (reply.empty())
+       return -1;
+
+    /*
      * If scan failed return without sending e-mail alert
      */
-    if(strncmp(reply.c_str() + reply.size() - 20, "Access denied. ERROR", 20) == 0 ||
-       strncmp(reply.c_str() + reply.size() - 21, "lstat() failed. ERROR", 21) == 0) {
+    if (strncmp(reply.c_str() + reply.size() - 20, "Access denied. ERROR", 20) == 0 ||
+       strncmp(reply.c_str() + reply.size() - 21, "lstat() failed. ERROR", 21) == 0 ||
+       strncmp(reply.c_str() + reply.size() - 40, "lstat() failed: Permission denied. ERROR", 40) == 0 ||
+       strncmp(reply.c_str() + reply.size() - 48, "lstat() failed: No such file or directory. ERROR", 48) == 0 ||
+       strncmp(reply.c_str() + reply.size() - 34, "No file descriptor received. ERROR", 34) == 0 ||
+       strncmp(reply.c_str() + reply.size() - 35, "INSTREAM size limit exceeded. ERROR", 35) == 0) {
         return -1;
+    }
+
+    if (strncmp(reply.c_str() + reply.size() - 5, "FOUND", 5) != 0) {
+       rLog(Warn, "Response not ending with 'FOUND' was received and left uninterpreted!");
     }
 
     /*
