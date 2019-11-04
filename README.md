@@ -1,4 +1,5 @@
 # ClamFS
+
 ClamFS - User-space fs with on-access antivirus scanning
 
 ## Description
@@ -64,9 +65,9 @@ cd /usr/ports/security/clamfs ; make install clean
 
 To build ClamFS on any GNU/Linux or *BSD you need:
  * [FUSE](https://github.com/libfuse/libfuse) >= 3
- * [RLog](https://www.arg0.net/rlog)
  * [POCO](https://pocoproject.org/) >= 1.2.9
- * [Boost](https://www.boost.org/)
+ * [Boost](https://www.boost.org/) >= 1.33
+ * [RLog](https://www.arg0.net/rlog)
  * [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/),
    [Automake](https://www.gnu.org/software/automake/),
    [Make](https://www.gnu.org/software/make/)...
@@ -88,9 +89,9 @@ library. This dependency was dropped in version 1.1.0 (with commit 3bdb8ec).
 
 To build ClamFS on Debian GNU/Linux and Ubuntu install these packages:
  * libfuse3-dev
- * librlog-dev
  * libpoco-dev
  * libboost-dev
+ * librlog-dev
  * pkg-config
 
 As a run-time dependency install:
@@ -101,7 +102,7 @@ Run following command to install al dependencies.
 ```
 sudo apt-get -y --no-install-recommends install \
       build-essential automake pkg-config \
-      libfuse-dev librlog-dev libpoco-dev libboost-dev \
+      libfuse3-dev libpoco-dev libboost-dev librlog-dev \
       clamav-daemon clamav-freshclam
 ```
 
@@ -109,9 +110,9 @@ sudo apt-get -y --no-install-recommends install \
 
 To build ClamFS on FreeBSD and DragonFly BSD you need those ports:
  * [sysutils/fusefs-libs3](https://www.freshports.org/sysutils/fusefs-libs3/)
- * [devel/rlog](https://www.freshports.org/devel/rlog/)
  * [devel/poco](https://www.freshports.org/devel/poco/)
  * [devel/boost-libs](https://www.freshports.org/devel/boost-libs/)
+ * [devel/rlog](https://www.freshports.org/devel/rlog/)
  * [devel/pkgconf](https://www.freshports.org/devel/pkgconf/)
 
 As a run-time dependency you need:
@@ -184,6 +185,38 @@ configuration options. Only three options are mandatory:
  * `<filesystem mountpoint="" />` to set mount point where virtual filesystem
    will be attached in directory tree
 
+#### Different scan modes
+
+ClamFS versions up to 1.1.0 use `fname` mode and pass only file name (with
+`SCAN` command) to clamd.
+
+In ClamFS versions after 1.1.0 three different modes are available to pass
+files to clamd. Default method is `fdpass`.
+
+##### mode="fname" - pass file name (with SCAN command)
+
+This is the simplest mode. In this mode clamd opens and reads file by itself.
+Permissions have to be set to allow clamd to access the file. Also this mode
+works only when clamd and ClamFS are no the same machine and both have access
+to files. Using this mode might require permissions or ACLs setup for clamd
+user. Please note that attempts to run clamd as root to bypass permissions
+is usually a bad idea.
+
+##### mode="fdpass" - pass file descriptor (with FILDES command)
+
+This is the default mode when BSD 4.4 / RFC2292 style fd passing is available
+in the operating system. In this mode ClamFS opens file and passes file
+descriptor to clamd over UNIX domain socket. Finally clamd reads file by
+itself. This mode works only when clamd and ClamFS are no the same machine
+and operating system supports file descriptor sharing.
+
+##### mode="stream" - pass file stream (with INSTREAM command)
+
+Last mode offers ability to use remote clamd instances. In this mode ClamFS
+opens and reads file. Than sends it to clamd over the UNIX domain or TCP/IP
+socket. This works for local and remote clamd instances, but for local clamd
+instance `fdpass` is preferred scanning method.
+
 #### Additional configuration steps for FreeBSD
 
 FreeBSD's `fuse` kernel module has to be loaded before starting ClamFS. This
@@ -246,6 +279,21 @@ configuration file defined here provided as its argument. Simple definition
 of ClamFS mount point in /etc/fstab looks like:
 ```
 clamfs#/etc/clamfs/share.xml  /clamfs/share  fuse  defaults  0  0
+```
+
+### Using remote clamd instances
+
+ClamFS can reach remote clamd instances using TCP/IP sockets. This type of
+connection requires `mode="stream"` settings and use clamd's `INSTREAM`
+command to scan files smaller than `StreamMaxLength` which defaults to 25 MiB.
+```
+<clamd socket="<IP>:<port>" mode="stream" />
+```
+
+Default clamd port is `3310`. For server running at address `192.168.1.101`
+configuration is:
+```
+<clamd socket="192.168.1.101:3310" mode="stream" />
 ```
 
 ### Read-only mounts

@@ -14,7 +14,7 @@
                   For Debian GNU/Linux it is /var/run/clamav/clamd.ctl, on
                   FreeBSD use /var/run/clamav/clamd.sock.
 
-         mode   - there three different mode available to pass file to clamd
+         mode   - three different modes are available to pass files to clamd
 
             mode="fname" - pass file name (with SCAN command)
                 clamd opens and reads file by itself permissions have to be set
@@ -31,7 +31,7 @@
             mode="stream" - pass file stream (with INSTREAM command)
                 ClamFS opens and reads file and sends it to clamd over the UNIX
                 domain or TCP/IP socket; this works for local and remote clamd;
-                for local clamd instance fdpass is prefered
+                for local clamd instance fdpass is preferred
 
          check  - (yes or no) check if clamd is available on startup (useful if
                   mounting clamfs file systems from /etc/fstab early on startup,
