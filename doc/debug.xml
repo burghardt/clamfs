@@ -13,7 +13,7 @@
          socket - location of clamd socket (may vary between operating systems)
                   For Debian GNU/Linux it is /var/run/clamav/clamd.ctl, on
                   FreeBSD use /var/run/clamav/clamd.sock.
-         mode   - there three different mode available to pass file to clamd
+         mode   - three different modes are available to pass files to clamd
             mode="fname" - pass file name (with SCAN command)
             mode="fdpass" - pass file descriptor (with FILDES command)
             mode="stream" - pass file stream (with INSTREAM command)
