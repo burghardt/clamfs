@@ -64,9 +64,9 @@ cd /usr/ports/security/clamfs ; make install clean
 #### Prerequisites
 
 To build ClamFS on any GNU/Linux or *BSD you need:
- * [FUSE](https://github.com/libfuse/libfuse) >= 3
- * [POCO](https://pocoproject.org/) >= 1.2.9
- * [Boost](https://www.boost.org/) >= 1.33
+ * [FUSE](https://github.com/libfuse/libfuse) &gt;= 3
+ * [POCO](https://pocoproject.org/) &gt;= 1.2.9
+ * [Boost](https://www.boost.org/) &gt;= 1.33
  * [RLog](https://www.arg0.net/rlog)
  * [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/),
    [Automake](https://www.gnu.org/software/automake/),
@@ -223,24 +223,24 @@ FreeBSD's `fuse` kernel module has to be loaded before starting ClamFS. This
 can be done ad-hoc with `kldload fuse` command.
 
 To have it loaded at boot time, add the following line to `/boot/loader.conf`.
-```
+```sh
 fuse_load="YES"
 ```
 
 Or append fuse module to `kld_list` in `/etc/rc.conf`.
-```
+```sh
 kld_list="fuse"
 ```
 
 Also configure ClamAV daemon and signature downloader service to start during
 boot with following options appended to `/etc/rc.conf`.
-```
+```sh
 clamav_clamd_enable="YES"
 clamav_freshclam_enable="YES"
 ```
 
 Finally start required services with following commands.
-```
+```sh
 service kld start
 service clamav-freshclam start
 service clamav-daemon start
@@ -249,13 +249,13 @@ service clamav-daemon start
 #### Mounting and unmounting ClamFS file systems
 
 To mount ClamFS filesystem run ClamFS with configuration filename as a parameter.
-```
+```sh
 clamfs /etc/clamfs/netshare.xml
 ```
 
 To unmount ClamFS use `fusermount` with `-u` flag and
 `<filesystem mountpoint="/net/share" />` value as a parameter.
-```
+```sh
 sudo fusermount -u /net/share
 ```
 
@@ -267,7 +267,7 @@ A new “check” option was added to allow you to mount a ClamFS file system wh
 clamd is not available, such as during an early stage of the boot process.
 To disable ClamAV Daemon (clamd) check on ClamFS startup set option check to
 no:
-```
+```xml
 <clamd socket="/var/run/clamav/clamd.ctl" check="no" />
 ```
 
@@ -286,13 +286,13 @@ clamfs#/etc/clamfs/share.xml  /clamfs/share  fuse  defaults  0  0
 ClamFS can reach remote clamd instances using TCP/IP sockets. This type of
 connection requires `mode="stream"` settings and use clamd's `INSTREAM`
 command to scan files smaller than `StreamMaxLength` which defaults to 25 MiB.
-```
+```xml
 <clamd socket="<IP>:<port>" mode="stream" />
 ```
 
 Default clamd port is `3310`. For server running at address `192.168.1.101`
 configuration is:
-```
+```xml
 <clamd socket="192.168.1.101:3310" mode="stream" />
 ```
 
@@ -301,7 +301,7 @@ configuration is:
 The “readonly” option was added to the filesystem options allowing you to
 create a read-only protected file system. Just extend filesystem definition
 in config file with `readonly` option set to `yes`:
-```
+```xml
 <filesystem root="/share" mountpoint="/clamfs/share" readonly="yes" />
 ```
 
@@ -325,8 +325,58 @@ Program name should be reported correctly with mounted `/proc`.
 
 ### Using ClamFS with WINE
 
-Please refer to my blog post [Wine with on-access ClamAV scanning](https://blog.burghardt.pl/2007/11/wine-with-on-access-clamav-scanning/)
-if you are interested in running ClamFS to protect WINE installation.
+Following steps setups on-access file scanning with ClamAV for WINE instance.
+
+1. Install ClamFS runtime dependencies.
+   ```sh
+   clamav-freshclam clamav-daemon
+   ```
+2. Move original `C:\` drive to new location.
+   ```sh
+   mv ~/.wine/drive_c ~/.wine/raw_drive_c
+   mkdir ~/.wine/drive_c
+   ```
+3. Copy [clamfs.xml](doc/clamfs.xml) to `~/.wine/clamfs.xml`.
+4. Set following options in `clamfs.xml`. Make sure `mode="fdpass"` and
+`public="no"` are set.
+   ```xml
+   <clamd socket="/var/run/clamav/clamd.ctl" mode="fdpass" check="yes" />
+   <filesystem root="/home/user/.wine/raw_drive_c" mountpoint="/home/user/.wine/drive_c" public="no" />
+   ```
+5. Mount ClamFS filesystem as normal user with this command.
+   ```sh
+   clamfs ~/.wine/clamfs.xml
+   ```
+6. Run any WINE software and check logs with.
+   ```sh
+   sudo tail -F /var/log/clamav/clamav.log /var/log/syslog
+   ```
+
+For legacy configuration without `mode=fdpass` enabled please refer to my blog
+post [Wine with on-access ClamAV scanning](https://blog.burghardt.pl/2007/11/wine-with-on-access-clamav-scanning/)
+if you are interested in running ClamFS version &lt;= 1.1.0 to protect WINE
+installation.
+
+### Installing FUSE v3 from sources
+
+If your operating system does not provide binary package for `libfuse3` (like
+Ubuntu 18.04 LTS) installing `fuse3` from sources into `/usr/local` might be
+simplest method to install this dependency. Following commands installs current
+`master` branch from Github `libfuse` repository:
+
+```sh
+sudo apt-get -y --no-install-recommends install meson ninja-build
+mkdir /tmp/fuse3 ; cd /tmp/fuse3
+git clone --depth 1 https://github.com/libfuse/libfuse.git .
+mkdir build ; cd build
+meson ..
+ninja
+sudo ninja install
+```
+
+Please note that Debian 9 (codename "Stretch") is unable to build fuse3 as
+meson version provided in stretch repository is too old (package version is
+0.37.1, but fuse requires &gt;= 0.42).
 
 ## License
 
