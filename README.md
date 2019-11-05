@@ -69,9 +69,9 @@ To build ClamFS on any GNU/Linux or *BSD you need:
  * [Boost](https://www.boost.org/) &gt;= 1.33
  * [RLog](https://www.arg0.net/rlog)
  * [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/),
- * [Autoconf](https://www.gnu.org/software/autoconf/),
-   [Automake](https://www.gnu.org/software/automake/),
-   [Make](https://www.gnu.org/software/make/)...
+   [autoconf](https://www.gnu.org/software/autoconf/),
+   [automake](https://www.gnu.org/software/automake/),
+   [make](https://www.gnu.org/software/make/)...
 
 To run ClamFS `clamd` service from [ClamAV project](https://www.clamav.net/)
 is required.
@@ -102,7 +102,7 @@ As a run-time dependency install:
 Run following command to install al dependencies.
 ```
 sudo apt-get -y --no-install-recommends install \
-      build-essential automake pkg-config \
+      build-essential pkg-config autoconf automake \
       libfuse3-dev libpoco-dev libboost-dev librlog-dev \
       clamav-daemon clamav-freshclam
 ```
@@ -332,7 +332,7 @@ Following steps setups on-access file scanning with ClamAV for WINE instance.
 
 1. Install ClamFS runtime dependencies.
    ```sh
-   clamav-freshclam clamav-daemon
+   sudo apt install clamav-freshclam clamav-daemon
    ```
 2. Move original `C:\` drive to new location.
    ```sh
