@@ -1,17 +1,22 @@
+# https://cirrus-ci.com/github/burghardt/clamfs
 task:
   name: FreeBSD build
   freebsd_instance:
     matrix:
-      # image_family: freebsd-13-0-snap
+      image_family: freebsd-13-0-snap
       image_family: freebsd-12-0
-      # image_family: freebsd-11-3
-      # image_family: freebsd-11-2
-      # image_family: freebsd-10-4
+      image_family: freebsd-11-3
+      image_family: freebsd-11-2
+      image_family: freebsd-10-4
+  env:
+    CIRRUS_CLONE_DEPTH: 10
   pkginstall_script:
-    - pkg install -y autoconf automake fusefs-libs3 poco boost-libs rlog pkgconf
+    - pkg install -y devel/autoconf devel/automake devel/pkgconf
+    - pkg install -y sysutils/fusefs-libs3 devel/poco devel/boost-libs devel/rlog
   configure_script:
+    - sed -i bak -e 's|-Werror ||g' configure.ac
     - sh bootstrap
-    - ./configure
+    - ./configure || { tail -n 300 config.log; false; }
   compile_script:
     - make -j
   install_script:

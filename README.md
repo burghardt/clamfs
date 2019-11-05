@@ -69,6 +69,7 @@ To build ClamFS on any GNU/Linux or *BSD you need:
  * [Boost](https://www.boost.org/) &gt;= 1.33
  * [RLog](https://www.arg0.net/rlog)
  * [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/),
+ * [Autoconf](https://www.gnu.org/software/autoconf/),
    [Automake](https://www.gnu.org/software/automake/),
    [Make](https://www.gnu.org/software/make/)...
 
@@ -114,6 +115,8 @@ To build ClamFS on FreeBSD and DragonFly BSD you need those ports:
  * [devel/boost-libs](https://www.freshports.org/devel/boost-libs/)
  * [devel/rlog](https://www.freshports.org/devel/rlog/)
  * [devel/pkgconf](https://www.freshports.org/devel/pkgconf/)
+ * [devel/autoconf](https://www.freshports.org/devel/autoconf/)
+ * [devel/automake](https://www.freshports.org/devel/automake/)
 
 As a run-time dependency you need:
  * [security/clamav](https://www.freshports.org/security/clamav/)
