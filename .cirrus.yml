@@ -1,6 +1,18 @@
-freebsd_instance:
-  image_family: freebsd-12-0
-
 task:
-  install_script: pkg install -y fusefs-libs3 poco boost-libs rlog pkgconf
-  script: sh autogen.sh && sh configure && make -j
+  name: FreeBSD build
+  freebsd_instance:
+    matrix:
+      # image_family: freebsd-13-0-snap
+      image_family: freebsd-12-0
+      # image_family: freebsd-11-3
+      # image_family: freebsd-11-2
+      # image_family: freebsd-10-4
+  pkginstall_script:
+    - pkg install -y autoconf automake fusefs-libs3 poco boost-libs rlog pkgconf
+  configure_script:
+    - sh bootstrap
+    - ./configure
+  compile_script:
+    - make -j
+  install_script:
+    - make install
