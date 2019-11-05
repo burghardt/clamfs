@@ -18,6 +18,6 @@ task:
     - sh bootstrap
     - ./configure || { tail -n 300 config.log; false; }
   compile_script:
-    - make -j
+    - make
   install_script:
     - make install
