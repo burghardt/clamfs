@@ -86,6 +86,13 @@ library. This dependency was dropped in version 1.1.0 (with commit 3bdb8ec).
 
 #### Installing dependencies
 
+##### Arch
+
+Sync following packages to build ClamFS:
+```
+pacman -Syu base-devel fuse3 poco boost rlog
+```
+
 ##### Debian, Ubuntu, etc.
 
 To build ClamFS on Debian GNU/Linux and Ubuntu install these packages:
