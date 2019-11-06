@@ -1,0 +1,28 @@
+version: 2.0
+
+jobs:
+  build:
+    docker:
+      - image: archlinux/base:latest
+    steps:
+      - checkout
+      - run:
+          name: pacman
+          command: |
+            pacman -Syu --noconfirm base-devel fuse3 poco boost rlog
+      - run:
+          name: build
+          command: |
+            sh autogen.sh
+            ./configure
+            make -j
+      - run:
+          name: install
+          command: |
+            make install
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
