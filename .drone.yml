@@ -1,9 +1,13 @@
-image: debian:jessie
-
-script:
-    - sudo apt-get update -qq
-    - sudo apt-get install -y build-essential
-    - sudo apt-get install -y libfuse-dev librlog-dev libpoco-dev libboost-dev
-    - sh autogen.sh
-    - sh configure
-    - make
+name: drone.io pipeline
+kind: pipeline
+type: docker
+steps:
+  - name: build
+    image: debian:sid
+    commands:
+      - apt-get update -qq
+      - apt-get install -y build-essential pkg-config autoconf automake
+      - apt-get install -y libfuse3-dev libpoco-dev libboost-dev librlog-dev
+      - sh autogen.sh
+      - sh configure
+      - make
