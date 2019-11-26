@@ -1139,6 +1139,21 @@ static ssize_t clamfs_copy_file_range(const char *path_in,
 }
 #endif
 
+#ifdef HAVE_FUSE_LSEEK
+static off_t clamfs_lseek(const char *path, off_t off, int whence,
+                         struct fuse_file_info *fi)
+{
+    off_t res;
+    (void) path;
+
+    res = lseek((int)fi->fh, off, whence);
+    if (res == -1)
+        return -errno;
+
+    return res;
+}
+#endif
+
 /*!\brief ClamFS main()
    \param argc arguments counter
    \param argv arguments array
@@ -1202,6 +1217,9 @@ int main(int argc, char *argv[])
     clamfs_oper.flock       = clamfs_flock;
 #ifdef HAVE_COPY_FILE_RANGE
     clamfs_oper.copy_file_range = clamfs_copy_file_range;
+#endif
+#if HAVE_FUSE_LSEEK
+    clamfs_oper.lseek       = clamfs_lseek;
 #endif
 
     umask(0);
