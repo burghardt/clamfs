@@ -1146,7 +1146,7 @@ static off_t clamfs_lseek(const char *path, off_t off, int whence,
     off_t res;
     (void) path;
 
-    res = lseek(fi->fh, off, whence);
+    res = lseek((int)fi->fh, off, whence);
     if (res == -1)
         return -errno;
 
