@@ -45,9 +45,11 @@ CPPFLAGS="$CPPFLAGS $BOOST_CPPFLAGS"
 LDFLAGS="$LDFLAGS $BOOST_LDFLAGS"
 
 # Check for libfuse3
-PKG_CHECK_MODULES([FUSE3], [fuse3 >= 3.8.0],
-    [CPPFLAGS="$CPPFLAGS $FUSE3_CFLAGS -pthread -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=32"
+PKG_CHECK_MODULES([FUSE3],[fuse3 >= 3],
+    [CPPFLAGS="$CPPFLAGS $FUSE3_CFLAGS -pthread -D_FILE_OFFSET_BITS=64 -DFUSE_USE_VERSION=31"
      LIBS="$LIBS $FUSE3_LIBS"])
+PKG_CHECK_MODULES([FUSE38],[fuse3 >= 3.8],AC_DEFINE([HAVE_FUSE_LSEEK],[1],[Define to 1 if you have the lseek() support in FUSE library.]),
+    AC_MSG_WARN([disabling lseek() support as building with FUSE version < 3.8.0]))
 
 # Check for libulockmgr
 AC_CHECK_HEADER(ulockmgr.h,AC_DEFINE([HAVE_LIBULOCKMGR],[1],[Define to 1 if you have the `ulockmgr` library.]))
