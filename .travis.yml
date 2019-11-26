@@ -22,7 +22,7 @@ before_install:
 
 script:
   - sh bootstrap
-  - ./configure --disable-fdpassing
+  - ./configure --disable-fdpassing || { tail -n 300 config.log; false; }
   - make clean
   - make -j
 

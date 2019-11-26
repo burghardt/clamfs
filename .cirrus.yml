@@ -1,18 +1,16 @@
 # https://cirrus-ci.com/github/burghardt/clamfs
-task:
+build_task:
   name: FreeBSD build
   freebsd_instance:
     matrix:
-      image_family: freebsd-13-0-snap
-      image_family: freebsd-12-0
-      # 11.3 image causes "Agent is not responding!" error
+      # disabled as didn't provide fuse.ko
+      #image_family: freebsd-13-0-snap
+      image_family: freebsd-12-1-snap
       image_family: freebsd-11-3-snap
-      image_family: freebsd-11-2
-      image_family: freebsd-10-4
   env:
     CIRRUS_CLONE_DEPTH: 10
   pkginstall_script:
-    - pkg install -y devel/autoconf devel/automake devel/pkgconf
+    - pkg install -y devel/autoconf devel/automake devel/pkgconf shells/bash
     - pkg install -y sysutils/fusefs-libs3 devel/poco devel/boost-libs devel/rlog
   configure_script:
     - sed -i bak -e 's|-Werror ||g' configure.ac
@@ -22,3 +20,33 @@ task:
     - make
   install_script:
     - make install
+  configure_clamfs_script:
+    - mkdir -p /clamfs/tmp
+    - sed 's/clamd.ctl/clamd.sock/g' doc/clamfs.xml > /clamfs/tmp.xml
+  install_clamav_deps_script:
+    - cd /usr/ports/security/clamav
+    - make all-depends-list | sed 's|/usr/ports/||g' | xargs -rtn1 pkg install -y
+  install_clamav_script:
+    - cd /usr/ports/security/clamav
+    - make -DBATCH install clean
+  freshclam_script:
+    - freshclam
+  start_clamd_script:
+    - service clamav-freshclam onestart
+    - service clamav-clamd onestart
+  load_fuse_script:
+    - kldload fuse
+  start_clamfs_script:
+    - clamfs /clamfs/tmp.xml
+  test_empty_script:
+    - cd /clamfs/tmp
+    - touch empty.file
+    - cat empty.file
+  test_string_script:
+    - cd /clamfs/tmp
+    - echo 'Hello World!' > string.txt
+    - cat string.txt
+  test_eicar_script:
+    - cd /clamfs/tmp
+    - echo 'X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*' > eicar.com
+    - hexdump -C eicar.com || exit 0

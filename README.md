@@ -253,7 +253,7 @@ Finally start required services with following commands.
 ```sh
 service kld start
 service clamav-freshclam start
-service clamav-daemon start
+service clamav-clamd start
 ```
 
 #### Mounting and unmounting ClamFS file systems
