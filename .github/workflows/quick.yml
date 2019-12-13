@@ -100,7 +100,7 @@ jobs:
         run: |
           set -x
           sudo fusermount3 -u /clamfs/tmp
-          sed -i 's/mode=".*" check="no"/mode="fname"/g' ./doc/debug.xml
+          sed -i 's/mode=".*"/mode="fname"/g' ./doc/clamfs.xml
           sudo ./src/clamfs ./doc/clamfs.xml
           cd /clamfs/tmp
           cat string.txt
@@ -110,7 +110,7 @@ jobs:
         run: |
           set -x
           sudo fusermount3 -u /clamfs/tmp
-          sed -i 's/mode=".*" check="no"/mode="stream"/g' ./doc/debug.xml
+          sed -i 's/mode=".*"/mode="stream"/g' ./doc/clamfs.xml
           sudo ./src/clamfs ./doc/clamfs.xml
           cd /clamfs/tmp
           cat string.txt
