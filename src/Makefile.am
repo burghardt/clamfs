@@ -7,4 +7,4 @@ clamfs_SOURCES=clamfs.cxx clamfs.hxx \
                scancache.cxx scancache.hxx \
                mnotify.cxx mnotify.hxx \
                stats.cxx stats.hxx \
-               utils.hxx
+               utils.hxx fdpassing.h
