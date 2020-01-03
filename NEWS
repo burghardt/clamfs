@@ -3,6 +3,17 @@
  =============
 
  *******************
+ 1.2.0 (03 Jan 2020)
+ *******************
+
+* Switched to libFUSE version 3. Drop support for FUSE v2.
+* Implemented two new scan modes: fdpass and stream.
+* Remote clamd instances supported in stream mode with socket="<IP>:<port>".
+* Add support for lseek() call with FUSE >= 3.8 / API v32.
+* Add support for lock(), flock() and copy_file_range().
+* Add support for ulockmgr.
+
+ *******************
  1.1.0 (21 Oct 2019)
  *******************
 
