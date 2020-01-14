@@ -71,11 +71,19 @@ AC_CHECK_HEADER(Poco/SAX/ContentHandler.h,,AC_MSG_ERROR([Poco/SAX/ContentHandler
 AC_CHECK_HEADER(Poco/SAX/LexicalHandler.h,,AC_MSG_ERROR([Poco/SAX/LexicalHandler.h]))
 AC_CHECK_HEADER(Poco/SAX/Attributes.h,,AC_MSG_ERROR([Poco/SAX/Attributes.h]))
 AC_CHECK_HEADER(Poco/SAX/Locator.h,,AC_MSG_ERROR([Poco/SAX/Locator.h]))
-AC_CHECK_LIB(PocoFoundation,_start,LIBS="$LIBS -lPocoFoundation",AC_MSG_ERROR([libPocoFoundation not found!]))
-AC_CHECK_LIB(PocoNet,_start,LIBS="$LIBS -lPocoNet",AC_MSG_ERROR([libPocoNet not found!]))
-AC_CHECK_LIB(PocoXML,_start,LIBS="$LIBS -lPocoXML",AC_MSG_ERROR([libPocoXML not found!]))
 
-dnl Use option --enable-gcc-debug to enable GCC debug code.
+# There is no portable way to check for C++ symbol with AC_CHECK_LIB().
+# Mangling C++ symbols is not portable. Hacks like using main() or _start()
+# are neither portable enough. Calling main() is forbidden in C++.
+# Symbol _start() is non-standard and does not exists on mips(64)el.
+
+#AC_CHECK_LIB(PocoFoundation,_start,LIBS="$LIBS -lPocoFoundation",AC_MSG_ERROR([libPocoFoundation not found!]))
+#AC_CHECK_LIB(PocoNet,_start,LIBS="$LIBS -lPocoNet",AC_MSG_ERROR([libPocoNet not found!]))
+#AC_CHECK_LIB(PocoXML,_start,LIBS="$LIBS -lPocoXML",AC_MSG_ERROR([libPocoXML not found!]))
+
+LIBS="$LIBS -lPocoFoundation -lPocoNet -lPocoXML"
+
+# Use option --enable-gcc-debug to enable GCC debug code.
 AC_ARG_ENABLE(gcc-debug,
 AC_HELP_STRING([--enable-gcc-debug],
         [enable GCC DEBUG code]),
@@ -88,7 +96,7 @@ else
  CPPFLAGS="$CPPFLAGS -O2 -DNDEBUG"
 fi
 
-dnl Use option --enable-clang-flags to enable CLANG flags.
+# Use option --enable-clang-flags to enable CLANG flags.
 AC_ARG_ENABLE(clang-flags,
 AC_HELP_STRING([--enable-clang-flags],
         [enable enable CLANG flags]),
@@ -103,7 +111,7 @@ if test "$enable_clang_flags" = "yes" && (test "$GXX" = "yes"); then
  AC_MSG_RESULT([Enabling CLANG flags...])
 fi
 
-dnl Use option --enable-dmalloc-debug to enable dmalloc debug code.
+# Use option --enable-dmalloc-debug to enable dmalloc debug code.
 AC_ARG_ENABLE(dmalloc-debug,
 AC_HELP_STRING([--enable-dmalloc-debug],
         [enable dmalloc debug code]),
@@ -115,7 +123,7 @@ if test "$enable_dmalloc_debug" = "yes" && (test "$GXX" = "yes"); then
  AC_MSG_RESULT([Enabling dmalloc debug...])
 fi
 
-dnl Use option --gprof to enable gprof support
+# Use option --gprof to enable gprof support
 AC_ARG_ENABLE(gprof,
 AC_HELP_STRING([--enable-gprof],
         [enable gprof support]),
