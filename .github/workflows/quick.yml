@@ -40,7 +40,7 @@ jobs:
           export CC=clang
           export CXX=clang++
           sh configure --enable-clang-flags || \
-              { tail -n 300 config.log; false; }
+              { tail -n 500 config.log; false; }
       - name: clean
         run: make clean
       - name: make

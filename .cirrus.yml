@@ -16,7 +16,7 @@ build_task:
   configure_script:
     - sed -i bak -e 's|-Werror ||g' configure.ac
     - sh bootstrap
-    - ./configure || { tail -n 300 config.log; false; }
+    - ./configure || { tail -n 500 config.log; false; }
   compile_script:
     - make
 
@@ -40,7 +40,7 @@ test_task:
   configure_script:
     - sed -i bak -e 's|-Werror ||g' configure.ac
     - sh bootstrap
-    - ./configure || { tail -n 300 config.log; false; }
+    - ./configure || { tail -n 500 config.log; false; }
   compile_script:
     - make
   install_script:

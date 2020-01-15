@@ -40,7 +40,7 @@ jobs:
           sh configure \
                --enable-gcc-debug \
                --enable-dmalloc-debug \
-               --enable-gprof || { tail -n 300 config.log; false; }
+               --enable-gprof || { tail -n 500 config.log; false; }
       - name: clean
         run: make clean
       - name: make
