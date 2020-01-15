@@ -42,7 +42,7 @@ CPPFLAGS="$CPPFLAGS -Wformat -Wformat-security -D_FORTIFY_SOURCE=2"
 CPPFLAGS="$CPPFLAGS -Wcast-align -Wcast-qual -Wchar-subscripts"
 CPPFLAGS="$CPPFLAGS -Wformat-nonliteral -Wpointer-arith -Wredundant-decls"
 CPPFLAGS="$CPPFLAGS -Wreturn-type -Wshadow -Wswitch -Wunused-parameter -Wwrite-strings"
-CPPFLAGS="$CPPFLAGS -fstack-protector-strong -fstack-check -fPIC -fPIE"
+CPPFLAGS="$CPPFLAGS -fstack-protector-strong -fPIC -fPIE"
 LDFLAGS="$LDFLAGS -pie -Wl,-z,relro -Wl,-z,now -Wl,--as-needed -Wl,-Bsymbolic-functions -Wl,--fatal-warnings"
 
 # Checks for boost
