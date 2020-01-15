@@ -37,7 +37,7 @@ jobs:
       - name: bootstrap
         run: sh bootstrap
       - name: configure
-        run: sh configure || { tail -n 300 config.log; false; }
+        run: sh configure || { tail -n 500 config.log; false; }
       - name: clean
         run: make clean
       - name: doxygen

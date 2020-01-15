@@ -36,8 +36,14 @@ AC_CHECK_FUNCS([fchdir fdatasync fork ftruncate fstatat utimensat posix_fallocat
 # Check for BSD 4.4 / RFC2292 style fd passing
 AC_C_FDPASSING
 
-# Set initial CPPFLAGS
-CPPFLAGS="$CPPFLAGS -Wall -Werror -Wextra"
+# Set initial CPPFLAGS and LDFLAGS
+CPPFLAGS="$CPPFLAGS -Wall -Werror -Wextra -Wdate-time"
+CPPFLAGS="$CPPFLAGS -Wformat -Wformat-security -D_FORTIFY_SOURCE=2"
+CPPFLAGS="$CPPFLAGS -Wcast-align -Wcast-qual -Wchar-subscripts"
+CPPFLAGS="$CPPFLAGS -Wformat-nonliteral -Wpointer-arith -Wredundant-decls"
+CPPFLAGS="$CPPFLAGS -Wreturn-type -Wshadow -Wswitch -Wunused-parameter -Wwrite-strings"
+CPPFLAGS="$CPPFLAGS -fstack-protector-strong -fPIC -fPIE"
+LDFLAGS="$LDFLAGS -pie -Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack -Wl,--as-needed -Wl,-Bsymbolic-functions -Wl,--fatal-warnings"
 
 # Checks for boost
 AX_BOOST_BASE(1.33)
@@ -105,9 +111,10 @@ AC_HELP_STRING([--enable-clang-flags],
 if test "$enable_clang_flags" = "yes" && (test "$GXX" = "yes"); then
  CPPFLAGS="$CPPFLAGS -Wfour-char-constants -Wpointer-arith -Wwrite-strings -Wcast-align"
  CPPFLAGS="$CPPFLAGS -Wconversion -Wfloat-equal -Wformat=2 -Wimplicit-atomic-properties"
- CPPFLAGS="$CPPFLAGS -Wmissing-declarations -Wmissing-prototypes -Woverlength-strings"
- CPPFLAGS="$CPPFLAGS -Wshadow -Wstrict-selector-match -Wundeclared-selector"
-#CPPFLAGS="$CPPFLAGS -Wunreachable-code"
+ CPPFLAGS="$CPPFLAGS -Wmissing-declarations"
+ CPPFLAGS="$CPPFLAGS -Woverlength-strings -Wshadow"
+ CPPFLAGS="$CPPFLAGS -Wstrict-selector-match -Wundeclared-selector"
+ CPPFLAGS="$CPPFLAGS -Wunreachable-code -Wthread-safety"
  AC_MSG_RESULT([Enabling CLANG flags...])
 fi
 
