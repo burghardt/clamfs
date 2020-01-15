@@ -43,7 +43,7 @@ CPPFLAGS="$CPPFLAGS -Wcast-align -Wcast-qual -Wchar-subscripts"
 CPPFLAGS="$CPPFLAGS -Wformat-nonliteral -Wpointer-arith -Wredundant-decls"
 CPPFLAGS="$CPPFLAGS -Wreturn-type -Wshadow -Wswitch -Wunused-parameter -Wwrite-strings"
 CPPFLAGS="$CPPFLAGS -fstack-protector-strong -fPIC -fPIE"
-LDFLAGS="$LDFLAGS -pie -Wl,-z,relro -Wl,-z,now -Wl,--as-needed -Wl,-Bsymbolic-functions -Wl,--fatal-warnings"
+LDFLAGS="$LDFLAGS -pie -Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack -Wl,--as-needed -Wl,-Bsymbolic-functions -Wl,--fatal-warnings"
 
 # Checks for boost
 AX_BOOST_BASE(1.33)
