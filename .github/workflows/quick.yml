@@ -87,7 +87,9 @@ jobs:
           cd /clamfs/tmp
           echo 'X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*' > eicar.com
           hexdump -C eicar.com && exit 1
-          sudo grep -e 'Eicar-Test-Signature' -e 'Clamav.Test.File-7' /var/log/syslog || \
+          sudo grep -e 'Eicar-Test-Signature' \
+                    -e 'Eicar-Signature' \
+                    -e 'Clamav.Test.File-7' /var/log/syslog || \
               { sudo tail -n 50 /var/log/syslog; false; }
       - name: testfiles
         run: |
@@ -106,7 +108,9 @@ jobs:
           cd /clamfs/tmp
           cat string.txt
           hexdump -C eicar.com && exit 1
-          sudo grep -e 'Eicar-Test-Signature' -e 'Clamav.Test.File-7' /var/log/syslog || \
+          sudo grep -e 'Eicar-Test-Signature' \
+                    -e 'Eicar-Signature' \
+                    -e 'Clamav.Test.File-7' /var/log/syslog || \
               { sudo tail -n 50 /var/log/syslog; false; }
       - name: stream
         run: |
@@ -117,7 +121,9 @@ jobs:
           cd /clamfs/tmp
           cat string.txt
           hexdump -C eicar.com && exit 1
-          sudo grep -e 'Eicar-Test-Signature' -e 'Clamav.Test.File-7' /var/log/syslog || \
+          sudo grep -e 'Eicar-Test-Signature' \
+                    -e 'Eicar-Signature' \
+                    -e 'Clamav.Test.File-7' /var/log/syslog || \
               { sudo tail -n 50 /var/log/syslog; false; }
       - name: umount
         run: |
