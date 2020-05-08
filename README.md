@@ -9,14 +9,50 @@ for Linux and [BSD](https://www.freshports.org/security/clamfs/)
 with on-access anti-virus file scanning through [clamd daemon](https://manpages.debian.org/testing/clamav-daemon/clamd.8.en.html)
 (a file scanning service developed by [ClamAV Project](https://www.clamav.net/)).
 
-## Features
+### Features
 
- * User-space file system (no kernel patches, recompilation, etc.)
+ * Scans files using ClamAV
+ * User-space file system (no kernel patches, modules, recompilations, etc.)
+ * Based on libFUSE version 3 (until version 1.1.0 on libFUSE v2)
+ * Implements all clamd scan modes: fname, fdpass and stream
+ * Supports remote clamd instances in stream mode over TCP/IP socket
+ * Caches scan results in a LRU cache with time-based and out-of-memory expiration
  * Configuration stored in XML files
- * FUSE (and libfuse3) used as file system back-end
- * Scan files using ClamAV
- * ScanCache (LRU with time-based and out-of-memory expiration) speeds up file access
- * Sends mail to administrator when detect virus
+ * Supports ulockmgr
+ * Sends mails to administrator when detects virus
+
+## Table of contents
+
+ * [Description](#description)
+   * [Features](#features)
+ * [Getting Started](#getting-started)
+   * [Installing packages](#installing-packages)
+     * [Arch](#arch)
+     * [Debian, Ubuntu, etc.](#debian-ubuntu-etc)
+     * [Gentoo](#gentoo)
+     * [FreeBSD, DragonFly BSD](#freebsd-dragonfly-bsd)
+   * [Building from sources](#building-from-sources)
+     * [Prerequisites](#prerequisites)
+     * [Installing dependencies](#installing-dependencies)
+     * [Downloading](#downloading)
+     * [Building](#building)
+     * [Installing](#installing)
+   * [Usage](#usage)
+     * [Sample output](#sample-output)
+     * [Configuration](#configuration)
+     * [Different scan modes](#different-scan-modes)
+     * [Additional configuration steps for FreeBSD](#additional-configuration-steps-for-freebsd)
+     * [Mounting and unmounting ClamFS file systems](#mounting-and-unmounting-clamfs-file-systems)
+ * [Fine tuning](#fine-tuning)
+   * [Starting without clamd available](#starting-without-clamd-available)
+   * [Mounting file systems from /etc/fstab](#mounting-file-systems-from-etcfstab)
+   * [Using remote clamd instances](#using-remote-clamd-instances)
+   * [Read-only mounts](#read-only-mounts)
+   * [Program name reported as unknown when virus found](#program-name-reported-as-unknown-when-virus-found)
+   * [Using ClamFS with WINE](#using-clamfs-with-wine)
+   * [Installing FUSE v3 from sources](#installing-fuse-v3-from-sources)
+ * [License](#license)
+ * [Historical repositories at SourceForge](#historical-repositories-at-sourceforge)
 
 ## Getting Started
 
