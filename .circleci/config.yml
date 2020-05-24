@@ -60,6 +60,10 @@ jobs:
           name: Build
           command: |
             ./build-wrapper --out-dir bw-outputs make clean all
+      - run:
+          name: Inject ClamFS version to SonarCloud configuration
+          command: |
+            sed -i.bak "s/^sonar.projectVersion=.*$/sonar.projectVersion=$(git describe)/" sonar-project.properties
       - sonarcloud/scan
 
 orbs:
