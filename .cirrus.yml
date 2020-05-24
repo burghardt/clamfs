@@ -4,10 +4,6 @@ build_task:
   freebsd_instance:
     matrix:
       image_family: freebsd-13-0-snap
-      image_family: freebsd-12-1
-      image_family: freebsd-12-0
-      # 11.3 image causes "Agent is not responding!" error
-      #image_family: freebsd-11-3
   env:
     CIRRUS_CLONE_DEPTH: 10
   pkginstall_script:
@@ -25,7 +21,6 @@ test_task:
   freebsd_instance:
     matrix:
       # 13.0-snap image didn't provide fuse.ko
-      #image_family: freebsd-13-0-snap
       image_family: freebsd-12-1-snap
       image_family: freebsd-11-3-snap
   env:
