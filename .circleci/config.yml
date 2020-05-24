@@ -1,28 +1,73 @@
-version: 2.0
+version: 2.1
 
 jobs:
-  build:
+  archlinux:
     docker:
       - image: archlinux/base:latest
     steps:
       - checkout
       - run:
-          name: pacman
+          name: Install dependencies
           command: |
             pacman -Syu --noconfirm base-devel fuse3 poco boost rlog
       - run:
-          name: build
+          name: Configure
           command: |
             sh autogen.sh
             ./configure
+      - run:
+          name: Build
+          command: |
             make -j
       - run:
-          name: install
+          name: Install
           command: |
             make install
+  sonarcloud:
+    docker:
+      - image: cimg/base:2020.01
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y build-essential
+            sudo apt-get install -y pkg-config autoconf automake
+            sudo apt-get install -y libpoco-dev libboost-dev librlog-dev
+      - run:
+          name: Install FUSE3
+          command: |
+            sudo apt-get install -y meson ninja-build udev
+            mkdir /tmp/fuse3 ; cd /tmp/fuse3
+            git clone --depth 1 https://github.com/libfuse/libfuse.git .
+            mkdir build ; cd build
+            meson ..
+            ninja
+            sudo ninja install || true
+      - run:
+          name: Configure
+          command: |
+            sh autogen.sh
+            ./configure
+      - run:
+          name: Download build-wrapper
+          command: |
+            wget https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+            unzip build-wrapper-linux-x86.zip
+            ln -vsf build-wrapper-linux-x86/build-wrapper-linux-x86-64 build-wrapper
+      - run:
+          name: Build
+          command: |
+            ./build-wrapper --out-dir bw-outputs make clean all
+      - sonarcloud/scan
+
+orbs:
+  sonarcloud: sonarsource/sonarcloud@1.0.1
 
 workflows:
-  version: 2
-  build-and-deploy:
+  main:
     jobs:
-      - build
+      - archlinux
+      - sonarcloud:
+          context: SonarCloud
