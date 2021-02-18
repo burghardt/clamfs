@@ -37,6 +37,17 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - run: |
+        apt-get update && \
+        apt-get -y --no-install-recommends install \
+          build-essential \
+          automake \
+          pkg-config \
+          libfuse3-dev \
+          librlog-dev \
+          libpoco-dev \
+          libboost-dev
+
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v1
