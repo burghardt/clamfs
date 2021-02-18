@@ -43,10 +43,18 @@ jobs:
           build-essential \
           automake \
           pkg-config \
-          libfuse3-dev \
           librlog-dev \
           libpoco-dev \
           libboost-dev
+          
+    - run: |
+        sudo apt-get -y --no-install-recommends install meson ninja-build
+        mkdir /tmp/fuse3 ; cd /tmp/fuse3
+        git clone --depth 1 https://github.com/libfuse/libfuse.git .
+        mkdir build ; cd build
+        meson ..
+        ninja
+        sudo ninja install
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
