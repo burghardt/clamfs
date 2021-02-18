@@ -1,0 +1,48 @@
+name: "CodeQL"
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron:  '0 1 * * *'
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get -y --no-install-recommends install \
+          build-essential \
+          automake \
+          pkg-config \
+          librlog-dev \
+          libpoco-dev \
+          libboost-dev
+          
+    - name: Install FUSE from sources
+      run: |
+        sudo apt-get -y --no-install-recommends install meson ninja-build
+        mkdir /tmp/fuse3 ; cd /tmp/fuse3
+        git clone --depth 1 https://github.com/libfuse/libfuse.git .
+        mkdir build ; cd build
+        meson ..
+        ninja
+        sudo ninja install
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v1
+      with:
+        languages: 'cpp'
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v1
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v1
