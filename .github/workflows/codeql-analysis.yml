@@ -1,14 +1,14 @@
-name: "CodeQL"
+name: codeql workflow
 
 on:
   push:
   pull_request:
   schedule:
-    - cron:  '0 1 * * *'
+    - cron:  '0 0 * * *'
 
 jobs:
   analyze:
-    name: Analyze
+    name: analyze
     runs-on: ubuntu-latest
 
     steps:
@@ -25,7 +25,7 @@ jobs:
           librlog-dev \
           libpoco-dev \
           libboost-dev
-          
+
     - name: Install FUSE from sources
       run: |
         sudo apt-get -y --no-install-recommends install meson ninja-build
