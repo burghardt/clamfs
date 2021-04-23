@@ -69,7 +69,19 @@ void Stats::dumpFilesystemStatsToLog() {
 
 void Stats::dumpMemoryStatsToLog() {
     rLog(Info, "--- begin of memory statistics ---");
-#ifdef HAVE_MALLINFO
+#if defined(HAVE_MALLINFO2)
+    struct mallinfo2 mi = mallinfo2();
+    rLog(Info, "Non-mmapped space allocated (arena):         %ld", mi.arena);
+    rLog(Info, "Number of free chunks (ordblks):             %ld", mi.ordblks);
+    rLog(Info, "Number of free fastbin blocks (smblks):      %ld", mi.smblks);
+    rLog(Info, "Number of mmapped regions (hblks):           %ld", mi.hblks);
+    rLog(Info, "Space allocated in mmapped regions (hblkhd): %ld", mi.hblkhd);
+    rLog(Info, "Maximum total allocated space (usmblks):     %ld", mi.usmblks);
+    rLog(Info, "Space in freed fastbin blocks (fsmblks):     %ld", mi.fsmblks);
+    rLog(Info, "Total allocated space (uordblks):            %ld", mi.uordblks);
+    rLog(Info, "Total free space (fordblks):                 %ld", mi.fordblks);
+    rLog(Info, "Top-most, releasable space (keepcost):       %ld", mi.keepcost);
+#elif defined(HAVE_MALLINFO)
     struct mallinfo mi = mallinfo();
     rLog(Info, "Non-mmapped space allocated (arena):         %d", mi.arena);
     rLog(Info, "Number of free chunks (ordblks):             %d", mi.ordblks);
