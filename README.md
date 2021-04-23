@@ -142,12 +142,30 @@ As a run-time dependency install:
  * clamav-daemon
  * fuse
 
-Run following command to install al dependencies.
+Run following command to install all dependencies.
 ```
 sudo apt-get -y --no-install-recommends install \
       build-essential pkg-config autoconf automake \
       libfuse3-dev libpoco-dev libboost-dev librlog-dev \
       clamav-daemon clamav-freshclam
+```
+
+##### Fedora
+
+To build ClamFS on Fedora you need those packages:
+ * fuse3-devel
+ * poco-devel
+ * boost-devel
+ * rlog-devel
+ * pkg-config
+
+As a run-time dependency install:
+ * clamd
+
+Run following command to install all dependencies.
+```
+sudo dnf install automake rlog-devel boost-devel poco-devel fuse3-devel \
+      pkg-config clamd
 ```
 
 ##### FreeBSD, DragonFly BSD
