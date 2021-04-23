@@ -31,7 +31,7 @@ AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_LSTAT
 AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
 AC_FUNC_UTIME_NULL
-AC_CHECK_FUNCS([fchdir fdatasync fork ftruncate fstatat utimensat posix_fallocate copy_file_range lchown memset mkdir mkfifo rmdir setxattr strdup strerror utime mallinfo])
+AC_CHECK_FUNCS([fchdir fdatasync fork ftruncate fstatat utimensat posix_fallocate copy_file_range lchown memset mkdir mkfifo rmdir setxattr strdup strerror utime mallinfo mallinfo2])
 
 # Check for BSD 4.4 / RFC2292 style fd passing
 AC_C_FDPASSING
