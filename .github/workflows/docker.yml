@@ -25,9 +25,9 @@ jobs:
         uses: ./.github/actions/build-debian-testing
       - name: debian-stable
         uses: ./.github/actions/build-debian-stable
-      #- name: debian-oldstable
-      #  uses: ./.github/actions/build-debian-oldstable
-      - name: fedora-rawhide
-        uses: ./.github/actions/build-fedora-rawhide
+      - name: debian-oldstable
+        uses: ./.github/actions/build-debian-oldstable
+      #- name: fedora-rawhide
+      #  uses: ./.github/actions/build-fedora-rawhide
       - name: fedora-latest
         uses: ./.github/actions/build-fedora-latest
