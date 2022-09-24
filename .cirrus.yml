@@ -1,28 +1,10 @@
 # https://cirrus-ci.com/github/burghardt/clamfs
-build_task:
-  name: FreeBSD build
-  freebsd_instance:
-    matrix:
-      image_family: freebsd-13-0-snap
-  env:
-    CIRRUS_CLONE_DEPTH: 10
-  pkginstall_script:
-    - pkg install -y devel/autoconf devel/automake devel/pkgconf
-    - pkg install -y sysutils/fusefs-libs3 devel/poco devel/boost-libs devel/rlog
-  configure_script:
-    - sed -i bak -e 's|-Werror ||g' configure.ac
-    - sh bootstrap
-    - ./configure || { tail -n 500 config.log; false; }
-  compile_script:
-    - make
-
 test_task:
   name: FreeBSD test run
   freebsd_instance:
     matrix:
-      # 13.0-snap image didn't provide fuse.ko
-      image_family: freebsd-12-1-snap
-      image_family: freebsd-11-3-snap
+      image_family: freebsd-13-1
+      image_family: freebsd-12-3
   env:
     CIRRUS_CLONE_DEPTH: 10
     matrix:

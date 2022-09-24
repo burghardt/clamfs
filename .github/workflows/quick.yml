@@ -96,7 +96,7 @@ jobs:
           mkdir /clamfs/tmp/testfiles
           cd /clamfs/tmp/testfiles
           cp -av /usr/share/clamav-testfiles/* .
-          ls | grep -i rar | xargs rm -fv
+          ls | grep -e clam-v2.rar -e clam-v3.rar -e clam_cache_emax.tgz | xargs rm -fv
           test -z "$(file * | grep -v 'no read permission')"
       - name: fname
         run: |
