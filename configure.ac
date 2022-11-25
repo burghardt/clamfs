@@ -61,11 +61,6 @@ PKG_CHECK_MODULES([FUSE38],[fuse3 >= 3.8],AC_DEFINE([HAVE_FUSE_LSEEK],[1],[Defin
 AC_CHECK_HEADER(ulockmgr.h,AC_DEFINE([HAVE_LIBULOCKMGR],[1],[Define to 1 if you have the `ulockmgr` library.]))
 AC_CHECK_LIB(ulockmgr,ulockmgr_op,LIBS="$LIBS -lulockmgr")
 
-# Check for librlog
-CPPFLAGS="$CPPFLAGS -DRLOG_COMPONENT=clamfs"
-AC_CHECK_HEADER(rlog/rlog.h,,AC_MSG_ERROR([rlog/rlog.h not found!]))
-AC_CHECK_LIB(rlog,RLogVersion,LIBS="$LIBS -lrlog",AC_MSG_ERROR([librlog not found!]))
-
 # Check for libpoco
 AC_CHECK_HEADER(Poco/Exception.h,,AC_MSG_ERROR([Poco/Exception.h]))
 AC_CHECK_HEADER(Poco/ExpireLRUCache.h,,AC_MSG_ERROR([Poco/ExpireLRUCache.h not found!]))
