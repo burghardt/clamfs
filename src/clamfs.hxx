@@ -38,6 +38,7 @@
 #endif
 
 #include "rlog.hxx"
+#include "logger.hxx"
 #include "config.hxx"
 #include "clamav.hxx"
 #include "scancache.hxx"
