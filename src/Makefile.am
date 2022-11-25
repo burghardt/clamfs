@@ -2,6 +2,7 @@ bin_PROGRAMS=clamfs
 
 clamfs_SOURCES=clamfs.cxx clamfs.hxx \
                config.cxx config.hxx \
+               logger.cxx logger.hxx \
                rlog.cxx rlog.hxx \
                clamav.cxx clamav.hxx \
                scancache.cxx scancache.hxx \
