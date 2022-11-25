@@ -22,7 +22,6 @@ jobs:
                doxygen graphviz \
                automake \
                pkg-config \
-               librlog-dev \
                libpoco-dev \
                libboost-dev \
                libdmalloc-dev
