@@ -1,7 +1,7 @@
-AC_INIT([ClamFS], [1.2.0], [krzysztof@burghardt.pl], [clamfs])
+AC_INIT([ClamFS],[1.2.0],[krzysztof@burghardt.pl],[clamfs])
 AC_CONFIG_AUX_DIR(build)
 AC_CONFIG_SRCDIR(src/clamfs.cxx)
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS(config.h)
 AM_INIT_AUTOMAKE
 AM_CONDITIONAL([DOT_GIT], [test -d .git])
 
@@ -10,11 +10,11 @@ AC_PROG_CXX
 AC_PROG_CC
 
 # Set language to C++
-AC_LANG_CPLUSPLUS
+AC_LANG([C++])
 
 # Checks for header files
 AC_HEADER_DIRENT
-AC_HEADER_STDC
+AC_CHECK_INCLUDES_DEFAULT
 AC_CHECK_HEADERS([fcntl.h string.h unistd.h stdlib.h malloc.h])
 
 # Checks for typedefs, structures, and compiler characteristics
@@ -91,8 +91,7 @@ LIBS="$LIBS -lPocoFoundation -lPocoNet -lPocoXML"
 
 # Use option --enable-gcc-debug to enable GCC debug code.
 AC_ARG_ENABLE(gcc-debug,
-AC_HELP_STRING([--enable-gcc-debug],
-        [enable GCC DEBUG code]),
+AS_HELP_STRING([--enable-gcc-debug],[enable GCC DEBUG code]),
         [enable_gcc_debug=yes],
         [enable_gcc_debug=no])
 if test "$enable_gcc_debug" = "yes" && (test "$GXX" = "yes"); then
@@ -104,8 +103,7 @@ fi
 
 # Use option --enable-clang-flags to enable CLANG flags.
 AC_ARG_ENABLE(clang-flags,
-AC_HELP_STRING([--enable-clang-flags],
-        [enable enable CLANG flags]),
+AS_HELP_STRING([--enable-clang-flags],[enable enable CLANG flags]),
         [enable_clang_flags=yes],
         [enable_clang_flags=no])
 if test "$enable_clang_flags" = "yes" && (test "$GXX" = "yes"); then
@@ -120,8 +118,7 @@ fi
 
 # Use option --enable-dmalloc-debug to enable dmalloc debug code.
 AC_ARG_ENABLE(dmalloc-debug,
-AC_HELP_STRING([--enable-dmalloc-debug],
-        [enable dmalloc debug code]),
+AS_HELP_STRING([--enable-dmalloc-debug],[enable dmalloc debug code]),
         [enable_dmalloc_debug=yes],
         [enable_dmalloc_debug=no])
 if test "$enable_dmalloc_debug" = "yes" && (test "$GXX" = "yes"); then
@@ -132,8 +129,7 @@ fi
 
 # Use option --gprof to enable gprof support
 AC_ARG_ENABLE(gprof,
-AC_HELP_STRING([--enable-gprof],
-        [enable gprof support]),
+AS_HELP_STRING([--enable-gprof],[enable gprof support]),
         [enable_gprof=yes],
         [enable_gprof=no])
 if test "$enable_gprof" = "yes" && (test "$GXX" = "yes"); then
