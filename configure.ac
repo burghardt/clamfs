@@ -103,7 +103,7 @@ fi
 
 # Use option --enable-clang-flags to enable CLANG flags.
 AC_ARG_ENABLE(clang-flags,
-AS_HELP_STRING([--enable-clang-flags],[enable enable CLANG flags]),
+AS_HELP_STRING([--enable-clang-flags],[enable CLANG flags]),
         [enable_clang_flags=yes],
         [enable_clang_flags=no])
 if test "$enable_clang_flags" = "yes" && (test "$GXX" = "yes"); then
