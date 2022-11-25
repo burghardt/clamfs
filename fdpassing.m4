@@ -158,8 +158,7 @@ dnl Submitted by Richard Lyons <frob-clamav@webcentral.com.au>
 AC_CHECK_FUNCS([recvmsg sendmsg])
 AC_CACHE_CHECK([for msg_control field in struct msghdr],
     [ac_cv_have_control_in_msghdr], [
-    AC_TRY_COMPILE(
-[
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #define _XOPEN_SOURCE 500
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -168,15 +167,14 @@ AC_CACHE_CHECK([for msg_control field in struct msghdr],
 #ifdef HAVE_SYS_UIO_H
 #include <sys/uio.h>
 #endif
-],
-[
+]], [[
 #ifdef msg_control
 #error msg_control defined
 #endif
 struct msghdr m;
 m.msg_control = 0;
 return 0;
-], [ ac_cv_have_control_in_msghdr="yes" ], [ ac_cv_have_control_in_msghdr="no" ])
+]])],[ ac_cv_have_control_in_msghdr="yes" ],[ ac_cv_have_control_in_msghdr="no" ])
 ])
 if test "x$ac_cv_have_control_in_msghdr" = "xyes" ; then
     dnl Check whether FD passing works <edwin@clamav.net>
