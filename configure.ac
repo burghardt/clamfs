@@ -83,6 +83,7 @@ AC_CHECK_HEADER(Poco/SAX/Locator.h,,AC_MSG_ERROR([Poco/SAX/Locator.h]))
 #AC_CHECK_LIB(PocoNet,_start,LIBS="$LIBS -lPocoNet",AC_MSG_ERROR([libPocoNet not found!]))
 #AC_CHECK_LIB(PocoXML,_start,LIBS="$LIBS -lPocoXML",AC_MSG_ERROR([libPocoXML not found!]))
 
+CPPFLAGS="$CPPFLAGS -DPOCO_LOG_DEBUG"
 LIBS="$LIBS -lPocoFoundation -lPocoNet -lPocoXML"
 
 # Use option --enable-gcc-debug to enable GCC debug code.
