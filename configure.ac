@@ -63,6 +63,7 @@ AC_CHECK_LIB(ulockmgr,ulockmgr_op,LIBS="$LIBS -lulockmgr")
 
 # Check for libpoco
 AC_CHECK_HEADER(Poco/Exception.h,,AC_MSG_ERROR([Poco/Exception.h]))
+AC_CHECK_HEADER(Poco/Logger.h,,AC_MSG_ERROR([Poco/Logger.h]))
 AC_CHECK_HEADER(Poco/ExpireLRUCache.h,,AC_MSG_ERROR([Poco/ExpireLRUCache.h not found!]))
 AC_CHECK_HEADER(Poco/Net/MailMessage.h,,AC_MSG_ERROR([Poco/Net/MailMessage.h]))
 AC_CHECK_HEADER(Poco/Net/MailRecipient.h,,AC_MSG_ERROR([Poco/Net/MailRecipient.h]))
