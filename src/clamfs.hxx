@@ -37,7 +37,6 @@
    #include <dmalloc.h>
 #endif
 
-#include "rlog.hxx"
 #include "logger.hxx"
 #include "config.hxx"
 #include "clamav.hxx"
@@ -55,12 +54,7 @@
 namespace clamfs {
 
 using namespace std;
-using namespace rlog;
 using namespace Poco;
-
-extern RLogChannel *Debug;
-extern RLogChannel *Info;
-extern RLogChannel *Warn;
 
 } /* namespace clamfs */
 

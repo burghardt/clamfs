@@ -37,19 +37,17 @@
    #include <dmalloc.h>
 #endif
 
-#include "rlog.hxx"
+#include "logger.hxx"
 
 namespace clamfs {
 
 using namespace std;
 
-extern RLogChannel *Info;
-
 /*!\class Stats
    \brief Statistics module for ClamFS fs, av, cache and more
 
    Statistic data collection class with easy to use interface,
-   simple analisis and ability to dump statistics to rLog.
+   simple analisis and ability to dump statistics to Poco:Logger.
 */
 class Stats {
     public:
@@ -86,31 +84,31 @@ class Stats {
 
     public:
         /*!\brief early cache hit counter */
-        unsigned long long earlyCacheHit;
+        size_t earlyCacheHit;
         /*!\brief early cache miss counter */
-        unsigned long long earlyCacheMiss;
+        size_t earlyCacheMiss;
         /*!\brief late cache hit counter */
-        unsigned long long lateCacheHit;
+        size_t lateCacheHit;
         /*!\brief late cache miss counter */
-        unsigned long long lateCacheMiss;
+        size_t lateCacheMiss;
 
         /*!\brief whitelist hit counter */
-        unsigned long long whitelistHit;
+        size_t whitelistHit;
         /*!\brief blacklist hit counter */
-        unsigned long long blacklistHit;
+        size_t blacklistHit;
 
         /*!\brief files bigger than maximal-size hit counter */
-        unsigned long long tooBigFile;
+        size_t tooBigFile;
 
         /*!\brief open() function call counter */
-        unsigned long long openCalled;
+        size_t openCalled;
         /*!\brief open() call allowed by AV counter */
-        unsigned long long openAllowed;
+        size_t openAllowed;
         /*!\brief open() call denied by AV counter */
-        unsigned long long openDenied;
+        size_t openDenied;
 
         /*!\brief a/v scan failed (clamd unavailable, permission problem, etc.) */
-        unsigned long long scanFailed;
+        size_t scanFailed;
 
         /*!\brief indicates that memory statistics should be included */
         bool memoryStats;

@@ -101,8 +101,9 @@ static inline const char* fixpath(const char* path)
     {
         char* username = getusername();
         char* callername = getcallername();
-        rLog(Warn, "(%s:%d) (%s:%d) %s: fchdir() failed: %s",
-                callername, fuse_get_context()->pid, username, fuse_get_context()->uid,
+        Logger& logger = Logger::root();
+        poco_warning_f(logger, "(%s:%d) (%s:%u) %s: fchdir() failed: %s",
+                string(callername), fuse_get_context()->pid, string(username), fuse_get_context()->uid,
                 path, strerror(errno));
         free(username);
         free(callername);
@@ -620,8 +621,9 @@ static int clamfs_create(const char *path, mode_t mode, struct fuse_file_info *f
     {
         char* username = getusername();
         char* callername = getcallername();
-        rLog(Warn, "(%s:%d) (%s:%d) %s: lchown() failed: %s",
-                callername, fuse_get_context()->pid, username, fuse_get_context()->uid,
+        Logger& logger = Logger::root();
+        poco_warning_f(logger, "(%s:%d) (%s:%u) %s: lchown() failed: %s",
+                string(callername), fuse_get_context()->pid, string(username), fuse_get_context()->uid,
                 path, strerror(errno));
         free(username);
         free(callername);
@@ -664,6 +666,8 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
 
     INC_STAT_COUNTER(openCalled);
 
+    Logger& logger = Logger::root();
+
     /*
      * Dump stats to log periodically
      */
@@ -694,8 +698,8 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
                             INC_STAT_COUNTER(whitelistHit);
                             char* username = getusername();
                             char* callername = getcallername();
-                            rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because extension whitelisted ",
-                                    callername, fuse_get_context()->pid, username, fuse_get_context()->uid, path);
+                            poco_warning_f(logger, "(%s:%d) (%s:%u) %s: excluded from anti-virus scan because extension whitelisted ",
+                                    string(callername), fuse_get_context()->pid, string(username), fuse_get_context()->uid, string(path));
                             free(username);
                             free(callername);
                             INC_STAT_COUNTER(openAllowed);
@@ -707,17 +711,19 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
                             file_is_blacklisted = true;
                             char* username = getusername();
                             char* callername = getcallername();
-                            rLog(Warn, "(%s:%d) (%s:%d) %s: forced anti-virus scan because extension blacklisted ",
-                                    callername, fuse_get_context()->pid, username, fuse_get_context()->uid, path);
+                            poco_warning_f(logger, "(%s:%d) (%s:%u) %s: forced anti-virus scan because extension blacklisted ",
+                                    string(callername), fuse_get_context()->pid, string(username), fuse_get_context()->uid, string(path));
                             free(username);
                             free(callername);
                             break;
                         }
                     default:
-                        DEBUG("Extension found in unordered_map, but with unknown ACL type");
+                        {
+                           poco_debug(logger, "Extension found in unordered_map, but with unknown ACL type");
+                        }
                 }
             } else {
-                DEBUG("Extension not found in unordered_map");
+                poco_debug(logger, "Extension not found in unordered_map");
             }
         }
     }
@@ -732,8 +738,8 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
                 INC_STAT_COUNTER(tooBigFile);
                 char* username = getusername();
                 char* callername = getcallername();
-                rLog(Warn, "(%s:%d) (%s:%d) %s: excluded from anti-virus scan because file is too big (file size: %ld bytes)",
-                        callername, fuse_get_context()->pid, username, fuse_get_context()->uid, path, (long int)file_stat.st_size);
+                poco_warning_f(logger, "(%s:%d) (%s:%u) %s: excluded from anti-virus scan because file is too big (file size: %ld bytes)",
+                        string(callername), fuse_get_context()->pid, string(username), fuse_get_context()->uid, path, (long int)file_stat.st_size);
                 free(username);
                 free(callername);
                 INC_STAT_COUNTER(openAllowed);
@@ -750,15 +756,15 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
             ret = lstat(real_path.get(), &file_stat);
         if (!ret) { /* got file stat without error */
 
-            Poco::SharedPtr<CachedResult> ptr_val;
+            SharedPtr<CachedResult> ptr_val;
 
             if ((ptr_val = cache->get(file_stat.st_ino))) {
                 INC_STAT_COUNTER(earlyCacheHit);
-                DEBUG("early cache hit for inode %ld", (unsigned long)file_stat.st_ino);
+                poco_debug_f1(logger, "early cache hit for inode %lu", (unsigned long)file_stat.st_ino);
 
                 if (ptr_val->scanTimestamp == file_stat.st_mtime) {
                     INC_STAT_COUNTER(lateCacheHit);
-                    DEBUG("late cache hit for inode %ld", (unsigned long)file_stat.st_ino);
+                    poco_debug_f1(logger, "late cache hit for inode %lu", (unsigned long)file_stat.st_ino);
 
                     /* file scanned and not changed, was it clean? */
                     if (ptr_val->isClean) {
@@ -770,7 +776,7 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
                     }
                 } else {
                     INC_STAT_COUNTER(lateCacheMiss);
-                    DEBUG("late cache miss for inode %ld", (unsigned long)file_stat.st_ino);
+                    poco_debug_f1(logger, "late cache miss for inode %lu", (unsigned long)file_stat.st_ino);
 
                     /*
                      * Scan file when file it was changed
@@ -800,7 +806,7 @@ static int clamfs_open(const char *path, struct fuse_file_info *fi)
 
             } else {
                 INC_STAT_COUNTER(earlyCacheMiss);
-                DEBUG("early cache miss for inode %ld", (unsigned long)file_stat.st_ino);
+                poco_debug_f1(logger, "early cache miss for inode %lu", (unsigned long)file_stat.st_ino);
 
                 /*
                  * Scan file when file is not in cache
@@ -1225,24 +1231,23 @@ int main(int argc, char *argv[])
     umask(0);
 
     /*
-     * Open RLog
+     * Open console logger
      */
-    RLogInit(argc, argv);
-    RLogOpenStdio();
-
-    rLog(Info, "ClamFS v" VERSION " (git-" PACKAGE_VERSION_GIT_DESCRIBE ")");
-    rLog(Info, "Copyright (c) 2007-2019 Krzysztof Burghardt <krzysztof@burghardt.pl>");
-    rLog(Info, "https://github.com/burghardt/clamfs");
+    LoggerOpenStdio();
+    Logger& logger = Logger::root();
+    poco_information(logger, "ClamFS v" VERSION " (git-" PACKAGE_VERSION_GIT_DESCRIBE ")");
+    poco_information(logger, "Copyright (c) 2007-2022 Krzysztof Burghardt <krzysztof@burghardt.pl>");
+    poco_information(logger, "https://github.com/burghardt/clamfs");
 
     /*
-     * Check if we have one argument (other arguments are assumed RLog related)
+     * Check if we have one argument
      */
     if ((argc < 2) ||
         ((argc > 1) &&
          ((strncmp(argv[1], "-h", strlen("-h")) == 0) ||
           (strncmp(argv[1], "--help", strlen("--help")) == 0)))) {
-        rLog(Warn, "ClamFS need to be invoked with one parameter - location of configuration file");
-        rLog(Warn, "Example: %s /etc/clamfs/home.xml", argv[0]);
+        poco_warning(logger, "ClamFS need to be invoked with one parameter - location of configuration file");
+        poco_warning_f1(logger, "Example: %s /etc/clamfs/home.xml", string(argv[0]));
         return EXIT_FAILURE;
     }
 
@@ -1251,7 +1256,7 @@ int main(int argc, char *argv[])
      */
     ConfigParserXML cp(argv[1]);
     if (config.size() == 0) {
-        rLog(Warn, "No configuration has been loaded");
+        poco_warning(logger, "No configuration has been loaded");
         return EXIT_FAILURE;
     }
 
@@ -1276,7 +1281,7 @@ int main(int argc, char *argv[])
     if ((config["socket"] == NULL) ||
         (config["root"] == NULL) ||
         (config["mountpoint"] == NULL)) {
-        rLog(Warn, "socket, root and mountpoint must be defined");
+        poco_warning(logger, "socket, root and mountpoint must be defined");
         return EXIT_FAILURE;
     }
 
@@ -1323,10 +1328,10 @@ int main(int argc, char *argv[])
     /*
      * Change our current directory to "root" of our filesystem
      */
-    rLog(Info,"chdir to our 'root' (%s)",config["root"]);
+    poco_information_f1(logger, "chdir to our 'root' (%s)", string(config["root"]));
     if (chdir(config["root"]) < 0) {
-        int err = errno; /* copy errno, RLog can overwrite */
-        rLog(Warn, "chdir failed: %s", strerror(err));
+        int err = errno; /* copy errno to avoid overwriting it */
+        poco_warning_f1(logger, "chdir failed: %s", string(strerror(err)));
         return err;
     }
     savefd = open(".", 0);
@@ -1337,12 +1342,12 @@ int main(int argc, char *argv[])
     if ((config["check"] == NULL) ||
         (strncmp(config["check"], "no", 2) != 0)) {
         if ((ret = OpenClamav(config["socket"])) != 0) {
-            rLog(Warn, "cannot start without running clamd, make sure it works");
+            poco_warning(logger, "cannot start without running clamd, make sure it works");
             return ret;
         }
 
         if ((ret = PingClamav()) != 0) {
-            rLog(Warn, "cannot start without running clamd, make sure it works");
+            poco_warning(logger, "cannot start without running clamd, make sure it works");
             return ret;
         }
         CloseClamav();
@@ -1353,21 +1358,21 @@ int main(int argc, char *argv[])
      */
     if ((config["entries"] != NULL) &&
         (atol(config["entries"]) <= 0)) {
-        rLog(Warn, "maximal cache entries count cannot be =< 0");
+        poco_warning(logger, "maximal cache entries count cannot be =< 0");
         return EXIT_FAILURE;
     }
     if ((config["expire"] != NULL) &&
         (atol(config["expire"]) <= 0)) {
-        rLog(Warn, "maximal cache expire value cannot be =< 0");
+        poco_warning(logger, "maximal cache expire value cannot be =< 0");
         return EXIT_FAILURE;
     }
     if ((config["entries"] != NULL) &&
         (config["expire"] != NULL)) {
-        rLog(Info, "ScanCache initialized, %s entries will be kept for %s ms max.",
-            config["entries"], config["expire"]);
+        poco_information_f2(logger, "ScanCache initialized, %s entries will be kept for %s ms max.",
+            string(config["entries"]), string(config["expire"]));
         cache = new ScanCache(atol(config["entries"]), atol(config["expire"]));
     } else {
-        rLog(Warn, "ScanCache disabled, expect poor performance");
+        poco_warning(logger, "ScanCache disabled, expect poor performance");
     }
 
     /*
@@ -1375,14 +1380,14 @@ int main(int argc, char *argv[])
      */
     if ((config["every"] != NULL) &&
         (atol(config["every"]) != 0)) {
-        rLog(Info, "Statistics module initialized");
+        poco_information(logger, "Statistics module initialized");
         stats = new Stats(atol(config["every"]));
     } else if ((config["atexit"] != NULL) &&
         (strncmp(config["atexit"], "yes", 3) == 0)) {
-        rLog(Info, "Statistics module initialized");
+        poco_information(logger, "Statistics module initialized");
         stats = new Stats(0);
     } else {
-        rLog(Info, "Statistics module disabled");
+        poco_information(logger, "Statistics module disabled");
     }
 
     if ((config["memory"] != NULL) &&
@@ -1395,14 +1400,12 @@ int main(int argc, char *argv[])
      */
     if (config["method"] != NULL) {
         if (strncmp(config["method"], "syslog", 6) == 0) {
-            RLogOpenSyslog();
-            RLogCloseStdio();
+            LoggerOpenSyslog();
         } else if (strncmp(config["method"], "file", 4) == 0) {
             if (config["filename"] != NULL) {
-                RLogOpenLogFile(config["filename"]);
-                RLogCloseStdio();
+                LoggerOpenLogFile(config["filename"]);
             } else {
-                rLog(Warn, "logging method 'file' chosen, but no log 'filename' given");
+                poco_warning(logger, "logging method 'file' chosen, but no log 'filename' given");
                 return EXIT_FAILURE;
             }
         }
@@ -1412,7 +1415,7 @@ int main(int argc, char *argv[])
      * Print size of extensions ACL
      */
     if (extensions != NULL) {
-        rLog(Info, "extension ACL size is %d entries", (int)extensions->size());
+        poco_information_f1(logger, "extension ACL size is %d entries", (int)extensions->size());
     }
 
     /*
@@ -1426,7 +1429,7 @@ int main(int argc, char *argv[])
     delete[] fuse_argv;
 
     if (cache) {
-        rLog(Info, "deleting cache");
+        poco_information(logger, "deleting cache");
         delete cache;
         cache = NULL;
     }
@@ -1439,21 +1442,19 @@ int main(int argc, char *argv[])
                 stats->dumpMemoryStatsToLog();
         }
 
-        rLog(Info, "deleting stats");
+        poco_information(logger, "deleting stats");
         delete stats;
         stats = NULL;
     }
 
     if (extensions != NULL) {
-        rLog(Info, "deleting extensions ACL");
+        poco_information(logger, "deleting extensions ACL");
         delete extensions;
         extensions = NULL;
     }
 
-    rLog(Info, "closing logging targets");
-    RLogCloseLogFile();
-
-    rLog(Warn,"exiting");
+    poco_information(logger, "closing logging targets");
+    poco_warning(logger,"exiting");
 #ifdef DMALLOC
     dmalloc_verify(0L);
 #endif

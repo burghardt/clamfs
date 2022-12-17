@@ -82,8 +82,9 @@ int SendMailNotification(const char* mx, const char* recipient,
         session.login();
         session.sendMessage(mmsg);
         session.close();
-    } catch (Poco::Exception& exc) {
-        rLog(Info, "Got exception when sending mail notification: %s", exc.displayText().c_str());
+    } catch (Exception& exc) {
+        Logger& logger = Logger::root();
+        poco_information_f1(logger, "Got exception when sending mail notification: %s", exc.displayText());
 
         free(username);
         free(callername);
