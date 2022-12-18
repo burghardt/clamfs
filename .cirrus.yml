@@ -14,6 +14,7 @@ test_task:
   pkginstall_script:
     - pkg install -y devel/autoconf devel/automake devel/pkgconf
     - pkg install -y sysutils/fusefs-libs3 devel/poco devel/boost-libs
+    - pkg install -y security/clamav-lts
   configure_script:
     - sed -i bak -e 's|-Werror ||g' configure.ac
     - sh bootstrap
@@ -27,12 +28,6 @@ test_task:
     - sed 's/clamd.ctl/clamd.sock/g' doc/clamfs.xml | sed "s/fdpass/$CLAMFS_SCAN_MODE/g" > /clamfs/tmp.xml
   dump_clamfs_config_script:
     - cat /clamfs/tmp.xml
-  install_clamav_deps_script:
-    - cd /usr/ports/security/clamav
-    - make all-depends-list | sed 's|/usr/ports/||g' | xargs -rtn1 pkg install -y
-  install_clamav_script:
-    - cd /usr/ports/security/clamav
-    - make -DBATCH install clean
   freshclam_script:
     - freshclam
   start_clamd_script:
