@@ -43,8 +43,9 @@ ConfigParserXML::ConfigParserXML(const char *filename) {
     parser.setContentHandler(&handler);
     try {
        parser.parse(filename);
-    } catch (Poco::Exception &e) {
-       rLog(Warn, e.displayText().c_str());
+    } catch (Exception &e) {
+       Logger& logger = Logger::get("consoleLogger");
+       poco_warning(logger, e.displayText().c_str());
     }
 #ifndef NDEBUG
     cout << "--- end of xml dump ---" << endl;

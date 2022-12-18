@@ -9,7 +9,6 @@ RUN dnf update -y && \
     automake \
     pkg-config \
     fuse3-devel \
-    rlog-devel \
     poco-devel \
     boost-devel
 

@@ -77,7 +77,7 @@ class ScanCache: public ExpireLRUCache<ino_t, CachedResult> {
            \param elements maximal size of cache
            \param expire maximal TTL for entries
         */
-        ScanCache(long int elements, long int expire);
+        ScanCache(unsigned long int elements, long int expire);
         /*!\brief Destructor for ScanCache */
         ~ScanCache();
     private:

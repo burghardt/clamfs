@@ -13,7 +13,7 @@ test_task:
       CLAMFS_SCAN_MODE: stream
   pkginstall_script:
     - pkg install -y devel/autoconf devel/automake devel/pkgconf
-    - pkg install -y sysutils/fusefs-libs3 devel/poco devel/boost-libs devel/rlog
+    - pkg install -y sysutils/fusefs-libs3 devel/poco devel/boost-libs
   configure_script:
     - sed -i bak -e 's|-Werror ||g' configure.ac
     - sh bootstrap

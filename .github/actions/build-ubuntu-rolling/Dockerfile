@@ -6,7 +6,6 @@ RUN apt-get update && \
         automake \
         pkg-config \
         libfuse3-dev \
-        librlog-dev \
         libpoco-dev \
         libboost-dev && \
     apt-get clean && \

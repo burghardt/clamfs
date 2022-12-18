@@ -103,7 +103,6 @@ To build ClamFS on any GNU/Linux or *BSD you need:
  * [FUSE](https://github.com/libfuse/libfuse) &gt;= 3
  * [POCO](https://pocoproject.org/) &gt;= 1.2.9
  * [Boost](https://www.boost.org/) &gt;= 1.33
- * [RLog](https://www.arg0.net/rlog)
  * [pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/),
    [autoconf](https://www.gnu.org/software/autoconf/),
    [automake](https://www.gnu.org/software/automake/),
@@ -126,7 +125,7 @@ library. This dependency was dropped in version 1.1.0 (with commit 3bdb8ec).
 
 Sync following packages to build ClamFS:
 ```
-pacman -Syu base-devel fuse3 poco boost rlog
+pacman -Syu base-devel fuse3 poco boost
 ```
 
 ##### Debian, Ubuntu, etc.
@@ -135,7 +134,6 @@ To build ClamFS on Debian GNU/Linux and Ubuntu install these packages:
  * libfuse3-dev
  * libpoco-dev
  * libboost-dev
- * librlog-dev
  * pkg-config
 
 As a run-time dependency install:
@@ -146,7 +144,7 @@ Run following command to install all dependencies.
 ```
 sudo apt-get -y --no-install-recommends install \
       build-essential pkg-config autoconf automake \
-      libfuse3-dev libpoco-dev libboost-dev librlog-dev \
+      libfuse3-dev libpoco-dev libboost-dev \
       clamav-daemon clamav-freshclam
 ```
 
@@ -156,7 +154,6 @@ To build ClamFS on Fedora you need those packages:
  * fuse3-devel
  * poco-devel
  * boost-devel
- * rlog-devel
  * pkg-config
 
 As a run-time dependency install:
@@ -164,7 +161,7 @@ As a run-time dependency install:
 
 Run following command to install all dependencies.
 ```
-sudo dnf install automake rlog-devel boost-devel poco-devel fuse3-devel \
+sudo dnf install automake boost-devel poco-devel fuse3-devel \
       pkg-config clamd
 ```
 
@@ -174,7 +171,6 @@ To build ClamFS on FreeBSD and DragonFly BSD you need those ports:
  * [sysutils/fusefs-libs3](https://www.freshports.org/sysutils/fusefs-libs3/)
  * [devel/poco](https://www.freshports.org/devel/poco/)
  * [devel/boost-libs](https://www.freshports.org/devel/boost-libs/)
- * [devel/rlog](https://www.freshports.org/devel/rlog/)
  * [devel/pkgconf](https://www.freshports.org/devel/pkgconf/)
  * [devel/autoconf](https://www.freshports.org/devel/autoconf/)
  * [devel/automake](https://www.freshports.org/devel/automake/)

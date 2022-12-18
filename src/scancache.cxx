@@ -34,7 +34,7 @@ CachedResult::CachedResult(bool isFileClean, time_t scanFileTimestamp) {
 CachedResult::~CachedResult() {
 }
 
-ScanCache::ScanCache(long int elements, long int expire):
+ScanCache::ScanCache(unsigned long int elements, long int expire):
     ExpireLRUCache<ino_t, CachedResult>(elements, expire) {
 }
 

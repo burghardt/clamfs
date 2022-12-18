@@ -7,7 +7,6 @@ RUN apt-get update && \
         git ca-certificates meson ninja-build udev \
         pkg-config \
         libfuse-dev \
-        librlog-dev \
         libpoco-dev \
         libboost-dev && \
     apt-get clean && \

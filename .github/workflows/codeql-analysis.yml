@@ -22,7 +22,6 @@ jobs:
           build-essential \
           automake \
           pkg-config \
-          librlog-dev \
           libpoco-dev \
           libboost-dev
 

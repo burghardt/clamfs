@@ -41,7 +41,7 @@
    #include <dmalloc.h>
 #endif
 
-#include "rlog.hxx"
+#include "logger.hxx"
 #include "utils.hxx"
 
 namespace clamfs {
@@ -55,10 +55,6 @@ using namespace Poco;
    \brief Poco Network namespace
 */
 using namespace Poco::Net;
-
-extern RLogChannel *Debug;
-extern RLogChannel *Info;
-extern RLogChannel *Warn;
 
 int SendMailNotification(const char* mx, const char* recipient,
                          const char* sender, const char* subject,

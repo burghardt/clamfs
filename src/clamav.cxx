@@ -49,7 +49,7 @@ extern FastMutex scanMutex;
 */
 #define CHECK_CLAMD(clamdStream) do {\
     if (!clamdStream) {\
-        rLog(Warn, "error: clamd connection lost and unable to reconnect");\
+        poco_warning(logger, "error: clamd connection lost and unable to reconnect");\
         CloseClamav();\
         return -1;\
     }\
@@ -75,22 +75,23 @@ StreamSocket clamdSocket;
 */
 int OpenClamav(const char *unixSocket) {
     SocketAddress sa(unixSocket);
+    Logger& logger = Logger::root();
 
-    DEBUG("attempt to open connection to clamd via %s", unixSocket);
+    poco_debug_f1(logger, "attempt to open connection to clamd via %s", string(unixSocket));
     try {
        clamdSocket.connect(sa);
     } catch (Exception &exc) {
        /* Ignore 'Socket is already connected' exception */
        if (exc.code() != EISCONN) {
-         rLog(Warn, "error: unable to open connection to clamd: %s: %d",
-               exc.displayText().c_str(), exc.code());
+         poco_warning_f2(logger, "error: unable to open connection to clamd: %s: %d",
+               exc.displayText(), exc.code());
          return -1;
        }
     }
     SocketStream clamd(clamdSocket);
     CHECK_CLAMD(clamd);
 
-    DEBUG("connected to clamd");
+    poco_debug(logger, "connected to clamd");
     return 0;
 }
 
@@ -98,6 +99,7 @@ int OpenClamav(const char *unixSocket) {
 */
 int PingClamav() {
     string reply;
+    Logger& logger = Logger::root();
 
     SocketStream clamd(clamdSocket);
     CHECK_CLAMD(clamd);
@@ -105,18 +107,20 @@ int PingClamav() {
     clamd >> reply;
 
     if (reply != "PONG") {
-        rLog(Warn, "invalid reply for PING received: %s", reply.c_str());
+        poco_warning_f1(logger, "invalid reply for PING received: %s", reply);
         return -1;
     }
 
-    DEBUG("got valid reply for PING command, clamd works");
+    poco_debug(logger, "got valid reply for PING command, clamd works");
     return 0;
 }
 
 /*!\brief Close clamd connection
 */
 void CloseClamav() {
-    DEBUG("closing clamd connection");
+    Logger& logger = Logger::root();
+
+    poco_debug(logger, "closing clamd connection");
     clamdSocket.close();
 }
 
@@ -157,8 +161,9 @@ static void SendFileDescriptorForFile(const int fd) {
  */
 int ClamavScanFile(const char *filename) {
     string reply;
+    Logger& logger = Logger::root();
 
-    DEBUG("attempt to scan file %s", filename);
+    poco_debug_f1(logger, "attempt to scan file %s", string(filename));
 
     /*
      * Enqueue requests
@@ -168,7 +173,7 @@ int ClamavScanFile(const char *filename) {
     /*
      * Open clamd socket
      */
-    DEBUG("started scanning file %s", filename);
+    poco_debug_f1(logger, "started scanning file %s", string(filename));
     OpenClamav(config["socket"]);
     SocketStream clamd(clamdSocket);
     if (!clamd)
@@ -186,11 +191,11 @@ int ClamavScanFile(const char *filename) {
             SendFileDescriptorForFile(fd);
             close(fd);
         } else {
-            rLog(Warn, "Unable to pass fd for file '%s'", filename);
+            poco_warning_f1(logger, "Unable to pass fd for file '%s'", string(filename));
             return -1;
         }
 #else
-        rLog(Warn, "Scan command FILDES not available due to lack of fd passing.");
+        poco_warning(logger, "Scan command FILDES not available due to lack of fd passing.");
         return -1;
 #endif
     } else if ((config["mode"] != NULL) &&
@@ -198,10 +203,10 @@ int ClamavScanFile(const char *filename) {
         /*
          * Scan file using INSTREAM command
          */
-        Poco::FileInputStream istr(filename, std::ios::binary);
+        FileInputStream istr(filename, std::ios::binary);
         if (istr.good()) {
             std::string chunkSizeStr;
-            Poco::File f(filename);
+            File f(filename);
             size_t chunkSize = htonl(f.getSize());
 
             chunkSizeStr.assign((const char*)&chunkSize, 4);
@@ -211,7 +216,7 @@ int ClamavScanFile(const char *filename) {
             chunkSizeStr.assign("\0\0\0\0", 4);
             clamd << chunkSizeStr << flush;
         } else {
-            rLog(Warn, "Unable to pass stream for file '%s'", filename);
+            poco_warning_f1(logger, "Unable to pass stream for file '%s'", string(filename));
             return -1;
         }
     } else {
@@ -230,7 +235,7 @@ int ClamavScanFile(const char *filename) {
     /*
      * Check for scan results, return if file is clean
      */
-    DEBUG("clamd reply for file '%s' is: '%s'", filename, reply.c_str());
+    poco_debug_f2(logger, "clamd reply for file '%s' is: '%s'", string(filename), reply);
     if (strncmp(reply.c_str() + reply.size() - 2,  "OK", 2) == 0 ||
         strncmp(reply.c_str() + reply.size() - 10, "Empty file", 10) == 0 ||
         strncmp(reply.c_str() + reply.size() - 8,  "Excluded", 8) == 0 ||
@@ -239,13 +244,13 @@ int ClamavScanFile(const char *filename) {
     }
 
     /*
-     * Log result through RLog (if virus is found or scan failed)
+     * Log result through Logger (if virus is found or scan failed)
      */
     char* username = getusername();
     char* callername = getcallername();
-    rLog(Warn, "(%s:%d) (%s:%d) '%s': %s", callername, fuse_get_context()->pid,
-        username, fuse_get_context()->uid, filename,
-        reply.empty() ? "< empty clamd reply >" : reply.c_str());
+    poco_warning_f(logger, "(%s:%d) (%s:%u) '%s': %s", string(callername), fuse_get_context()->pid,
+        string(username), fuse_get_context()->uid, string(filename),
+        reply.empty() ? "< empty clamd reply >" : reply);
     free(username);
     free(callername);
 
@@ -269,7 +274,7 @@ int ClamavScanFile(const char *filename) {
     }
 
     if (strncmp(reply.c_str() + reply.size() - 5, "FOUND", 5) != 0) {
-       rLog(Warn, "Response not ending with 'FOUND' was received and left uninterpreted!");
+       poco_warning(logger, "Response not ending with 'FOUND' was received and left uninterpreted!");
     }
 
     /*

@@ -1,11 +1,11 @@
-/*!\file clamav.hxx
+/*!\file logger.hxx
 
-   \brief Clamd bindings (header file)
+   \brief Poco::Logger logging routines (header file)
 
 *//*
 
    ClamFS - An user-space anti-virus protected file system
-   Copyright (C) 2007-2019 Krzysztof Burghardt
+   Copyright (C) 2022 Krzysztof Burghardt
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -22,14 +22,19 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef CLAMFS_CLAMAV_HXX
-#define CLAMFS_CLAMAV_HXX
+#ifndef CLAMFS_LOGGER_HXX
+#define CLAMFS_LOGGER_HXX
 
 #include "config.h"
 
 #include <cstring>
-#include <Poco/Mutex.h>
-#include <Poco/ScopedLock.h>
+#include <Poco/Exception.h>
+#include <Poco/Logger.h>
+#include <Poco/FormattingChannel.h>
+#include <Poco/PatternFormatter.h>
+#include <Poco/ConsoleChannel.h>
+#include <Poco/SyslogChannel.h>
+#include <Poco/SimpleFileChannel.h>
 
 #ifdef DMALLOC
    #include <stdlib.h>
@@ -40,21 +45,26 @@
 #endif
 
 #include "config.hxx"
-#include "mnotify.hxx"
+#include "utils.hxx"
 
 namespace clamfs {
 
 using namespace std;
-using namespace Poco;
-using namespace Poco::Net;
+using Poco::ColorConsoleChannel;
+using Poco::SyslogChannel;
+using Poco::SimpleFileChannel;
+using Poco::FormattingChannel;
+using Poco::PatternFormatter;
+using Poco::Logger;
+using Poco::Message;
+using Poco::AutoPtr;
 
-int OpenClamav(const char *unixSocket);
-int PingClamav();
-void CloseClamav();
-int ClamavScanFile(const char *filename);
+void LoggerOpenStdio();
+void LoggerOpenSyslog();
+void LoggerOpenLogFile(const string &filename);
 
 } /* namespace clamfs */
 
-#endif /* CLAMFS_CLAMAV_HXX */
+#endif /* CLAMFS_LOGGER_HXX */
 
 /* EoF */

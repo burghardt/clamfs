@@ -53,50 +53,52 @@ Stats::~Stats() {
 }
 
 void Stats::dumpFilesystemStatsToLog() {
-    rLog(Info, "--- begin of filesystem statistics ---");
-    rLog(Info, "Early cache hit:  %llu", earlyCacheHit);
-    rLog(Info, "Early cache miss: %llu", earlyCacheMiss);
-    rLog(Info, "Late cache hit:   %llu", lateCacheHit);
-    rLog(Info, "Late cache miss:  %llu", lateCacheMiss);
-    rLog(Info, "Whitelist hit:    %llu", whitelistHit);
-    rLog(Info, "Blacklist hit:    %llu", blacklistHit);
-    rLog(Info, "Files bigger than maximal-size: %llu", tooBigFile);
-    rLog(Info, "open() function called %llu times (allowed: %llu, denied: %llu)",
+    Logger& logger = Logger::root();
+    poco_information(logger, "--- begin of filesystem statistics ---");
+    poco_information_f1(logger, "Early cache hit:  %z", earlyCacheHit);
+    poco_information_f1(logger, "Early cache miss: %z", earlyCacheMiss);
+    poco_information_f1(logger, "Late cache hit:   %z", lateCacheHit);
+    poco_information_f1(logger, "Late cache miss:  %z", lateCacheMiss);
+    poco_information_f1(logger, "Whitelist hit:    %z", whitelistHit);
+    poco_information_f1(logger, "Blacklist hit:    %z", blacklistHit);
+    poco_information_f1(logger, "Files bigger than maximal-size: %z", tooBigFile);
+    poco_information_f3(logger, "open() function called %z times (allowed: %z, denied: %z)",
             openCalled, openAllowed, openDenied);
-    rLog(Info, "Scan failed %llu times", scanFailed);
-    rLog(Info, "--- end of filesystem statistics ---");
+    poco_information_f1(logger, "Scan failed %z times", scanFailed);
+    poco_information(logger, "--- end of filesystem statistics ---");
 }
 
 void Stats::dumpMemoryStatsToLog() {
-    rLog(Info, "--- begin of memory statistics ---");
+    Logger& logger = Logger::root();
+    poco_information(logger, "--- begin of memory statistics ---");
 #if defined(HAVE_MALLINFO2)
     struct mallinfo2 mi = mallinfo2();
-    rLog(Info, "Non-mmapped space allocated (arena):         %zd", mi.arena);
-    rLog(Info, "Number of free chunks (ordblks):             %zd", mi.ordblks);
-    rLog(Info, "Number of free fastbin blocks (smblks):      %zd", mi.smblks);
-    rLog(Info, "Number of mmapped regions (hblks):           %zd", mi.hblks);
-    rLog(Info, "Space allocated in mmapped regions (hblkhd): %zd", mi.hblkhd);
-    rLog(Info, "Maximum total allocated space (usmblks):     %zd", mi.usmblks);
-    rLog(Info, "Space in freed fastbin blocks (fsmblks):     %zd", mi.fsmblks);
-    rLog(Info, "Total allocated space (uordblks):            %zd", mi.uordblks);
-    rLog(Info, "Total free space (fordblks):                 %zd", mi.fordblks);
-    rLog(Info, "Top-most, releasable space (keepcost):       %zd", mi.keepcost);
+    poco_information_f1(logger, "Non-mmapped space allocated (arena):         %z", mi.arena);
+    poco_information_f1(logger, "Number of free chunks (ordblks):             %z", mi.ordblks);
+    poco_information_f1(logger, "Number of free fastbin blocks (smblks):      %z", mi.smblks);
+    poco_information_f1(logger, "Number of mmapped regions (hblks):           %z", mi.hblks);
+    poco_information_f1(logger, "Space allocated in mmapped regions (hblkhd): %z", mi.hblkhd);
+    poco_information_f1(logger, "Maximum total allocated space (usmblks):     %z", mi.usmblks);
+    poco_information_f1(logger, "Space in freed fastbin blocks (fsmblks):     %z", mi.fsmblks);
+    poco_information_f1(logger, "Total allocated space (uordblks):            %z", mi.uordblks);
+    poco_information_f1(logger, "Total free space (fordblks):                 %z", mi.fordblks);
+    poco_information_f1(logger, "Top-most, releasable space (keepcost):       %z", mi.keepcost);
 #elif defined(HAVE_MALLINFO)
     struct mallinfo mi = mallinfo();
-    rLog(Info, "Non-mmapped space allocated (arena):         %d", mi.arena);
-    rLog(Info, "Number of free chunks (ordblks):             %d", mi.ordblks);
-    rLog(Info, "Number of free fastbin blocks (smblks):      %d", mi.smblks);
-    rLog(Info, "Number of mmapped regions (hblks):           %d", mi.hblks);
-    rLog(Info, "Space allocated in mmapped regions (hblkhd): %d", mi.hblkhd);
-    rLog(Info, "Maximum total allocated space (usmblks):     %d", mi.usmblks);
-    rLog(Info, "Space in freed fastbin blocks (fsmblks):     %d", mi.fsmblks);
-    rLog(Info, "Total allocated space (uordblks):            %d", mi.uordblks);
-    rLog(Info, "Total free space (fordblks):                 %d", mi.fordblks);
-    rLog(Info, "Top-most, releasable space (keepcost):       %d", mi.keepcost);
+    poco_information_f1(logger, "Non-mmapped space allocated (arena):         %z", mi.arena);
+    poco_information_f1(logger, "Number of free chunks (ordblks):             %z", mi.ordblks);
+    poco_information_f1(logger, "Number of free fastbin blocks (smblks):      %z", mi.smblks);
+    poco_information_f1(logger, "Number of mmapped regions (hblks):           %z", mi.hblks);
+    poco_information_f1(logger, "Space allocated in mmapped regions (hblkhd): %z", mi.hblkhd);
+    poco_information_f1(logger, "Maximum total allocated space (usmblks):     %z", mi.usmblks);
+    poco_information_f1(logger, "Space in freed fastbin blocks (fsmblks):     %z", mi.fsmblks);
+    poco_information_f1(logger, "Total allocated space (uordblks):            %z", mi.uordblks);
+    poco_information_f1(logger, "Total free space (fordblks):                 %z", mi.fordblks);
+    poco_information_f1(logger, "Top-most, releasable space (keepcost):       %z", mi.keepcost);
 #else
-    rLog(Warn, "mallinfo() not available");
+    poco_warning(logger, "mallinfo() not available");
 #endif
-    rLog(Info, "--- end of memory statistics ---");
+    poco_information(logger, "--- end of memory statistics ---");
 }
 
 void Stats::periodicDumpToLog() {
