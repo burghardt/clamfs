@@ -3,6 +3,7 @@ test_task:
   name: FreeBSD test run
   freebsd_instance:
     matrix:
+      image_family: freebsd-14-0-snap
       image_family: freebsd-13-1
       image_family: freebsd-12-3
   env:
@@ -34,7 +35,7 @@ test_task:
     - service clamav-freshclam onestart
     - service clamav-clamd onestart
   load_fuse_script:
-    - kldload fuse
+    - kldload fusefs || kldload fuse
   start_clamfs_script:
     - clamfs /clamfs/tmp.xml
   test_empty_script:
