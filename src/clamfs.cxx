@@ -1370,7 +1370,7 @@ int main(int argc, char *argv[])
         (config["expire"] != NULL)) {
         poco_information_f2(logger, "ScanCache initialized, %s entries will be kept for %s ms max.",
             string(config["entries"]), string(config["expire"]));
-        cache = new ScanCache(strtoul(config["entries"], NULL, 10), strtoul(config["expire"], NULL, 10));
+        cache = new ScanCache(strtoul(config["entries"], NULL, 10), atol(config["expire"]));
     } else {
         poco_warning(logger, "ScanCache disabled, expect poor performance");
     }
