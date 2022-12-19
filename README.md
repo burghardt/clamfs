@@ -178,8 +178,9 @@ To build ClamFS on FreeBSD and DragonFly BSD you need those ports:
 As a run-time dependency you need:
  * [security/clamav](https://www.freshports.org/security/clamav/)
 
-Note: older FreeBSD version required port named `sysutils/fusefs-kmod`.
-This is no longer the case as `fuse` module is part of kernel.
+Note: FreeBSD &gt;= 6.0 & &lt; 10.0 use `sysutils/fusefs-kmod` port. FreeBSD
+&gt;= 10.0 & &lt; 12.1 use fuse kernel module. In FreeBSD &gt;= 12.1 module
+was renamed to fusefs for consistency with other filesystems.
 
 #### Downloading
 
@@ -279,18 +280,20 @@ instance `fdpass` is preferred scanning method.
 
 #### Additional configuration steps for FreeBSD
 
-FreeBSD's `fuse` kernel module has to be loaded before starting ClamFS. This
-can be done ad-hoc with `kldload fuse` command.
+FreeBSD's `fusefs` kernel module has to be loaded before starting ClamFS. This
+can be done ad-hoc with `kldload fusefs` command.
 
 To have it loaded at boot time, add the following line to `/boot/loader.conf`.
 ```sh
-fuse_load="YES"
+fusefs_load="YES"
 ```
 
 Or append fuse module to `kld_list` in `/etc/rc.conf`.
 ```sh
-kld_list="fuse"
+kld_list="fusefs"
 ```
+
+Note: before FreeBSD 12.1 `fusefs` module was named `fuse`.
 
 Also configure ClamAV daemon and signature downloader service to start during
 boot with following options appended to `/etc/rc.conf`.

@@ -1,4 +1,4 @@
-AC_INIT([ClamFS],[1.2.0],[krzysztof@burghardt.pl],[clamfs])
+AC_INIT([ClamFS],[1.3.0],[krzysztof@burghardt.pl],[clamfs])
 AC_CONFIG_AUX_DIR(build)
 AC_CONFIG_SRCDIR(src/clamfs.cxx)
 AC_CONFIG_HEADERS(config.h)
