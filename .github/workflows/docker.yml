@@ -18,8 +18,8 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@master
-      - name: ubuntu-devel
-        uses: ./.github/actions/build-ubuntu-devel
+      #- name: ubuntu-devel
+      #  uses: ./.github/actions/build-ubuntu-devel
       - name: ubuntu-latest
         uses: ./.github/actions/build-ubuntu-latest
       - name: ubuntu-rolling
