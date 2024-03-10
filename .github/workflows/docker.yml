@@ -2,9 +2,14 @@ name: docker workflow
 
 on:
   push:
+    branches:
+      - master
   pull_request:
+    branches:
+      - master
   schedule:
-    - cron:  '0 1 * * *'
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,8 +18,8 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@master
-      - name: ubuntu-devel
-        uses: ./.github/actions/build-ubuntu-devel
+      #- name: ubuntu-devel
+      #  uses: ./.github/actions/build-ubuntu-devel
       - name: ubuntu-latest
         uses: ./.github/actions/build-ubuntu-latest
       - name: ubuntu-rolling
