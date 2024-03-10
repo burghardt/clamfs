@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
       #- name: ubuntu-devel
       #  uses: ./.github/actions/build-ubuntu-devel
       - name: ubuntu-latest
