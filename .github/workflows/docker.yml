@@ -26,8 +26,8 @@ jobs:
         uses: ./.github/actions/build-ubuntu-rolling
       - name: debian-unstable
         uses: ./.github/actions/build-debian-unstable
-      - name: debian-testing
-        uses: ./.github/actions/build-debian-testing
+      #- name: debian-testing
+      #  uses: ./.github/actions/build-debian-testing
       - name: debian-stable
         uses: ./.github/actions/build-debian-stable
       #- name: debian-oldstable
