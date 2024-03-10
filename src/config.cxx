@@ -40,6 +40,8 @@ ConfigParserXML::ConfigParserXML(const char *filename) {
 #endif
     parser.setFeature(XMLReader::FEATURE_NAMESPACES, true);
     parser.setFeature(XMLReader::FEATURE_NAMESPACE_PREFIXES, true);
+    parser.setFeature(XMLReader::FEATURE_EXTERNAL_GENERAL_ENTITIES, false);
+    parser.setFeature(XMLReader::FEATURE_EXTERNAL_PARAMETER_ENTITIES, false);
     parser.setContentHandler(&handler);
     try {
        parser.parse(filename);
