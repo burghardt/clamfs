@@ -10,9 +10,10 @@ RUN dnf update -y && \
     pkg-config \
     fuse3-devel \
     poco-devel \
-    boost-devel
+    boost-devel && \
+    dnf clean all
 
-ADD entrypoint.sh /entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
