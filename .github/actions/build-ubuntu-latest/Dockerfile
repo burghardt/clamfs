@@ -23,7 +23,7 @@ RUN mkdir /tmp/fuse3 && \
     cd /tmp && \
     rm -fr fuse3
 
-ADD entrypoint.sh /entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
