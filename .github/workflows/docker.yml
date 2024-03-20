@@ -34,7 +34,8 @@ jobs:
         uses: ./.github/actions/build-debian-stable
       - name: debian-oldstable
         uses: ./.github/actions/build-debian-oldstable
-      - name: fedora-rawhide
-        uses: ./.github/actions/build-fedora-rawhide
+      # fatal error: Poco/XML/expat.h: No such file or directory
+      #- name: fedora-rawhide
+      #  uses: ./.github/actions/build-fedora-rawhide
       - name: fedora-latest
         uses: ./.github/actions/build-fedora-latest
