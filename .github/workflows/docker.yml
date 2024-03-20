@@ -15,23 +15,26 @@ jobs:
   build:
     name: build
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - name: checkout
         uses: actions/checkout@v4
-      #- name: ubuntu-devel
-      #  uses: ./.github/actions/build-ubuntu-devel
+      - name: ubuntu-devel
+        uses: ./.github/actions/build-ubuntu-devel
       - name: ubuntu-latest
         uses: ./.github/actions/build-ubuntu-latest
       - name: ubuntu-rolling
         uses: ./.github/actions/build-ubuntu-rolling
       - name: debian-unstable
         uses: ./.github/actions/build-debian-unstable
+      # E: Unable to locate package libpoco-dev
       #- name: debian-testing
       #  uses: ./.github/actions/build-debian-testing
       - name: debian-stable
         uses: ./.github/actions/build-debian-stable
-      #- name: debian-oldstable
-      #  uses: ./.github/actions/build-debian-oldstable
+      - name: debian-oldstable
+        uses: ./.github/actions/build-debian-oldstable
+      # fatal error: Poco/XML/expat.h: No such file or directory
       #- name: fedora-rawhide
       #  uses: ./.github/actions/build-fedora-rawhide
       - name: fedora-latest

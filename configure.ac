@@ -2,6 +2,7 @@ AC_INIT([ClamFS],[1.3.0],[krzysztof@burghardt.pl],[clamfs])
 AC_CONFIG_AUX_DIR(build)
 AC_CONFIG_SRCDIR(src/clamfs.cxx)
 AC_CONFIG_HEADERS(config.h)
+AC_CONFIG_MACRO_DIR(m4)
 AM_INIT_AUTOMAKE
 AM_CONDITIONAL([DOT_GIT], [test -d .git])
 
@@ -37,12 +38,15 @@ AC_C_FDPASSING
 
 # Set initial CPPFLAGS and LDFLAGS
 CPPFLAGS="$CPPFLAGS -Wall -Werror -Wextra -Wdate-time"
-CPPFLAGS="$CPPFLAGS -Wformat -Wformat-security -D_FORTIFY_SOURCE=2"
+CPPFLAGS="$CPPFLAGS -Wformat -Wformat-security"
 CPPFLAGS="$CPPFLAGS -Wcast-align -Wcast-qual -Wchar-subscripts"
 CPPFLAGS="$CPPFLAGS -Wformat-nonliteral -Wpointer-arith -Wredundant-decls"
 CPPFLAGS="$CPPFLAGS -Wreturn-type -Wshadow -Wswitch -Wunused-parameter -Wwrite-strings"
 CPPFLAGS="$CPPFLAGS -fstack-protector-strong -fPIC -fPIE"
 LDFLAGS="$LDFLAGS -pie -Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack -Wl,--as-needed -Wl,-Bsymbolic-functions -Wl,--fatal-warnings"
+
+# Check whether to add -D_FORTIFY_SOURCE=? to CPPFLAGS
+AX_ADD_FORTIFY_SOURCE
 
 # Checks for boost
 AX_BOOST_BASE(1.33)
