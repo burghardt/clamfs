@@ -13,26 +13,23 @@ on:
 
 jobs:
   build:
-    name: build
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - ubuntu-devel
+          - ubuntu-latest
+          - ubuntu-rolling
+          - debian-unstable
+          - debian-testing
+          - debian-stable
+          - debian-oldstable
+          - fedora-rawhide
+          - fedora-latest
+    name: build on ${{ matrix.image }}
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v4
-      #- name: ubuntu-devel
-      #  uses: ./.github/actions/build-ubuntu-devel
-      - name: ubuntu-latest
-        uses: ./.github/actions/build-ubuntu-latest
-      - name: ubuntu-rolling
-        uses: ./.github/actions/build-ubuntu-rolling
-      - name: debian-unstable
-        uses: ./.github/actions/build-debian-unstable
-      #- name: debian-testing
-      #  uses: ./.github/actions/build-debian-testing
-      - name: debian-stable
-        uses: ./.github/actions/build-debian-stable
-      #- name: debian-oldstable
-      #  uses: ./.github/actions/build-debian-oldstable
-      #- name: fedora-rawhide
-      #  uses: ./.github/actions/build-fedora-rawhide
-      - name: fedora-latest
-        uses: ./.github/actions/build-fedora-latest
+      - name: ${{ matrix.image }}
+        uses: ./.github/actions/build-${{ matrix.image }}
