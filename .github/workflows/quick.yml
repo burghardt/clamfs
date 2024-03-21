@@ -132,3 +132,7 @@ jobs:
         run: |
           set -x
           sudo umount /clamfs/tmp
+      - name: bats
+        run: |
+          cd tests
+          ./runtests.bash

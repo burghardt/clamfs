@@ -50,7 +50,3 @@ jobs:
         run: make clean
       - name: make
         run: make -j
-      - name: bats
-        run: |
-          cd tests
-          ./runtests.bash
