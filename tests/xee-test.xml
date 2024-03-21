@@ -1,0 +1,6 @@
+<!DOCTYPE xee-test [
+  <!ENTITY xxe SYSTEM "file:///dev/full">
+]>
+<clamfs>
+  <clamd socket="&xxe;" />
+</clamfs>

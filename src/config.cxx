@@ -5,7 +5,7 @@
 *//*
 
    ClamFS - An user-space anti-virus protected file system
-   Copyright (C) 2007-2019 Krzysztof Burghardt
+   Copyright (C) 2007-2024 Krzysztof Burghardt
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -40,8 +40,11 @@ ConfigParserXML::ConfigParserXML(const char *filename) {
 #endif
     parser.setFeature(XMLReader::FEATURE_NAMESPACES, true);
     parser.setFeature(XMLReader::FEATURE_NAMESPACE_PREFIXES, true);
+
+    // Disable external entity resolution
     parser.setFeature(XMLReader::FEATURE_EXTERNAL_GENERAL_ENTITIES, false);
     parser.setFeature(XMLReader::FEATURE_EXTERNAL_PARAMETER_ENTITIES, false);
+
     parser.setContentHandler(&handler);
     try {
        parser.parse(filename);
