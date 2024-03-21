@@ -26,6 +26,7 @@ jobs:
                meson ninja-build \
                automake \
                pkg-config \
+               bash bats \
                libpoco-dev \
                libboost-dev \
                libdmalloc-dev
