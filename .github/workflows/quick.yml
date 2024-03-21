@@ -26,6 +26,7 @@ jobs:
                meson ninja-build \
                automake \
                pkg-config \
+               bash bats \
                libpoco-dev \
                libboost-dev \
                libdmalloc-dev
@@ -132,3 +133,7 @@ jobs:
         run: |
           set -x
           sudo umount /clamfs/tmp
+      - name: bats
+        run: |
+          cd tests
+          ./runtests.bash
