@@ -1,9 +1,6 @@
 SUBDIRS = src doc
 
-EXTRA_DIST = bootstrap \
-             ax_boost_base.m4 \
-             fdpassing.m4 \
-             version.h
+EXTRA_DIST = bootstrap m4 version.h
 
 BUILT_SOURCES = version.h
 
