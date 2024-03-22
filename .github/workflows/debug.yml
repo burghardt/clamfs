@@ -49,3 +49,20 @@ jobs:
         run: make clean
       - name: make
         run: make -j
+      - name: distclean
+        run: make distclean
+      - name: autogen.sh
+        run: sh autogen.sh
+      - name: configure
+        run: ./configure --prefix=$HOME
+      - name: dist
+        run: make dist
+      - name: build from tarball
+        run: |
+          tar xf clamfs-*.tar.gz
+          cd clamfs-*/
+          sh configure
+          make -j
+          make clean
+          make dist
+          make distclean
