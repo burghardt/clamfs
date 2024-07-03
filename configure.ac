@@ -71,6 +71,7 @@ AC_CHECK_HEADER(Poco/ExpireLRUCache.h,,AC_MSG_ERROR([Poco/ExpireLRUCache.h not f
 AC_CHECK_HEADER(Poco/Net/MailMessage.h,,AC_MSG_ERROR([Poco/Net/MailMessage.h]))
 AC_CHECK_HEADER(Poco/Net/MailRecipient.h,,AC_MSG_ERROR([Poco/Net/MailRecipient.h]))
 AC_CHECK_HEADER(Poco/Net/SMTPClientSession.h,,AC_MSG_ERROR([Poco/Net/SMTPClientSession.h]))
+AC_CHECK_HEADER(Poco/XML/expat.h,,AC_DEFINE([POCO_UNBUNDLED],[1],[Set to 1 if you prefer system dependencies instead of components bundled with the `POCO` library.]))
 AC_CHECK_HEADER(Poco/SAX/SAXParser.h,,AC_MSG_ERROR([Poco/SAX/SAXParser.h]))
 AC_CHECK_HEADER(Poco/SAX/ContentHandler.h,,AC_MSG_ERROR([Poco/SAX/ContentHandler.h]))
 AC_CHECK_HEADER(Poco/SAX/LexicalHandler.h,,AC_MSG_ERROR([Poco/SAX/LexicalHandler.h]))
