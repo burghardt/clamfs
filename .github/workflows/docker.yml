@@ -33,8 +33,7 @@ jobs:
         uses: ./.github/actions/build-debian-stable
       - name: debian-oldstable
         uses: ./.github/actions/build-debian-oldstable
-      # rawhide is disabled because it cannot install dependencies
-      #- name: fedora-rawhide
-      #  uses: ./.github/actions/build-fedora-rawhide
+      - name: fedora-rawhide
+        uses: ./.github/actions/build-fedora-rawhide
       - name: fedora-latest
         uses: ./.github/actions/build-fedora-latest
