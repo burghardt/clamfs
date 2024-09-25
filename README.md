@@ -305,9 +305,13 @@ clamav_freshclam_enable="YES"
 Finally start required services with following commands.
 ```sh
 service kld start
-service clamav-freshclam start
-service clamav-clamd start
+service clamav_freshclam start
+service clamav_clamd start
 ```
+
+Note: before [20240912](https://github.com/freebsd/freebsd-ports/blob/7be75b567a82537c52a51e920b21944c2f005203/UPDATING#L8)
+rc.d scripts were named `clamav-freshclam` and `clamav-clamd` ("_" vs "-",
+underscore vs dash).
 
 #### Mounting and unmounting ClamFS file systems
 

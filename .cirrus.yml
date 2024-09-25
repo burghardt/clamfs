@@ -32,8 +32,8 @@ test_task:
   freshclam_script:
     - freshclam
   start_clamd_script:
-    - service clamav-freshclam onestart
-    - service clamav-clamd onestart
+    - service clamav_freshclam onestart || service clamav-freshclam onestart
+    - service clamav_clamd onestart || service clamav-clamd onestart
   load_fuse_script:
     - kldload fusefs || kldload fuse
   start_clamfs_script:
