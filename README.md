@@ -268,7 +268,7 @@ is usually a bad idea.
 This is the default mode when BSD 4.4 / RFC2292 style fd passing is available
 in the operating system. In this mode ClamFS opens file and passes file
 descriptor to clamd over UNIX domain socket. Finally clamd reads file by
-itself. This mode works only when clamd and ClamFS are no the same machine
+itself. This mode works only when clamd and ClamFS are on the same machine
 and operating system supports file descriptor sharing.
 
 ##### mode="stream" - pass file stream (with INSTREAM command)
