@@ -258,7 +258,7 @@ files to clamd. Default method is `fdpass`.
 
 This is the simplest mode. In this mode clamd opens and reads file by itself.
 Permissions have to be set to allow clamd to access the file. Also this mode
-works only when clamd and ClamFS are no the same machine and both have access
+works only when clamd and ClamFS are on the same machine and both have access
 to files. Using this mode might require permissions or ACLs setup for clamd
 user. Please note that attempts to run clamd as root to bypass permissions
 is usually a bad idea.
