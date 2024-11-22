@@ -258,7 +258,7 @@ files to clamd. Default method is `fdpass`.
 
 This is the simplest mode. In this mode clamd opens and reads file by itself.
 Permissions have to be set to allow clamd to access the file. Also this mode
-works only when clamd and ClamFS are no the same machine and both have access
+works only when clamd and ClamFS are on the same machine and both have access
 to files. Using this mode might require permissions or ACLs setup for clamd
 user. Please note that attempts to run clamd as root to bypass permissions
 is usually a bad idea.
@@ -268,7 +268,7 @@ is usually a bad idea.
 This is the default mode when BSD 4.4 / RFC2292 style fd passing is available
 in the operating system. In this mode ClamFS opens file and passes file
 descriptor to clamd over UNIX domain socket. Finally clamd reads file by
-itself. This mode works only when clamd and ClamFS are no the same machine
+itself. This mode works only when clamd and ClamFS are on the same machine
 and operating system supports file descriptor sharing.
 
 ##### mode="stream" - pass file stream (with INSTREAM command)
