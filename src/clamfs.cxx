@@ -570,6 +570,8 @@ static int clamfs_truncate(const char *path, off_t size,
 #ifdef HAVE_UTIMENSAT
 /*!\brief FUSE utimens() callback
    \param path file path
+   \param ts specifies the new last access and last modification times
+   \param fi pointer to a structure containing file-specific information
    \returns 0 if utimens() returns without error on -errno otherwise
 */
 static int clamfs_utimens(const char *path, const struct timespec ts[2],
