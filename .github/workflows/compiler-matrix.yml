@@ -1,0 +1,60 @@
+name: compiler matrix
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - cc: gcc-14
+            cxx: g++-14
+          - cc: gcc-15
+            cxx: g++-15
+          - cc: gcc-16
+            cxx: g++-16
+          - cc: clang-19
+            cxx: clang++-19
+          - cc: clang-20
+            cxx: clang++-20
+    steps:
+      - name: checkout
+        uses: actions/checkout@v6
+      - name: deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y software-properties-common
+          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get -y --no-install-recommends install \
+            build-essential \
+            meson ninja-build \
+            automake \
+            pkg-config \
+            libfuse3-dev \
+            libpoco-dev \
+            libboost-dev \
+            libdmalloc-dev \
+            ${{ matrix.cc }} ${{ matrix.cxx }}
+      - name: bootstrap
+        run: sh bootstrap
+      - name: configure
+        env:
+          CC: ${{ matrix.cc }}
+          CXX: ${{ matrix.cxx }}
+        run: |
+          sh configure || { tail -n 500 config.log; false; }
+      - name: make
+        run: make -j
