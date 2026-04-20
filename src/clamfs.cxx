@@ -1162,6 +1162,10 @@ static off_t clamfs_lseek(const char *path, off_t off, int whence,
 }
 #endif
 
+} /* extern "C" */
+
+} /* namespace clamfs */
+
 /*!\brief ClamFS main()
    \param argc arguments counter
    \param argv arguments array
@@ -1462,9 +1466,5 @@ int main(int argc, char *argv[])
 #endif
     return ret;
 }
-
-} /* extern "C" */
-
-} /* namespace clamfs */
 
 /* EoF */
